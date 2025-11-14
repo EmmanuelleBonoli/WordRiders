@@ -2,7 +2,7 @@ import 'package:flame/game.dart';
 import '../../features/gameplay/components/enemy.dart';
 import '../../features/gameplay/components/finish_line.dart';
 import '../../features/gameplay/components/player.dart';
-import '../../features/gameplay/game_state.dart';
+import '../../features/gameplay/services/game_state.dart';
 import '../../utils/dictionary.dart';
 import '../constants/game_constants.dart';
 
@@ -56,7 +56,6 @@ class WordTrainGame extends FlameGame {
   @override
   void update(double dt) {
     super.update(dt);
-
     if (gameState.isGameOver) return;
 
     /// L'ennemi avance automatiquement
@@ -82,7 +81,9 @@ class WordTrainGame extends FlameGame {
 
     final word = gameState.consumeWord();
 
-    if (dictionary.isValid(word)) {
+    if (dictionary.isValid(word) && !gameState.isAlreadyProposedWord(word)) {
+      gameState.saveValidWord(word);
+
       final advance = size.x * GameConstants.playerAdvanceRatio;
       player!.moveForward(advance, finishLineX);
     }

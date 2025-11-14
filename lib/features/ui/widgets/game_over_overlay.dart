@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../gameplay/game_state.dart';
+import '../../gameplay/services/game_state.dart';
 import '../../../core/game/word_train_game.dart';
 
 class GameOverOverlay extends StatelessWidget {

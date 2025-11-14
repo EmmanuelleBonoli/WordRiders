@@ -1,0 +1,26 @@
+{
+  "loading": {
+    "messages": {
+      "0": "Chargement de la magie...",
+      "1": "Affûtage des épées...",
+      "2": "Invocation des héros..."
+    },
+    "title": "Chargement..."
+  },
+  "menu": {
+    "campaign": "Campagne",
+    "training": "Entraînement",
+    "settings": "Paramètres",
+    "quit": "Quitter",
+    "confirmQuitTitle": "Quitter le jeu",
+    "confirmQuitMessage": "Êtes-vous sûr de vouloir quitter ?",
+    "confirmQuitCancel": "Annuler"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "enableMusic": "Activer la musique",
+    "enableSounds": "Activer les effets sonores",
+    "resetCampaign": "Redémarrer la campagne"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "loading": {
+    "messages": {
+      "0": "message one...",
+      "1": "message two...",
+      "2": "message three..."
+    },
+    "title": "Loading..."
+  },
+  "menu": {
+    "campaign": "Campaign",
+    "training": "Training",
+    "settings": "Settings",
+    "quit": "Quit",
+    "confirmQuitTitle": "Quit Game",
+    "confirmQuitMessage": "Are you sure you want to quit?",
+    "confirmQuitCancel": "Cancel"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "enableMusic": "Enable Music",
+    "enableSounds": "Enable Sounds",
+    "resetCampaign": "Reset Campaign"
+  }
+}

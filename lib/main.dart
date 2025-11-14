@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
+import 'package:word_train/router.dart';
 import 'package:word_train/utils/dictionary.dart';
-
-import 'features/ui/screens/game_screen.dart';
 
 void main() async {
   /// nécessaire pour charger les assets
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
 
   /// charger le dictionnaire
   final dictionary = Dictionary();
@@ -19,21 +21,34 @@ void main() async {
   ]);
 
   /// lancer le jeu
-  runApp(WordTrainApp(dictionary: dictionary));
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('fr')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en'),
+      child: Provider<Dictionary>.value(
+        value: dictionary,
+        child: WordTrainApp(),
+      ),
+    ),
+  );
 }
 
 class WordTrainApp extends StatelessWidget {
-  final Dictionary dictionary;
-
-  const WordTrainApp({super.key, required this.dictionary});
+  const WordTrainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Word Train',
       theme: ThemeData.dark(),
-      home: GameScreen(dictionary: dictionary),
+
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+
+      routerConfig: router,
     );
   }
 }

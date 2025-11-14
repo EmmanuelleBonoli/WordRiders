@@ -1,21 +1,21 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../core/game/word_train_game.dart';
 import '../../../utils/dictionary.dart';
-import '../../gameplay/game_state.dart';
+import '../../gameplay/services/game_state.dart';
 import '../widgets/game_over_overlay.dart';
 import '../widgets/letter_input_widget.dart';
 
 class GameScreen extends StatefulWidget {
-  final Dictionary dictionary;
-
-  const GameScreen({super.key, required this.dictionary});
+  const GameScreen({super.key});
 
   @override
   State<GameScreen> createState() => _GameScreenState();
 }
 
 class _GameScreenState extends State<GameScreen> {
+  late final Dictionary dictionary;
   late final GameState gameState;
   late final WordTrainGame game;
 
@@ -23,7 +23,8 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     gameState = GameState();
-    game = WordTrainGame(dictionary: widget.dictionary, gameState: gameState);
+    dictionary = context.read<Dictionary>();
+    game = WordTrainGame(dictionary: dictionary, gameState: gameState);
   }
 
   @override
