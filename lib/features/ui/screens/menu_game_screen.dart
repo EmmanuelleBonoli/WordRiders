@@ -12,71 +12,62 @@ class MenuGameScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          // --- fond dégradé ---
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.black, Color(0xFF202020)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+      body: Center(
+        child: SafeArea(
+          child: Column(
+            children: [
+              const SizedBox(height: 30),
+              // --- titre fixe ---
+              const Text(
+                'WORD TRAIN',
+                style: TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 3,
+                ),
               ),
-            ),
-          ),
+              const SizedBox(height: 10),
+              const Text(
+                'by Major Manu Productions',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                  letterSpacing: 1.5,
+                ),
+              ),
+              const SizedBox(height: 40),
 
-          // --- contenu principal ---
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // --- logo ou titre du jeu ---
-                Column(
-                  children: const [
-                    Text(
-                      'WORD TRAIN',
-                      style: TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 3,
+              // --- zone scrollable pour les boutons ---
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      MenuButton(
+                        text: tr('menu.campaign'),
+                        onPressed: () => context.push('/campaign'),
                       ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'by Major Manu Productions',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                        letterSpacing: 1.5,
+                      MenuButton(
+                        text: tr('menu.training'),
+                        onPressed: () => context.push('/game'),
                       ),
-                    ),
-                  ],
+                      MenuButton(
+                        text: tr('menu.settings'),
+                        onPressed: () => context.push('/settings'),
+                      ),
+                      MenuButton(
+                        text: tr('menu.quit'),
+                        onPressed: () => _confirmQuit(context),
+                      ),
+                    ],
+                  ),
                 ),
-
-                const SizedBox(height: 40),
-
-                // --- boutons du menu ---
-                MenuButton(
-                  text: tr('menu.campaign'),
-                  onPressed: () => context.go('/campaign'),
-                ),
-                MenuButton(
-                  text: tr('menu.training'),
-                  onPressed: () => context.go('/game'),
-                ),
-                MenuButton(
-                  text: tr('menu.settings'),
-                  onPressed: () => context.go('/settings'),
-                ),
-                MenuButton(
-                  text: tr('menu.quit'),
-                  onPressed: () => _confirmQuit(context),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

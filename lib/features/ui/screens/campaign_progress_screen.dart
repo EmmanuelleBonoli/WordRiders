@@ -1,92 +1,102 @@
 import 'package:flutter/material.dart';
 import '../../gameplay/services/player_preferences.dart';
+import '../widgets/stage_circle_widget.dart';
 
 class CampaignProgressScreen extends StatefulWidget {
   const CampaignProgressScreen({super.key});
 
   @override
-  State<CampaignProgressScreen> createState() =>
-      _CampaignProgressAnimationScreenState();
+  State<CampaignProgressScreen> createState() => _CampaignProgressScreenState();
 }
 
-class _CampaignProgressAnimationScreenState
-    extends State<CampaignProgressScreen>
+class _CampaignProgressScreenState extends State<CampaignProgressScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  late AnimationController _animationController;
   late Animation<int> _stageAnimation;
+
   int _currentStage = 1;
-  bool _isLoaded = false;
+  bool _loaded = false;
 
   @override
   void initState() {
     super.initState();
-    _initStage();
+    _loadStageProgress();
   }
 
-  Future<void> _initStage() async {
+  Future<void> _loadStageProgress() async {
     _currentStage = await PlayerProgress.getCurrentStage();
+    final startingStage = (_currentStage > 10)
+        ? _currentStage - 10
+        : _currentStage;
 
-    int startStage = (_currentStage > 10) ? _currentStage - 10 : 1;
-
-    _controller = AnimationController(
+    _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 800),
+      duration: Duration(milliseconds: 3000),
     );
 
-    _stageAnimation = IntTween(
-      begin: startStage,
-      end: _currentStage,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _stageAnimation = IntTween(begin: startingStage, end: _currentStage)
+        .animate(
+          CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+        );
 
-    _controller.forward();
-    setState(() => _isLoaded = true);
+    _animationController.forward();
+    setState(() => _loaded = true);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isLoaded) {
+    if (!_loaded) {
       return const Center(child: CircularProgressIndicator());
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Progression')),
-      body: Center(
-        child: AnimatedBuilder(
-          animation: _stageAnimation,
-          builder: (context, child) {
-            int displayedStage = _stageAnimation.value;
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (index) {
-                // On affiche les 5 derniers stages animés
-                int stageNumber = displayedStage - 4 + index;
-                if (stageNumber < 1) return const SizedBox(width: 40);
-                bool unlocked = stageNumber <= _currentStage;
-                return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: unlocked ? Colors.green : Colors.grey,
-                    shape: BoxShape.circle,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '$stageNumber',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                );
-              }),
-            );
-          },
-        ),
+      // appBar: AppBar(leading: BackButton()),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'images/background/background1.jpg',
+              fit: BoxFit.cover,
+            ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              BackButton(),
+              AnimatedBuilder(
+                animation: _stageAnimation,
+                builder: (context, child) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 30,
+                    children: _buildStageCircles(_stageAnimation.value),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
+  }
+
+  List<Widget> _buildStageCircles(int displayedStage) {
+    return List.generate(10, (index) {
+      final stageNumber = displayedStage - 4 + index;
+
+      if (stageNumber < 1) {
+        return const SizedBox(width: 40);
+      }
+
+      final unlocked = stageNumber <= _currentStage;
+
+      return StageCircle(number: stageNumber, unlocked: unlocked);
+    });
   }
 }

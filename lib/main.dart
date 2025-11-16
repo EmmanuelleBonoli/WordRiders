@@ -25,7 +25,7 @@ void main() async {
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('fr')],
       path: 'assets/translations',
-      fallbackLocale: const Locale('en'),
+      fallbackLocale: const Locale('fr'),
       child: Provider<Dictionary>.value(
         value: dictionary,
         child: WordTrainApp(),

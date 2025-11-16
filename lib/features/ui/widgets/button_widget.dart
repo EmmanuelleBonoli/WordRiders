@@ -14,7 +14,7 @@ class MenuButton extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF303030),
-          fixedSize: const Size(280, 40),
+          fixedSize: const Size(280, 55),
           padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
