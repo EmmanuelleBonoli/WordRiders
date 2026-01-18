@@ -12,6 +12,7 @@ package.json
 .svn/
 .swiftpm/
 migrate_working_dir/
+.ai/
 
 # IntelliJ related
 *.iml

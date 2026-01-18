@@ -1,16 +1,55 @@
-# word_train
+# Word Train 🚂
 
-A new Flutter project.
+**Word Train** est un jeu de puzzle de mots mobile développé avec [Flutter](https://flutter.dev) et le [Moteur Flame](https://flame-engine.org/). Les joueurs doivent former des mots en utilisant les lettres fournies pour alimenter leur train et faire la course jusqu'à la ligne d'arrivée.
 
-## Getting Started
+## 🎮 Modes de Jeu
 
-This project is a starting point for a Flutter application.
+### Mode Campagne
+Défiez un adversaire IA qui avance continuellement. La vitesse de l'IA s'adapte dynamiquement en fonction du niveau de difficulté du stage. Battez l'IA jusqu'à la ligne d'arrivée pour progresser !
 
-A few resources to get you started if this is your first Flutter project:
+## 🛠 Stack Technique
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- **Framework**: Flutter
+- **Moteur de Jeu**: Flame
+- **Gestion d'État**: Provider
+- **Navigation**: GoRouter
+- **Localisation**: EasyLocalization (Anglais & Français)
+- **Architecture**: Structure orientée fonctionnalités (Feature-first)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📂 Structure du Projet
+
+```text
+lib/
+├── core/           # Configurations de base et logique partagée
+├── features/       # Modules basés sur les fonctionnalités (gameplay, ui, etc.)
+├── utils/          # Classes utilitaires (Dictionnaire, etc.)
+├── main.dart       # Point d'entrée
+└── router.dart     # Configuration de la navigation
+```
+
+## 🚀 Pour Commencer
+
+Ce projet est un point de départ pour une application Flutter.
+
+### Prérequis
+- SDK Flutter
+- SDK Dart
+
+### Installation
+
+1. Cloner le dépôt :
+   ```bash
+   git clone https://github.com/EmmanuelleBonoli/WordTrain.git
+   ```
+2. Installer les dépendances :
+   ```bash
+   flutter pub get
+   ```
+3. Lancer l'application :
+   ```bash
+   flutter run
+   ```
+
+## 🌐 Localisation
+
+L'application supporte l'Anglais (`en`) et le Français (`fr`). Les traductions se trouvent dans le dossier `assets/translations/`.

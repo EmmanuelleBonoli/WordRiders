@@ -1,66 +1,39 @@
-import 'dart:ui' as ui;
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-class Player extends PositionComponent {
-  late List<ui.Image> _frames;
+class Player extends SpriteComponent {
+  late List<Sprite> frames;
   int currentFrame = 0;
-  bool _isLoaded = false;
+  bool isLoaded = false;
 
   static const double rabbitWidth = 120;
 
-  Player() : super(size: Vector2(rabbitWidth, rabbitWidth));
+  // debug : si true, active le debugMode pour tracer un rectangle si le sprite manque
+  Player({bool debug = false}) : super(size: Vector2(rabbitWidth, rabbitWidth)) {
+    debugMode = debug;
+  }
 
   @override
   Future<void> onLoad() async {
     await _loadFrames();
+    sprite = frames[0]; // première frame
+    isLoaded = true;
   }
-
-  // Future<void> _loadFrames() async {
-  //   _frames = [
-  //     await Sprite(Image.asset('player/rabbit1.png')),
-  //     // await Sprite.load('player/rabbit2.png'),
-  //     // await Sprite.load('player/rabbit3.png'),
-  //     // await Sprite.load('player/rabbit4.png'),
-  //   ];
-  // }
 
   Future<void> _loadFrames() async {
-    final image2 = await _loadImage('assets/images/player/rabbit1.png');
-    _frames = [image2];
-    _isLoaded = true;
+    frames = [
+      await Sprite.load('player/rabbit1.png'),
+      // await Sprite.load('player/rabbit2.png'),
+      // await Sprite.load('player/rabbit3.png'),
+      // await Sprite.load('player/rabbit4.png'),
+    ];
   }
 
-  Future<ui.Image> _loadImage(String path) async {
-    final data = await rootBundle.load(path);
-    final bytes = data.buffer.asUint8List();
-    final codec = await ui.instantiateImageCodec(bytes);
-    final frame = await codec.getNextFrame();
-    return frame.image;
-  }
-
-  @override
-  void render(Canvas canvas) {
-    if (!_isLoaded || _frames.isEmpty) {
-      // Affiche un rectangle rouge si l'image ne charge pas
-      final paint = Paint()..color = const Color(0xFFFF0000);
-      canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), paint);
-      return;
-    }
-
-    final image = _frames[currentFrame];
-    paintImage(
-      canvas: canvas,
-      rect: Rect.fromLTWH(0, 0, size.x, size.y),
-      image: image,
-      fit: BoxFit.contain,
-    );
-  }
-
-  /// Change la frame pour l’animation (appelé par un Timer)
+  /// Change la frame pour l’animation
   void updateFrame() {
-    currentFrame = (currentFrame + 1) % _frames.length;
+    if (!isLoaded) return;
+
+    currentFrame = (currentFrame + 1) % frames.length;
+    sprite = frames[currentFrame]; // met à jour l'image affichée
   }
 
   /// Déplace le joueur vers l'avant (avec limite)
