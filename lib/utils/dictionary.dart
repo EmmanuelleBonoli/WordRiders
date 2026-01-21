@@ -16,7 +16,7 @@ class Dictionary {
         .map((e) => e.trim().toUpperCase())
         .where((e) => e.isNotEmpty)
         .toSet();
-    print('Loaded ${_words.length} words for language $languageCode');
+    // print('Loaded ${_words.length} words for language $languageCode');
   }
 
   /// Vérifie si un mot est valide

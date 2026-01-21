@@ -24,24 +24,28 @@ class _LoadingStartScreenState extends State<LoadingStartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Scaffold(
-      backgroundColor: Colors.black,
+      // Background inherits from theme (cream)
       body: Stack(
         children: [
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Text(
                   "WORD TRAIN",
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  style: theme.textTheme.displayLarge?.copyWith(
+                    color: theme.primaryColor,
+                    fontSize: 42,
+                    letterSpacing: 3,
                   ),
                 ),
-                SizedBox(height: 20),
-                CircularProgressIndicator(color: Colors.white),
+                const SizedBox(height: 30),
+                CircularProgressIndicator(
+                  color: theme.colorScheme.secondary,
+                ),
               ],
             ),
           ),

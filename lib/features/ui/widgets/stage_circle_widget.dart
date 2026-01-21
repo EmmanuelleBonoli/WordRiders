@@ -8,16 +8,32 @@ class StageCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = unlocked ? theme.primaryColor : Colors.grey.shade400;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4),
-      width: 40,
-      height: 40,
+      width: 44, // Slightly larger
+      height: 44,
       decoration: BoxDecoration(
-        color: unlocked ? Colors.green : Colors.grey,
+        color: color,
         shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.4),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       alignment: Alignment.center,
-      child: Text('$number', style: const TextStyle(color: Colors.white)),
+      child: Text(
+        '$number',
+        style: theme.textTheme.titleMedium?.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 }

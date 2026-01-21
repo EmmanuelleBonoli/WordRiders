@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 class Player extends SpriteComponent {
   late List<Sprite> frames;
   int currentFrame = 0;
+  @override
   bool isLoaded = false;
 
   static const double rabbitWidth = 120;

@@ -1,4 +1,4 @@
-import 'package:flame/components.dart';
+
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:word_train/features/gameplay/components/player.dart';
@@ -68,48 +68,109 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
     }
 
     return Scaffold(
-      // appBar: AppBar(leading: BackButton()),
       body: Stack(
         children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/background/background1.jpg',
-              fit: BoxFit.fill,
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              BackButton(),
-              // Affiche la zone de preview du joueur
-              SizedBox(
-                height: 140,
-                child: _previewGame == null
-                    ? const SizedBox.shrink()
-                    : GameWidget(
-                        game: _previewGame!,
-                        // quand le jeu est construit, on peut positionner le joueur
-                        // on met à jour la position du joueur à chaque tick de l'animation
-                        // via AnimatedBuilder ci-dessous
-                      ),
-              ),
-              AnimatedBuilder(
-                animation: _stageAnimation,
-                builder: (context, child) {
-                  // Met à jour la position du joueur dans le mini-jeu
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    _previewGame?.setStage(_stageAnimation.value);
-                  });
+          // Background
+           Positioned.fill(
+             child: Image.asset(
+               'assets/images/background/game_bg.png',
+               fit: BoxFit.cover,
+               alignment: Alignment.center, // Loopable bg usually works well centered or tiled
+             ),
+           ),
+           
+           // Overlay for contrast
+           Positioned.fill(
+             child: Container(
+               color: Colors.white.withValues(alpha: 0.4),
+             ),
+           ),
 
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 30,
-                    children: _buildStageCircles(_stageAnimation.value),
-                  );
-                },
-              ),
-            ],
-          ),
+           SafeArea(
+             child: Column(
+               crossAxisAlignment: CrossAxisAlignment.stretch,
+               children: [
+                 Align(
+                   alignment: Alignment.topLeft,
+                   child: Padding(
+                     padding: const EdgeInsets.all(16.0),
+                     child: Container(
+                       decoration: BoxDecoration(
+                         color: Colors.white,
+                         shape: BoxShape.circle,
+                         boxShadow: [
+                           BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+                         ],
+                       ),
+                       child: BackButton(
+                         color: Theme.of(context).primaryColor,
+                       ),
+                     ),
+                   ),
+                 ),
+                 
+                 Expanded(
+                   child: Center(
+                     child: Container(
+                        height: 250, // Enough height for game + circles
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.7),
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(color: Colors.black12, blurRadius: 10),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // GAME PREVIEW
+                            SizedBox(
+                              height: 120,
+                              width: double.infinity,
+                              child: _previewGame == null
+                                  ? const SizedBox.shrink()
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: GameWidget(
+                                        game: _previewGame!,
+                                      ),
+                                    ),
+                            ),
+                            
+                            const Spacer(),
+                            
+                            // STAGE INDICATORS
+                            AnimatedBuilder(
+                              animation: _stageAnimation,
+                              builder: (context, child) {
+                                // Update game stage
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  _previewGame?.setStage(_stageAnimation.value);
+                                });
+
+                                return SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: _buildStageCircles(_stageAnimation.value)
+                                        .map((w) => Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: w))
+                                        .toList(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                     ),
+                   ),
+                 ),
+                 
+                 const SizedBox(height: 20),
+               ],
+             ),
+           ),
         ],
       ),
     );
@@ -155,8 +216,8 @@ class CampaignPreviewGame extends FlameGame {
   }
 
   @override
-  void onGameResize(Vector2 canvasSize) {
-    super.onGameResize(canvasSize);
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
     // repositionne le player si on avait une mise à jour en attente
     if (_pendingStage != null) {
       _applyStage(_pendingStage!);

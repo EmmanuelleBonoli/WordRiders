@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:word_train/router.dart';
 import 'package:word_train/utils/dictionary.dart';
+import 'package:word_train/core/theme/app_theme.dart';
 
 void main() async {
   /// nécessaire pour charger les assets
@@ -42,7 +43,7 @@ class WordTrainApp extends StatelessWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Word Train',
-      theme: ThemeData.dark(),
+      theme: AppTheme.lightTheme,
 
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
