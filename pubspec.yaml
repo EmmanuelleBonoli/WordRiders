@@ -41,6 +41,8 @@ dependencies:
   provider: ^6.1.5+1
   google_fonts: ^6.1.0
   shared_preferences: ^2.2.2
+  url_launcher: ^6.3.2
+  package_info_plus: ^9.0.0
 
 dev_dependencies:
   flutter_test:
@@ -68,9 +70,11 @@ flutter:
   assets:
     - assets/images/
     - assets/images/player/
+    - assets/images/characters/
     - assets/images/background/
     - assets/sounds/
     - assets/words/fr.txt
+    - assets/words/en.txt
     - assets/translations/fr.json
     - assets/translations/en.json
 

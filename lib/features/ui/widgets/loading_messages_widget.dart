@@ -22,7 +22,6 @@ class _LoadingMessagesWidgetState extends State<LoadingMessagesWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // On peut appeler tr() ici car le contexte est dispo
     _messages = [
       tr('loading.messages.0'),
       tr('loading.messages.1'),
@@ -54,9 +53,10 @@ class _LoadingMessagesWidgetState extends State<LoadingMessagesWidget> {
           child: Text(
             _messages.isNotEmpty ? _messages[_index] : tr('loading.title'),
             key: ValueKey(_index),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
-              color: Colors.white70,
+              color: Theme.of(context).primaryColor,
+              fontWeight: FontWeight.bold,
               fontStyle: FontStyle.italic,
             ),
           ),

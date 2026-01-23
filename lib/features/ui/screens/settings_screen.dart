@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:word_train/features/gameplay/services/player_preferences.dart';
+import 'package:go_router/go_router.dart';
+import 'package:word_train/features/ui/widgets/navigation/app_back_button.dart';
+import 'package:word_train/features/ui/styles/app_theme.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -12,11 +17,13 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool musicOn = true;
   bool sfxOn = true;
+  String appVersion = '1.0.0';
 
   @override
   void initState() {
     super.initState();
     _loadSettings();
+    _loadVersion();
   }
 
   Future<void> _loadSettings() async {
@@ -25,23 +32,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {});
   }
 
+  Future<void> _loadVersion() async {
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      setState(() {
+        appVersion = packageInfo.version;
+      });
+    } catch (e) {
+      debugPrint("Erreur chargement version: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
 
     return Scaffold(
       body: Stack(
         children: [
-          // Background Image
           Positioned.fill(
              child: Image.asset(
                'assets/images/background/menu_bg.png',
                fit: BoxFit.cover,
-               alignment: Alignment.bottomCenter, // Focus on the bottom details
+               alignment: Alignment.bottomCenter,
              ),
           ),
           
-          // Overlay
           Positioned.fill(
              child: Container(
                color: Colors.white.withValues(alpha: 0.3),
@@ -55,39 +70,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                    child: Row(
                      children: [
-                       // Custom Back Button
-                       Container(
-                         decoration: BoxDecoration(
-                           color: Colors.white,
-                           shape: BoxShape.circle,
-                           boxShadow: [
-                             BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
-                           ],
-                         ),
-                         child: IconButton(
-                           icon: const Icon(Icons.arrow_back),
-                           color: theme.primaryColor,
-                           onPressed: () => Navigator.pop(context),
-                         ),
-                       ),
+                       AppBackButton(onPressed: () => context.pop()),
+                       
                        Expanded(
                          child: Text(
-                           tr('settings.title'),
+                           tr('settings.title').toUpperCase(),
                            textAlign: TextAlign.center,
-                           style: theme.textTheme.headlineMedium?.copyWith(
-                             color: theme.primaryColor,
-                             fontWeight: FontWeight.bold,
+                           style: const TextStyle(
+                             fontFamily: 'Round',
+                             fontSize: 32,
+                             color: AppTheme.brown,
+                             fontWeight: FontWeight.w900,
+                             letterSpacing: 1.5,
                              shadows: [
                                Shadow(
-                                 color: Colors.white,
-                                 offset: Offset(0, 1),
-                                 blurRadius: 2,
+                                 color: Colors.white60,
+                                 offset: Offset(2, 2),
+                                 blurRadius: 0,
                                ),
                              ],
                            ),
                          ),
                        ),
-                       const SizedBox(width: 48), // Balance for BackButton
+                       const SizedBox(width: 48),
                      ],
                    ),
                  ),
@@ -97,41 +102,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
                      child: Container(
                        constraints: const BoxConstraints(maxWidth: 600),
                        margin: const EdgeInsets.all(24),
-                       padding: const EdgeInsets.all(24),
-                       decoration: BoxDecoration(
-                         color: Colors.white.withValues(alpha: 0.85),
-                         borderRadius: BorderRadius.circular(30),
-                         boxShadow: [
-                           BoxShadow(
-                             color: Colors.black.withValues(alpha: 0.1),
-                             blurRadius: 15,
-                             spreadRadius: 2,
-                           ),
-                         ],
-                       ),
                        child: ListView(
                         shrinkWrap: true,
                         children: [
-                          _buildSectionTitle(theme, tr('settings.language')),
+                          _buildSectionTitle(tr('settings.language'), AppTheme.brown),
                           Container(
-                            decoration: _itemDecoration(theme),
+                            decoration: _itemDecoration(AppTheme.cream, AppTheme.brown),
+                            padding: const EdgeInsets.symmetric(vertical: 4),
                             child: ListTile(
-                              leading: Icon(Icons.language, color: theme.primaryColor),
-                              title: Text(tr('settings.language'), style: theme.textTheme.bodyLarge),
+                              leading: const Icon(Icons.language, color: AppTheme.brown, size: 28),
+                              title: Text(
+                                tr('settings.language'), 
+                                style: const TextStyle(
+                                  fontFamily: 'Round', 
+                                  color: AppTheme.darkBrown, 
+                                  fontSize: 18, 
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
                               trailing: DropdownButtonHideUnderline(
                                 child: DropdownButton<Locale>(
                                   value: context.locale,
-                                  dropdownColor: Colors.white,
-                                  icon: Icon(Icons.arrow_drop_down, color: theme.primaryColor),
+                                  dropdownColor: AppTheme.cream,
+                                  icon: const Icon(Icons.arrow_drop_down_rounded, color: AppTheme.brown, size: 32),
                                   borderRadius: BorderRadius.circular(12),
+                                  style: const TextStyle(fontFamily: 'Round', color: AppTheme.darkBrown, fontSize: 18),
                                   items: [
-                                    DropdownMenuItem(
-                                      value: const Locale('en'),
-                                      child: Text('English', style: theme.textTheme.bodyMedium),
+                                    const DropdownMenuItem(
+                                      value: Locale('en'),
+                                      child: Text('ENGLISH'),
                                     ),
-                                    DropdownMenuItem(
-                                      value: const Locale('fr'),
-                                      child: Text('Français', style: theme.textTheme.bodyMedium),
+                                    const DropdownMenuItem(
+                                      value: Locale('fr'),
+                                      child: Text('FRANÇAIS'),
                                     ),
                                   ],
                                   onChanged: (newLocale) async {
@@ -143,35 +146,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 24),
                           
-                          _buildSectionTitle(theme, "Audio"),
+                          _buildSectionTitle("AUDIO", AppTheme.brown),
                           Container(
-                            decoration: _itemDecoration(theme),
+                            decoration: _itemDecoration(AppTheme.cream, AppTheme.brown),
                             child: Column(
                               children: [
-                                SwitchListTile(
-                                  secondary: Icon(
-                                    musicOn ? Icons.music_note : Icons.music_off,
-                                    color: theme.primaryColor,
-                                  ),
-                                  title: Text(tr('settings.enableMusic'), style: theme.textTheme.bodyLarge),
-                                  activeThumbColor: theme.colorScheme.secondary,
+                                _buildSwitchTile(
+                                  title: tr('settings.enableMusic'),
                                   value: musicOn,
+                                  icon: musicOn ? Icons.music_note_rounded : Icons.music_off_rounded,
+                                  color: AppTheme.brown,
+                                  textColor: AppTheme.darkBrown,
                                   onChanged: (val) async {
                                     setState(() => musicOn = val);
                                     await PlayerProgress.setMusicEnabled(val);
                                   },
                                 ),
-                                Divider(height: 1, indent: 60, endIndent: 20, color: Colors.grey.withValues(alpha: 0.2)),
-                                SwitchListTile(
-                                  secondary: Icon(
-                                    sfxOn ? Icons.volume_up : Icons.volume_off,
-                                    color: theme.primaryColor,
-                                  ),
-                                  title: Text(tr('settings.enableSounds'), style: theme.textTheme.bodyLarge),
-                                  activeThumbColor: theme.colorScheme.secondary,
+                                Divider(height: 2, thickness: 2, color: AppTheme.brown.withValues(alpha: 0.2)),
+                                _buildSwitchTile(
+                                  title: tr('settings.enableSounds'),
                                   value: sfxOn,
+                                  icon: sfxOn ? Icons.volume_up_rounded : Icons.volume_off_rounded,
+                                  color: AppTheme.brown,
+                                  textColor: AppTheme.darkBrown,
                                   onChanged: (val) async {
                                     setState(() => sfxOn = val);
                                     await PlayerProgress.setSfxEnabled(val);
@@ -181,28 +180,122 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           ),
                           
-                          const SizedBox(height: 30),
+                          const SizedBox(height: 40),
                           
-                          // Reset Zone
+                          _buildSectionTitle(tr('settings.aboutTitle').toUpperCase(), AppTheme.brown),
+                          Container(
+                            decoration: _itemDecoration(AppTheme.cream, AppTheme.brown),
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  leading: const Icon(Icons.info_outline_rounded, color: AppTheme.brown, size: 28),
+                                  title: Text(
+                                    tr('settings.version'),
+                                    style: const TextStyle(
+                                      fontFamily: 'Round',
+                                      color: AppTheme.darkBrown,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  trailing: Text(
+                                    appVersion,
+                                    style: const TextStyle(
+                                      fontFamily: 'Round',
+                                      color: AppTheme.brown,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Divider(height: 2, thickness: 2, color: AppTheme.brown.withValues(alpha: 0.2)),
+                                ListTile(
+                                  leading: const Icon(Icons.email_outlined, color: AppTheme.brown, size: 28),
+                                  title: Text(
+                                    tr('settings.contact'),
+                                    style: const TextStyle(
+                                      fontFamily: 'Round',
+                                      color: AppTheme.darkBrown,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  subtitle: const Text(
+                                    'contact@majormanuprod.com',
+                                    style: TextStyle(
+                                      color: AppTheme.brown,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  onTap: _launchEmail,
+                                ),
+                                Divider(height: 2, thickness: 2, color: AppTheme.brown.withValues(alpha: 0.2)),
+                                ListTile(
+                                  leading: const Icon(Icons.description_outlined, color: AppTheme.brown, size: 28),
+                                  title: Text(
+                                    tr('settings.privacyPolicy'),
+                                    style: const TextStyle(
+                                      fontFamily: 'Round',
+                                      color: AppTheme.darkBrown,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  trailing: const Icon(Icons.open_in_new, color: AppTheme.brown, size: 20),
+                                  onTap: _launchPrivacyPolicy,
+                                ),
+                                Divider(height: 2, thickness: 2, color: AppTheme.brown.withValues(alpha: 0.2)),
+                                ListTile(
+                                  leading: const Icon(Icons.gavel_outlined, color: AppTheme.brown, size: 28),
+                                  title: Text(
+                                    tr('settings.termsOfService'),
+                                    style: const TextStyle(
+                                      fontFamily: 'Round',
+                                      color: AppTheme.darkBrown,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  trailing: const Icon(Icons.open_in_new, color: AppTheme.brown, size: 20),
+                                  onTap: _launchTermsOfService,
+                                ),
+                              ],
+                            ),
+                          ),
+                          
+                          const SizedBox(height: 40),
+                          
                            Container(
-                             decoration: _itemDecoration(theme).copyWith(
-                               color: theme.colorScheme.error.withValues(alpha: 0.1),
-                               border: Border.all(color: theme.colorScheme.error.withValues(alpha: 0.3)),
-                             ),
+                             decoration: _itemDecoration(const Color(0xFFFFEBEE), AppTheme.red), 
                              child: ListTile(
-                               leading: Icon(Icons.delete_forever, color: theme.colorScheme.error),
+                               leading: const Icon(Icons.delete_forever_rounded, color: AppTheme.red),
                                title: Text(
-                                 tr('settings.resetCampaign'),
-                                 style: theme.textTheme.bodyLarge?.copyWith(
-                                   color: theme.colorScheme.error,
+                                 tr('settings.resetCampaign').toUpperCase(),
+                                 style: const TextStyle(
+                                   fontFamily: 'Round',
+                                   color: AppTheme.red,
                                    fontWeight: FontWeight.bold,
+                                   fontSize: 16,
                                  ),
                                ),
-                               onTap: () {
-                                 // TODO: show confirmation
-                               },
+                               onTap: () => _confirmResetCampaign(context),
                              ),
                            ),
+                            const SizedBox(height: 40),
+                          
+                          // Copyright
+                          Center(
+                            child: Text(
+                              tr('settings.copyright'),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'Round',
+                                color: AppTheme.brown.withValues(alpha: 0.7),
+                                fontSize: 12,
+                                height: 1.5,
+                              ),
+                            ),
+                          ),
                         ],
                        ),
                      ),
@@ -216,32 +309,198 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSectionTitle(ThemeData theme, String title) {
+  Widget _buildSwitchTile({
+    required String title, 
+    required bool value, 
+    required IconData icon, 
+    required Function(bool) onChanged,
+    required Color color,
+    required Color textColor,
+  }) {
+    return SwitchListTile(
+      secondary: Icon(icon, color: color, size: 28),
+      title: Text(
+        title, 
+        style: TextStyle(
+          fontFamily: 'Round', 
+          color: textColor, 
+          fontSize: 18, 
+          fontWeight: FontWeight.bold
+        )
+      ),
+      thumbColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
+        if (states.contains(WidgetState.selected)) {
+          return AppTheme.darkBrown;
+        }
+        return color;
+      }),
+      trackColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
+        if (states.contains(WidgetState.selected)) {
+          return AppTheme.brown;
+        }
+        return color.withValues(alpha: 0.3);
+      }),
+      value: value,
+      onChanged: onChanged,
+    );
+  }
+
+  Widget _buildSectionTitle(String title, Color color) {
     return Padding(
-      padding: const EdgeInsets.only(left: 12, bottom: 8),
+      padding: const EdgeInsets.only(left: 8, bottom: 8),
       child: Text(
         title.toUpperCase(),
-        style: theme.textTheme.labelLarge?.copyWith(
-          color: theme.colorScheme.secondary,
-          fontWeight: FontWeight.bold,
+        style: TextStyle(
+          fontFamily: 'Round',
+          fontSize: 20,
+          color: color,
+          fontWeight: FontWeight.w900,
           letterSpacing: 1.2,
+          shadows: const [
+             Shadow(color: Colors.white, offset: Offset(1,1), blurRadius: 0),
+          ]
         ),
       ),
     );
   }
 
-  BoxDecoration _itemDecoration(ThemeData theme) {
+  BoxDecoration _itemDecoration(Color bgColor, Color borderColor) {
     return BoxDecoration(
-      color: Colors.white,
+      color: bgColor,
       borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: theme.primaryColor.withValues(alpha: 0.1)),
+      border: Border.all(color: borderColor, width: 3),
       boxShadow: [
         BoxShadow(
-          color: theme.primaryColor.withValues(alpha: 0.05),
+          color: Colors.black.withValues(alpha: 0.1),
           offset: const Offset(0, 4),
-          blurRadius: 8,
+          blurRadius: 0,
         ),
       ],
     );
+  }
+
+  void _confirmResetCampaign(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white.withValues(alpha: 0.95),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          tr('settings.resetCampaignConfirmTitle'),
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontFamily: 'Round',
+            color: AppTheme.red,
+            fontWeight: FontWeight.w900,
+            fontSize: 22,
+          ),
+        ),
+        content: Text(
+          tr('settings.resetCampaignConfirmMessage'),
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: AppTheme.textDark,
+            fontSize: 16,
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              tr('settings.cancel'),
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontFamily: 'Round',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await PlayerProgress.resetCampaign();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(tr('settings.resetCampaignSuccess')),
+                    backgroundColor: AppTheme.green,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.red,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
+            child: Text(
+              tr('settings.resetCampaignConfirm'),
+              style: const TextStyle(fontFamily: 'Round', fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _launchEmail() async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'contact@majormanuprod.com',
+      query: 'subject=Word Train - Contact',
+    );
+    
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(tr('settings.emailError')),
+            backgroundColor: AppTheme.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _launchPrivacyPolicy() async {
+    // TODO: Remplacer par votre vraie URL
+    final Uri url = Uri.parse('https://majormanuprod.com/privacy-policy');
+    
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(tr('settings.linkError')),
+            backgroundColor: AppTheme.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _launchTermsOfService() async {
+    // TODO: Remplacer par votre vraie URL
+    final Uri url = Uri.parse('https://majormanuprod.com/terms-of-service');
+    
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(tr('settings.linkError')),
+            backgroundColor: AppTheme.red,
+          ),
+        );
+      }
+    }
   }
 }

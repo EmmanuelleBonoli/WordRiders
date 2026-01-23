@@ -18,7 +18,9 @@ final router = GoRouter(
     GoRoute(
       path: '/game',
       builder: (context, state) {
-        return GameScreen();
+        final extra = state.extra as Map<String, dynamic>?;
+        final isCampaign = extra?['isCampaign'] ?? false;
+        return GameScreen(isCampaign: isCampaign);
       },
     ),
   ],

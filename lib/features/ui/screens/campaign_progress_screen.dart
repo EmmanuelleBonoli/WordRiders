@@ -1,9 +1,13 @@
 
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:word_train/features/gameplay/components/player.dart';
+import 'package:go_router/go_router.dart';
+import 'package:word_train/features/ui/widgets/campaign/campaign_preview_game.dart';
+import 'package:word_train/features/ui/styles/app_theme.dart';
 import '../../gameplay/services/player_preferences.dart';
-import '../widgets/stage_circle_widget.dart';
+import '../widgets/navigation/app_back_button.dart';
+import '../widgets/navigation/settings_button.dart';
+import '../widgets/campaign/stage_circle_widget.dart';
 
 class CampaignProgressScreen extends StatefulWidget {
   const CampaignProgressScreen({super.key});
@@ -13,14 +17,21 @@ class CampaignProgressScreen extends StatefulWidget {
 }
 
 class _CampaignProgressScreenState extends State<CampaignProgressScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
-  late Animation<int> _stageAnimation;
+  late Animation<double> _stageAnimation;
+  
+  late AnimationController _shakeController;
+  late Animation<Offset> _shakeAnimation;
+
 
   CampaignPreviewGame? _previewGame;
 
   int _currentStage = 1;
   bool _loaded = false;
+  
+  int _viewMinStage = 1;
+  int _viewMaxStage = 10;
 
   @override
   void initState() {
@@ -29,35 +40,85 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
   }
 
   Future<void> _loadStageProgress() async {
-    _currentStage = await PlayerProgress.getCurrentStage();
-    final startingStage = (_currentStage > 10)
-        ? _currentStage - 10
-        : _currentStage;
+    try {
+      debugPrint("Starting _loadStageProgress...");
+      _currentStage = await PlayerProgress.getCurrentStage();
+      debugPrint("Loaded stage: $_currentStage");
+      
+      // Toujours centrer sur le stage actuel
+      // La fenêtre est de 5 de large, centrée sur _currentStage.
+      _viewMinStage = _currentStage - 5;
+      _viewMaxStage = _currentStage + 5;
 
-    // Crée le mini-jeu de preview avec les bornes de stage
-    _previewGame = CampaignPreviewGame(
-      startingStage: startingStage,
-      maxStage: _currentStage,
-    );
+      // Animation : entree de l'extérieur (gauche) vers le centre
+      // On commence 1 unité *avant* le minimum visible.
+      // Progress 0.0 est le bouton visible à gauche.
+      final double animStart = _viewMinStage.toDouble() - 1.5; 
+      final double animEnd = _currentStage.toDouble();
 
-    _animationController = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 3000),
-    );
+      debugPrint("Creating preview game...");
+      // Prévisualisation du mini-jeu
+      _previewGame = CampaignPreviewGame(
+        minVisibleStage: _viewMinStage,
+        maxVisibleStage: _viewMaxStage,
+      );
+      // On lance le mouvement
+      _previewGame!.setPlaying(true);
 
-    _stageAnimation = IntTween(begin: startingStage, end: _currentStage)
-        .animate(
-          CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
-        );
+      debugPrint("Setting up animations...");
+      _shakeController = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 600), 
+      )..repeat(reverse: true); // Reverse true crée l'effet "Yoyo"
 
-    _animationController.forward();
-    setState(() => _loaded = true);
+      _shakeAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero).animate(_shakeController);
+
+      _animationController = AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 2500),
+      );
+
+      _stageAnimation = Tween<double>(
+        begin: animStart,
+        end: animEnd,
+      ).animate(
+        CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+      );
+
+      _animationController.addListener(() {
+        // Mise à jour uniquement si le jeu existe
+        if (_previewGame != null) {
+          _previewGame!.setStage(_stageAnimation.value);
+        }
+      });
+
+      _animationController.addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          // Arrêter le mouvement à la fin de l'animation
+           if (_previewGame != null) {
+             _previewGame!.setPlaying(false);
+           }
+        }
+      });
+
+      debugPrint("Starting animation forward...");
+      _animationController.forward();
+      
+      if (mounted) {
+        setState(() => _loaded = true);
+      }
+    } catch (e) {
+      debugPrint("ERROR loading stage progress: $e");
+      if (mounted) {
+         setState(() => _loaded = true);
+      }
+    }
   }
 
   @override
   void dispose() {
     _animationController.dispose();
-    _previewGame?.onRemove();
+    _shakeController.dispose();
     super.dispose();
   }
 
@@ -70,19 +131,11 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
     return Scaffold(
       body: Stack(
         children: [
-          // Background
            Positioned.fill(
              child: Image.asset(
                'assets/images/background/game_bg.png',
                fit: BoxFit.cover,
-               alignment: Alignment.center, // Loopable bg usually works well centered or tiled
-             ),
-           ),
-           
-           // Overlay for contrast
-           Positioned.fill(
-             child: Container(
-               color: Colors.white.withValues(alpha: 0.4),
+               alignment: Alignment.center,
              ),
            ),
 
@@ -90,42 +143,26 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
              child: Column(
                crossAxisAlignment: CrossAxisAlignment.stretch,
                children: [
-                 Align(
-                   alignment: Alignment.topLeft,
-                   child: Padding(
-                     padding: const EdgeInsets.all(16.0),
-                     child: Container(
-                       decoration: BoxDecoration(
-                         color: Colors.white,
-                         shape: BoxShape.circle,
-                         boxShadow: [
-                           BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
-                         ],
-                       ),
-                       child: BackButton(
-                         color: Theme.of(context).primaryColor,
-                       ),
-                     ),
-                   ),
-                 ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const AppBackButton(),
+                        const SettingsButton(),
+                      ],
+                    ),
+                  ),
                  
                  Expanded(
                    child: Center(
                      child: Container(
-                        height: 250, // Enough height for game + circles
+                        height: 250, 
                         margin: const EdgeInsets.symmetric(horizontal: 20),
                         padding: const EdgeInsets.symmetric(vertical: 20),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.7),
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(color: Colors.black12, blurRadius: 10),
-                          ],
-                        ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // GAME PREVIEW
                             SizedBox(
                               height: 120,
                               width: double.infinity,
@@ -141,25 +178,29 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
                             
                             const Spacer(),
                             
-                            // STAGE INDICATORS
-                            AnimatedBuilder(
-                              animation: _stageAnimation,
-                              builder: (context, child) {
-                                // Update game stage
-                                WidgetsBinding.instance.addPostFrameCallback((_) {
-                                  _previewGame?.setStage(_stageAnimation.value);
-                                });
-
-                                return SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              physics: const NeverScrollableScrollPhysics(),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Container(
+                                     width: 900, 
+                                     height: 6,
+                                     decoration: BoxDecoration(
+                                       color: AppTheme.brown,
+                                       borderRadius: BorderRadius.circular(3),
+                                     ),
+                                  ),
+                                  
+                                  Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    children: _buildStageCircles(_stageAnimation.value)
-                                        .map((w) => Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: w))
+                                    children: _buildStageCircles()
+                                        .map((w) => Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: w))
                                         .toList(),
                                   ),
-                                );
-                              },
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -176,80 +217,67 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
     );
   }
 
-  List<Widget> _buildStageCircles(int displayedStage) {
-    return List.generate(10, (index) {
-      final stageNumber = displayedStage - 4 + index;
-
+  List<Widget> _buildStageCircles() {
+    // Génère les cercles pour la fenêtre visible
+    final count = _viewMaxStage - _viewMinStage + 1;
+    return List.generate(count, (index) {
+      final stageNumber = _viewMinStage + index;
       if (stageNumber < 1) {
-        return const SizedBox(width: 40);
+        // Espaceur invisible pour maintenir la mise en page
+        return const SizedBox(width: 54, height: 54);
       }
-
       final unlocked = stageNumber <= _currentStage;
-
-      return StageCircle(number: stageNumber, unlocked: unlocked);
+      final isCurrent = stageNumber == _currentStage;
+      
+      Widget circle = StageCircle(number: stageNumber, unlocked: unlocked);
+      
+      // Rendre l'étape actuelle cliquable pour lancer le niveau
+      if (isCurrent) {
+        return GestureDetector(
+          onTap: () async {
+            // Navigation vers l'écran de jeu en mode Campagne
+            await context.push('/game', extra: {'isCampaign': true});
+            // Au retour, on recharge la progression
+            if (context.mounted) {
+               _loadStageProgress();
+            }
+          },
+          child: AnimatedBuilder(
+            animation: _shakeAnimation,
+            builder: (context, child) {
+              final curvedValue = Curves.easeInOutSine.transform(_shakeController.value);
+              
+              final scale = 1.0 + (curvedValue * 0.08); 
+              return Transform.scale(
+                scale: scale,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.6 * curvedValue),
+                        blurRadius: 15 * scale,
+                        spreadRadius: 2 * scale,
+                      ),
+                      BoxShadow(
+                        color: AppTheme.cream.withValues(alpha: 0.6 * curvedValue),
+                        blurRadius: 20 * scale, 
+                        spreadRadius: 2 * scale,
+                      ),
+                    ],
+                  ),
+                  child: child,
+                ),
+              );
+            },
+            child: circle,
+          ),
+        );
+      }
+      
+      return circle;
     });
   }
 }
 
-/// Petit FlameGame utilisé pour prévisualiser le player sur l'écran de progression
-class CampaignPreviewGame extends FlameGame {
-  final int startingStage;
-  final int maxStage;
-  late Player _player;
-  int? _pendingStage;
-  static const double _horizontalPadding = 12.0;
 
-  CampaignPreviewGame({required this.startingStage, required this.maxStage});
-
-  @override
-  Future<void> onLoad() async {
-    await super.onLoad();
-    // active le debug pour voir un conteneur si la sprite ne s'affiche pas
-    _player = Player(debug: true);
-    // taille raisonnable pour mini-preview
-    _player.size = Vector2(Player.rabbitWidth, Player.rabbitWidth);
-    await add(_player);
-
-    // position initiale
-    // Utilise setStage qui gére le cas size.x == 0 (mémorise en _pendingStage)
-    setStage(startingStage);
-  }
-
-  @override
-  void onGameResize(Vector2 size) {
-    super.onGameResize(size);
-    // repositionne le player si on avait une mise à jour en attente
-    if (_pendingStage != null) {
-      _applyStage(_pendingStage!);
-      _pendingStage = null;
-    } else {
-      // redispatch de la position courante pour tenir compte de la nouvelle largeur
-      _applyStage(startingStage);
-    }
-  }
-
-  /// Mappe un numéro de stage à une position X et place le player
-  void setStage(int stage) {
-    // si la taille du canvas n'est pas encore connue, mémorise
-    if (size.x == 0) {
-      _pendingStage = stage;
-      return;
-    }
-
-    _applyStage(stage);
-  }
-
-  void _applyStage(int stage) {
-    final effectiveStart = startingStage;
-    final effectiveEnd = maxStage == effectiveStart ? effectiveStart + 1 : maxStage;
-    final progress = ((stage - effectiveStart) / (effectiveEnd - effectiveStart)).clamp(0.0, 1.0);
-
-    final usableWidth = size.x - 2 * _horizontalPadding - _player.size.x;
-    final x = _horizontalPadding + usableWidth * progress;
-
-    // place le player sur l'axe Y au centre vertical de la zone de preview
-    final y = (size.y / 2) - (_player.size.y / 2);
-
-    _player.position = Vector2(x, y);
-  }
-}
