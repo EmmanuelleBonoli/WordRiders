@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PlayerProgress {
+class PlayerPreferences {
   static const _keyStage = 'currentStage';
   static const _keyMusic = 'musicEnabled';
   static const _keySfx = 'sfxEnabled';
@@ -94,11 +94,147 @@ class PlayerProgress {
     return null; // Fin de campagne ou erreur
   }
 
+  /// Sauvegarde ou met à jour le mot pour un stage donné
+  static Future<void> setWordForStage(int stage, String word) async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> words = prefs.getStringList(_keyCampaignWords) ?? [];
+    
+    // stage 1 -> index 0
+    final index = stage - 1;
+    
+    // Si la liste est trop petite, on la remplit avec des placeholders
+    while (words.length <= index) {
+      words.add(""); 
+    }
+    
+    words[index] = word;
+    await prefs.setStringList(_keyCampaignWords, words);
+  }
+
+  static const _keyLives = 'playerLives';
+  static const _keyLastRegenTime = 'lastLifeRegenTime';
+  static const int _maxLives = 5;
+  static const int _regenMinutes = 20;
+
+  /// Récupère le nombre de vies, en calculant la régénération
+  static Future<int> getLives() async {
+    final prefs = await SharedPreferences.getInstance();
+    int currentLives = prefs.getInt(_keyLives) ?? _maxLives;
+    
+    // Si on est déjà au max, pas de calcul
+    if (currentLives >= _maxLives) {
+      return _maxLives;
+    }
+
+    // Calcul de la régénération
+    final lastRegenStr = prefs.getString(_keyLastRegenTime);
+    if (lastRegenStr == null) {
+      // Cas bizarre: pas au max mais pas de date ? On remet au max par sécurité
+      await setLives(_maxLives);
+      return _maxLives;
+    }
+
+    final lastRegenTime = DateTime.parse(lastRegenStr);
+    final now = DateTime.now();
+    final difference = now.difference(lastRegenTime);
+    
+    final livesToRestore = difference.inMinutes ~/ _regenMinutes;
+    
+    if (livesToRestore > 0) {
+      currentLives += livesToRestore;
+      if (currentLives > _maxLives) currentLives = _maxLives;
+      
+      await setLives(currentLives);
+      
+      // Si on n'est toujours pas au max, on avance le timer d'autant de périodes de 20min complétées
+      // pour garder le "crédit" des minutes restantes
+      if (currentLives < _maxLives) {
+        final newLastRegenTime = lastRegenTime.add(Duration(minutes: livesToRestore * _regenMinutes));
+        await prefs.setString(_keyLastRegenTime, newLastRegenTime.toIso8601String());
+      } else {
+        // Si on est au max, on nettoie le timer
+        await prefs.remove(_keyLastRegenTime);
+      }
+    }
+
+    return currentLives;
+  }
+
+  static Future<void> setLives(int lives) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_keyLives, lives);
+  }
+
+  /// Consomme une vie. Retourne true si succès, false si pas assez de vies.
+  static Future<bool> loseLife() async {
+    int current = await getLives();
+    if (current > 0) {
+      current--;
+      await setLives(current);
+      
+      // Si on vient de passer en dessous du max (donc on était à 5, on passe à 4),
+      // on doit initialiser le timer pour la prochaine regen
+      if (current == _maxLives - 1) {
+         final prefs = await SharedPreferences.getInstance();
+         // On vérifie s'il y a déjà un timer (par précaution) mais en théorie non
+         if (!prefs.containsKey(_keyLastRegenTime)) {
+            await prefs.setString(_keyLastRegenTime, DateTime.now().toIso8601String());
+         }
+      }
+      return true;
+    }
+    return false;
+  }
+
+  /// Temps restant avant la prochaine vie (null si full)
+  static Future<Duration?> getTimeToNextLife() async {
+    final prefs = await SharedPreferences.getInstance();
+    int currentLives = await getLives(); // Déclenche le calcul de regen si besoin
+    
+    if (currentLives >= _maxLives) return null;
+    
+    final lastRegenStr = prefs.getString(_keyLastRegenTime);
+    if (lastRegenStr == null) return null; // Should not happen if lives < max
+    
+    final lastRegenTime = DateTime.parse(lastRegenStr);
+    final now = DateTime.now();
+    final diff = now.difference(lastRegenTime);
+    
+    // final minutesElapsed = diff.inMinutes; // Minutes écoulées sur la période en cours
+    
+    final timeLeft = Duration(minutes: _regenMinutes) - diff;
+    return timeLeft.isNegative ? Duration.zero : timeLeft;
+  }
+
+  static const _keyCoins = 'playerCoins';
+
+  static Future<int> getCoins() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_keyCoins) ?? 0;
+  }
+
+  static Future<void> addCoins(int amount) async {
+    final prefs = await SharedPreferences.getInstance();
+    final current = await getCoins();
+    await prefs.setInt(_keyCoins, current + amount);
+  }
+
+  static Future<bool> spendCoins(int amount) async {
+    final prefs = await SharedPreferences.getInstance();
+    final current = await getCoins();
+    if (current >= amount) {
+      await prefs.setInt(_keyCoins, current - amount);
+      return true;
+    }
+    return false;
+  }
+
   static Future<void> resetCampaign() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_keyStage, 1);
     await prefs.remove(_keyUsedWords);
     await prefs.remove(_keyActiveWord);
     await prefs.remove(_keyCampaignWords);
+    // On ne reset pas les vies ni les pièces, c'est indépendant
   }
 }

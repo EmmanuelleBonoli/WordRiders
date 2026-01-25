@@ -1,4 +1,4 @@
-
+import 'dart:async';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +8,10 @@ import '../../gameplay/services/player_preferences.dart';
 import '../widgets/navigation/app_back_button.dart';
 import '../widgets/navigation/settings_button.dart';
 import '../widgets/campaign/stage_circle_widget.dart';
+import 'package:word_train/features/ui/widgets/campaign/life_indicator.dart';
+import 'package:word_train/features/ui/widgets/campaign/coin_indicator.dart';
+import 'package:word_train/features/ui/widgets/game/overlays/no_lives_overlay.dart';
+import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
 
 class CampaignProgressScreen extends StatefulWidget {
   const CampaignProgressScreen({super.key});
@@ -18,14 +22,15 @@ class CampaignProgressScreen extends StatefulWidget {
 
 class _CampaignProgressScreenState extends State<CampaignProgressScreen>
     with TickerProviderStateMixin {
-  late AnimationController _animationController;
+  AnimationController? _animationController;
   late Animation<double> _stageAnimation;
   
-  late AnimationController _shakeController;
+  AnimationController? _shakeController;
   late Animation<Offset> _shakeAnimation;
 
 
   CampaignPreviewGame? _previewGame;
+
 
   int _currentStage = 1;
   bool _loaded = false;
@@ -33,16 +38,32 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
   int _viewMinStage = 1;
   int _viewMaxStage = 10;
 
+
+  
+  final GlobalKey<LifeIndicatorState> _lifeIndicatorKey = GlobalKey<LifeIndicatorState>();
+  final GlobalKey<CoinIndicatorState> _coinIndicatorKey = GlobalKey<CoinIndicatorState>();
+
   @override
   void initState() {
     super.initState();
     _loadStageProgress();
   }
 
+  @override
+  void dispose() {
+    _animationController?.dispose();
+    _shakeController?.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+
   Future<void> _loadStageProgress() async {
     try {
       debugPrint("Starting _loadStageProgress...");
-      _currentStage = await PlayerProgress.getCurrentStage();
+      _currentStage = await PlayerPreferences.getCurrentStage();
+      if (!mounted) return;
+
       debugPrint("Loaded stage: $_currentStage");
       
       // Toujours centrer sur le stage actuel
@@ -66,13 +87,16 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
       _previewGame!.setPlaying(true);
 
       debugPrint("Setting up animations...");
+      
+      _shakeController?.dispose();
       _shakeController = AnimationController(
         vsync: this,
         duration: const Duration(milliseconds: 600), 
       )..repeat(reverse: true); // Reverse true crée l'effet "Yoyo"
 
-      _shakeAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero).animate(_shakeController);
+      _shakeAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero).animate(_shakeController!);
 
+      _animationController?.dispose();
       _animationController = AnimationController(
           vsync: this,
           duration: const Duration(milliseconds: 2500),
@@ -82,17 +106,17 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
         begin: animStart,
         end: animEnd,
       ).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+        CurvedAnimation(parent: _animationController!, curve: Curves.easeOut),
       );
 
-      _animationController.addListener(() {
+      _animationController!.addListener(() {
         // Mise à jour uniquement si le jeu existe
         if (_previewGame != null) {
           _previewGame!.setStage(_stageAnimation.value);
         }
       });
 
-      _animationController.addStatusListener((status) {
+      _animationController!.addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           // Arrêter le mouvement à la fin de l'animation
            if (_previewGame != null) {
@@ -102,10 +126,11 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
       });
 
       debugPrint("Starting animation forward...");
-      _animationController.forward();
+      _animationController!.forward();
       
       if (mounted) {
         setState(() => _loaded = true);
+        WidgetsBinding.instance.addPostFrameCallback((_) => _centerContent());
       }
     } catch (e) {
       debugPrint("ERROR loading stage progress: $e");
@@ -115,11 +140,15 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
     }
   }
 
-  @override
-  void dispose() {
-    _animationController.dispose();
-    _shakeController.dispose();
-    super.dispose();
+  final ScrollController _scrollController = ScrollController();
+
+
+
+  void _centerContent() {
+    if (_scrollController.hasClients) {
+      final maxScroll = _scrollController.position.maxScrollExtent;
+      _scrollController.jumpTo(maxScroll / 2);
+    }
   }
 
   @override
@@ -133,7 +162,7 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
         children: [
            Positioned.fill(
              child: Image.asset(
-               'assets/images/background/game_bg.png',
+               'assets/images/background/game_bg.jpg',
                fit: BoxFit.cover,
                alignment: Alignment.center,
              ),
@@ -149,6 +178,13 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const AppBackButton(),
+                        Row(
+                          children: [
+                            LifeIndicator(key: _lifeIndicatorKey),
+                            const SizedBox(width: 12),
+                            CoinIndicator(key: _coinIndicatorKey),
+                          ],
+                        ),
                         const SettingsButton(),
                       ],
                     ),
@@ -179,27 +215,29 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
                             const Spacer(),
                             
                             SingleChildScrollView(
+                              controller: _scrollController,
                               scrollDirection: Axis.horizontal,
                               physics: const NeverScrollableScrollPhysics(),
+                              clipBehavior: Clip.none,
                               child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Container(
-                                     width: 900, 
-                                     height: 6,
-                                     decoration: BoxDecoration(
-                                       color: AppTheme.brown,
-                                       borderRadius: BorderRadius.circular(3),
-                                     ),
-                                  ),
-                                  
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: _buildStageCircles()
-                                        .map((w) => Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: w))
-                                        .toList(),
-                                  ),
-                                ],
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Container(
+                                       width: 900, 
+                                       height: 6,
+                                       decoration: BoxDecoration(
+                                         color: AppTheme.brown,
+                                         borderRadius: BorderRadius.circular(3),
+                                       ),
+                                    ),
+                                    
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: _buildStageCircles()
+                                          .map((w) => Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: w))
+                                          .toList(),
+                                    ),
+                                  ],
                               ),
                             ),
                           ],
@@ -233,40 +271,62 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
       
       // Rendre l'étape actuelle cliquable pour lancer le niveau
       if (isCurrent) {
-        return GestureDetector(
+        return BouncingScaleButton(
+          showShadow: false,
           onTap: () async {
+            if ((_lifeIndicatorKey.currentState?.currentLives ?? 5) <= 0) {
+              // Afficher la modale pour recharger les vies
+              showDialog(
+                context: context,
+                barrierDismissible: true,
+                builder: (ctx) => NoLivesOverlay(
+                  onLivesReplenished: () {
+                    // Recharger les indicateurs après achat/pub
+                    _lifeIndicatorKey.currentState?.reload();
+                    _coinIndicatorKey.currentState?.reload();
+                  },
+                ),
+              );
+              return;
+            }
+
             // Navigation vers l'écran de jeu en mode Campagne
             await context.push('/game', extra: {'isCampaign': true});
             // Au retour, on recharge la progression
             if (context.mounted) {
                _loadStageProgress();
+               _lifeIndicatorKey.currentState?.reload();
+               _coinIndicatorKey.currentState?.reload();
             }
           },
           child: AnimatedBuilder(
             animation: _shakeAnimation,
             builder: (context, child) {
-              final curvedValue = Curves.easeInOutSine.transform(_shakeController.value);
+              final curvedValue = Curves.easeInOutSine.transform(_shakeController!.value);
               
               final scale = 1.0 + (curvedValue * 0.08); 
               return Transform.scale(
                 scale: scale,
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.white.withValues(alpha: 0.6 * curvedValue),
-                        blurRadius: 15 * scale,
-                        spreadRadius: 2 * scale,
-                      ),
-                      BoxShadow(
-                        color: AppTheme.cream.withValues(alpha: 0.6 * curvedValue),
-                        blurRadius: 20 * scale, 
-                        spreadRadius: 2 * scale,
-                      ),
-                    ],
+                filterQuality: FilterQuality.medium,
+                child: RepaintBoundary(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.white.withValues(alpha: 0.6 * curvedValue),
+                          blurRadius: 15 * scale,
+                          spreadRadius: 2 * scale,
+                        ),
+                        BoxShadow(
+                          color: AppTheme.cream.withValues(alpha: 0.6 * curvedValue),
+                          blurRadius: 20 * scale, 
+                          spreadRadius: 2 * scale,
+                        ),
+                      ],
+                    ),
+                    child: child,
                   ),
-                  child: child,
                 ),
               );
             },

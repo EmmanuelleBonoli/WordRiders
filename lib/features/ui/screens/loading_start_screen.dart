@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../widgets/loading_messages_widget.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
 
 class LoadingStartScreen extends StatefulWidget {
   const LoadingStartScreen({super.key});
@@ -17,7 +16,8 @@ class _LoadingStartScreenState extends State<LoadingStartScreen> {
   @override
   void initState() {
     super.initState();
-
+    
+    // Durée de l'écran de chargement avant d'aller au menu
     Timer(const Duration(seconds: 4), () {
       if (mounted) context.go('/menu');
     });
@@ -32,85 +32,49 @@ class _LoadingStartScreenState extends State<LoadingStartScreen> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/images/background/menu_bg.png',
+              'assets/images/background/loading_bg2.png', 
               fit: BoxFit.cover,
               alignment: Alignment.bottomCenter,
             ),
           ),
           
-          // Dégradé de superposition
           Positioned.fill(
              child: Container(
                decoration: BoxDecoration(
                  gradient: LinearGradient(
                    begin: Alignment.topCenter,
-                   end: Alignment.bottomCenter,
+                   end: Alignment.center,
                    colors: [
-                     Colors.white.withValues(alpha: 0.3),
+                     Colors.white.withValues(alpha: 0.4),
                      Colors.transparent,
-                     Colors.white.withValues(alpha: 0.5),
                    ],
                  ),
                ),
              ),
           ),
 
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Stack(
-                  children: [
-                    Text(
-                      'WORD\nTRAIN',
-                      style: theme.textTheme.displayLarge?.copyWith(
-                        fontSize: 64,
-                        height: 0.9,
-                        letterSpacing: 2,
-                        foreground: Paint()
-                          ..style = PaintingStyle.stroke
-                          ..strokeWidth = 6
-                          ..color = Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      'WORD\nTRAIN',
-                      style: theme.textTheme.displayLarge?.copyWith(
-                        color: theme.primaryColor,
-                        fontSize: 64,
-                        height: 0.9,
-                        letterSpacing: 2,
-                        shadows: [
-                           BoxShadow(
-                             color: theme.colorScheme.secondary.withValues(alpha: 0.4),
-                             blurRadius: 8,
-                             offset: const Offset(0, 4),
-                           ),
-                        ],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(height: 16),
-                Text(
-                  'by Major Manu Productions',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: AppTheme.green,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
+          Positioned.fill(
+            child: SafeArea(
+              child: Column(
+                children: [
+                  const SizedBox(height: 30),
+                  
+                  Image.asset(
+                    'assets/images/logo_title.png',
+                    height: 180, 
+                    fit: BoxFit.contain,
                   ),
-                ),
+                  
 
-                const SizedBox(height: 60),
+                  const Spacer(), 
 
-                CircularProgressIndicator(
-                  color: theme.colorScheme.secondary,
-                  strokeWidth: 5,
-                ),
-              ],
+                  CircularProgressIndicator(
+                    color: theme.colorScheme.secondary,
+                    strokeWidth: 5,
+                  ),
+                  const SizedBox(height: 120), 
+                ],
+              ),
             ),
           ),
 

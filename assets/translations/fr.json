@@ -10,6 +10,7 @@
   "menu": {
     "campaign": "Campagne",
     "training": "Entraînement",
+    "coins": "Pièces",
     "settings": "Paramètres",
     "quit": "Quitter",
     "confirmQuitTitle": "Quitter le jeu",
@@ -27,6 +28,9 @@
     "resetCampaignConfirm": "Redémarrer",
     "resetCampaignSuccess": "Campagne redémarrée avec succès !",
     "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "changeLanguageConfirmTitle": "Changer de langue ?",
+    "changeLanguageConfirmMessage": "Changer de langue réinitialisera votre progression de campagne. Continuer ?",
     "aboutTitle": "À propos",
     "version": "Version",
     "contact": "Contact",
@@ -35,5 +39,32 @@
     "copyright": "© 2026 Major Manu Productions\nTous droits réservés",
     "emailError": "Impossible d'ouvrir l'application email",
     "linkError": "Impossible d'ouvrir le lien"
+  },
+  "campaign": {
+    "noLives": "Vous n'avez plus de vie !",
+    "noLivesMessage": "Attendez que vos vies se rechargent ou utilisez vos pièces.",
+    "getLives": "Recharger vos vies",
+    "watchAd": "Regarder une pub (+1 vie)",
+    "buyLives": "Acheter 5 vies (700 pièces)",
+    "notEnoughCoins": "Pas assez de pièces !"
+  },
+  "game": {
+    "pause_title": "PAUSE",
+    "quit_confirm_title": "Quitter la partie ?",
+    "quit_confirm_subtitle_campaign": "Le renard gagnera si vous abandonnez !",
+    "quit_confirm_subtitle_training": "Votre progression actuelle sera perdue.",
+    "continue": "CONTINUER",
+    "replay": "REJOUER",
+    "quit": "Quitter",
+    "quit_game": "Quitter la partie",
+    "victory": "VICTOIRE !",
+    "defeat": "DOMMAGE...",
+    "level_finished": "Niveau terminé !",
+    "training_won": "Le lapin est sauf !",
+    "fox_won": "Le renard vous a eu...",
+    "feedback_invalid": "Mot invalide ou déjà utilisé !",
+    "compose_words_title": "Composez des mots !",
+    "compose_words_subtitle": "Trouvez des mots pour courir plus vite.",
+    "continue_adventure": "Continuer l'aventure"
   }
 }

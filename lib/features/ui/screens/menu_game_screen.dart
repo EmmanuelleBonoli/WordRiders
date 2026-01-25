@@ -8,21 +8,27 @@ import 'package:word_train/features/ui/styles/app_theme.dart';
 import '../../gameplay/services/player_preferences.dart';
 import '../../gameplay/services/word_service.dart';
 
+import 'package:word_train/features/ui/widgets/common/pulsing_widget.dart';
+
 class MenuGameScreen extends StatelessWidget {
   const MenuGameScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+
     
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: const AssetImage('assets/images/background/menu_bg.png'),
+            image: const AssetImage('assets/images/background/menu_bg2.png'),
             fit: BoxFit.cover,
             alignment: Alignment.bottomCenter,
+            colorFilter: ColorFilter.mode(
+              Colors.white.withValues(alpha: 0.3),
+              BlendMode.srcOver,
+            ),
           ),
         ),
         child: Container(
@@ -45,49 +51,11 @@ class MenuGameScreen extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Stack(
-                        children: [
-                          Text(
-                            'WORD\nTRAIN',
-                            style: theme.textTheme.displayLarge?.copyWith(
-                              fontSize: 64,
-                              height: 0.9,
-                              letterSpacing: 2,
-                              foreground: Paint()
-                                ..style = PaintingStyle.stroke
-                                ..strokeWidth = 6
-                                ..color = Colors.white,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          Text(
-                            'WORD\nTRAIN',
-                            style: theme.textTheme.displayLarge?.copyWith(
-                              color: theme.primaryColor,
-                              fontSize: 64,
-                              height: 0.9,
-                              letterSpacing: 2,
-                              shadows: [
-                                 BoxShadow(
-                                   color: theme.colorScheme.secondary.withValues(alpha: 0.4),
-                                   blurRadius: 8,
-                                   offset: const Offset(0, 4),
-                                 ),
-                              ],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'by Major Manu Productions',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: AppTheme.green,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
+                     Image.asset(
+                    'assets/images/logo_title.png',
+                    height: 200, 
+                    fit: BoxFit.contain
+                  ),
                     ],
                   ),
                 ),
@@ -101,9 +69,12 @@ class MenuGameScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          MenuButton(
-                            text: tr('menu.campaign'),
-                            onPressed: () => _handleCampaignTap(context),
+
+                          PulsingWidget(
+                            child: MenuButton(
+                              text: tr('menu.campaign'),
+                              onPressed: () => _handleCampaignTap(context),
+                            ),
                           ),
                           MenuButton(
                             text: tr('menu.training'),
@@ -134,17 +105,21 @@ class MenuGameScreen extends StatelessWidget {
     // Capturer la locale immédiatement avant toute opération async
     final locale = context.locale.languageCode;
     
-    final isInit = await PlayerProgress.isCampaignInitialized();
+    final initialized = await PlayerPreferences.isCampaignInitialized();
     
-    if (!isInit) {
+    if (!initialized) {
       // Auto-initialiser la campagne silencieusement
       try {
         final service = WordService();
         final words = await service.generateCampaignWords(locale, 10);
         
-        await PlayerProgress.resetCampaign();
-        await PlayerProgress.setCampaignWords(words);
-        
+        await PlayerPreferences.resetCampaign();
+        await PlayerPreferences.setCampaignWords(words);
+        // On recharge la progression
+        // final newStage = await PlayerPreferences.getCurrentStage(); // This line is commented out as it's not used in a StatelessWidget
+        // setState(() { // This line is commented out as it's not used in a StatelessWidget
+        //   _currentStage = newStage; // This line is commented out as it's not used in a StatelessWidget
+        // });
         debugPrint("Campagne auto-initialisée avec ${words.length} mots");
       } catch (e) {
         debugPrint("Erreur auto-init campagne : $e");

@@ -10,6 +10,7 @@
   "menu": {
     "campaign": "Campaign",
     "training": "Training",
+    "coins": "Coins",
     "settings": "Settings",
     "quit": "Quit",
     "confirmQuitTitle": "Quit Game",
@@ -27,6 +28,9 @@
     "resetCampaignConfirm": "Reset",
     "resetCampaignSuccess": "Campaign reset successfully!",
     "cancel": "Cancel",
+    "confirm": "Confirm",
+    "changeLanguageConfirmTitle": "Change Language?",
+    "changeLanguageConfirmMessage": "Changing language will reset your campaign progress. Continue?",
     "aboutTitle": "About",
     "version": "Version",
     "contact": "Contact",
@@ -35,5 +39,32 @@
     "copyright": "© 2026 Major Manu Productions\nAll rights reserved",
     "emailError": "Unable to open email app",
     "linkError": "Unable to open link"
+  },
+  "campaign": {
+    "noLives": "You're out of lives!",
+    "noLivesMessage": "Wait for your lives to recharge or use your coins.",
+    "getLives": "Recharge your lives",
+    "watchAd": "Watch an ad (+1 life)",
+    "buyLives": "Buy 5 lives (700 coins)",
+    "notEnoughCoins": "Not enough coins!"
+  },
+  "game": {
+    "pause_title": "PAUSED",
+    "quit_confirm_title": "Quit Game?",
+    "quit_confirm_subtitle_campaign": "The fox will win if you give up!",
+    "quit_confirm_subtitle_training": "Your current progress will be lost.",
+    "continue": "RESUME",
+    "replay": "REPLAY",
+    "quit": "Quit",
+    "quit_game": "Quit Game",
+    "victory": "VICTORY!",
+    "defeat": "GAME OVER...",
+    "level_finished": "Level Complete!",
+    "training_won": "The rabbit is safe!",
+    "fox_won": "The fox caught you...",
+    "feedback_invalid": "Invalid word or already used!",
+    "compose_words_title": "Compose Words!",
+    "compose_words_subtitle": "Find words to run faster.",
+    "continue_adventure": "Continue Adventure"
   }
 }

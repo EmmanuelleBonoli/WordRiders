@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
-
-
-import 'package:word_train/features/ui/widgets/game/game_buttons.dart';
-import 'package:word_train/features/ui/widgets/game/gameplay_timeline.dart';
-import 'package:word_train/features/ui/widgets/navigation/app_back_button.dart';
-import 'package:word_train/features/ui/widgets/navigation/settings_button.dart';
-
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import 'package:word_train/features/gameplay/controllers/game_controller.dart';
+import 'package:word_train/features/gameplay/services/player_preferences.dart';
+import 'package:word_train/features/ui/widgets/game/game_header.dart';
+import 'package:word_train/features/ui/widgets/game/game_input_area.dart';
+import 'package:word_train/features/ui/widgets/game/game_race_area.dart';
+import 'package:word_train/features/ui/widgets/game/overlays/game_end_overlay.dart';
+import 'package:word_train/features/ui/widgets/game/overlays/game_pause_overlay.dart';
+import 'package:word_train/features/ui/widgets/game/overlays/game_pause_dialog.dart';
+import 'package:word_train/features/ui/widgets/game/overlays/no_lives_overlay.dart';
 
 class GameScreen extends StatelessWidget {
   final bool isCampaign;
@@ -40,165 +42,141 @@ class _GameScreenContent extends StatelessWidget {
     }
 
     void onValidate() {
-      if (controller.validate()) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (ctx) => AlertDialog(
-            title: const Text("VICTOIRE !"),
-            content: Text("Vous avez trouvé : ${controller.targetWord}"),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(ctx); // Fermer le dialogue
-                  Navigator.pop(context); // Retour au menu/campagne
-                },
-                child: const Text("Continuer"),
-              )
-            ],
-          ),
-        );
-      } else {
-        debugPrint("Mauvais mot !");
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Essayez encore !")));
+      if (!controller.validate()) {
+        controller.showFeedback(tr('game.feedback_invalid'));
         controller.clearInput();
       }
+    }
+
+    void onSettingsTap() async {
+      controller.pauseGame();
+      await context.push('/settings');
+      controller.resumeGame();
+    }
+
+    void onBackTap() {
+      controller.pauseGame();
+      
+      final String subtitle = controller.isCampaign 
+          ? tr('game.quit_confirm_subtitle_campaign')
+          : tr('game.quit_confirm_subtitle_training');
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => GamePauseDialog(
+          title: tr('game.pause_title'),
+          message: subtitle,
+          onResume: () {
+            Navigator.pop(ctx); 
+            controller.resumeGame();
+          },
+          onRestart: () async {
+            Navigator.pop(ctx);
+            
+            // En campagne, recommencer en cours de jeu coûte une vie (abandon)
+            if (controller.isCampaign) {
+               final success = await controller.consumeLifeForRestart();
+               if (!success) {
+                 // Plus de vie ! Afficher la modale pour recharger
+                 if (context.mounted) {
+                   await showDialog(
+                     context: context,
+                     barrierDismissible: true,
+                     builder: (dialogCtx) => NoLivesOverlay(
+                       onLivesReplenished: () {
+                         // Après recharge, on peut restart
+                         controller.restartGame();
+                       },
+                     ),
+                   );
+                   
+                   // Si on arrive ici, la modale s'est fermée
+                   // On vérifie si le joueur a rechargé ses vies
+                   if (context.mounted) {
+                     final currentLives = await PlayerPreferences.getLives();
+                     if (currentLives <= 0) {
+                       // Toujours pas de vie, retour à l'écran de campagne
+                       if (context.mounted) {
+                         context.go('/campaign');
+                       }
+                     }
+                   }
+                 }
+                 return; // Ne pas restart si pas de vie
+               }
+            }
+            
+            controller.restartGame();
+          },
+          onQuit: () async {
+            Navigator.pop(ctx); 
+            await controller.quitGame(); // Déclenche potentiellement perte de vie
+            if (context.mounted) {
+               Navigator.pop(context); 
+            }
+          },
+        ),
+      );
     }
 
     return Scaffold(
       body: Stack(
         children: [
+          // 1. Fond
           Positioned.fill(
             child: Image.asset(
-              'assets/images/background/game_bg.png',
+              'assets/images/background/game_bg.jpg',
               fit: BoxFit.cover,
             ),
           ),
           
+          // 2. Contenu Principal
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Container(
-                  height: 100,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(
-                    children: [
-                       const AppBackButton(),
-                       const SizedBox(width: 12),
-                       
-                       Expanded(
-                         child: GameplayTimeline(
-                           progress: controller.progress, 
-                         ),
-                       ),
-                       
-                       const SizedBox(width: 12),
-                       const SettingsButton(),
-                    ],
-                  ),
+                GameHeader(
+                  onBack: onBackTap,
+                  onSettings: onSettingsTap,
+                  showFox: controller.isCampaign,
+                  rabbitProgress: controller.rabbitProgress,
+                  foxProgress: controller.foxProgress,
                 ),
 
+                // Zone centrale (Animation Course)
                 Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppTheme.brown, width: 2),
-                      borderRadius: BorderRadius.circular(16),
-                      color: AppTheme.brown.withValues(alpha: 0.1),
-                    ),
-                    child: Center(
-                       child: Text(
-                         "VUE JEU FLAME\nCible : ${controller.targetWord}",
-                         textAlign: TextAlign.center,
-                         style: const TextStyle(color: AppTheme.darkBrown, fontWeight: FontWeight.bold),
-                       ),
-                    ),
-                  ),
+                  child: GameRaceArea(isCampaign: controller.isCampaign),
                 ),
 
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        children: [
-                           ActionButton(
-                             icon: Icons.backspace_rounded, 
-                             color: AppTheme.red, 
-                             onTap: controller.onBackspace,
-                           ),
-                           
-                           const SizedBox(width: 12),
-
-                           // Affichage de l'Input (Étendu)
-                           Expanded(
-                             child: Container(
-                                height: 56,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: AppTheme.brown, width: 2),
-                                ),
-                                child: Text(
-                                  controller.currentInput,
-                                  style: const TextStyle(
-                                    fontSize: 28, 
-                                    fontWeight: FontWeight.bold, 
-                                    letterSpacing: 2,
-                                    color: AppTheme.textDark
-                                  ),
-                                ),
-                             ),
-                           ),
-
-                           const SizedBox(width: 12),
-
-                           // Bouton VALIDATION
-                           ActionButton(
-                             icon: Icons.check_circle_rounded, 
-                             color: AppTheme.green, 
-                             onTap: onValidate,
-                           ),
-
-                        ],
-                      ),
-                      
-                      const SizedBox(height: 12),
-
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        alignment: WrapAlignment.center,
-                        children: [
-                          ...controller.shuffledLetters.map((l) {
-                          return LetterButton(
-                            letter: l, 
-                            onTap: () => controller.onLetterTap(l),
-                          );
-                        }),
-                          const SizedBox(width: 24),
-
-                           ActionButton(
-                             icon: Icons.shuffle_rounded, 
-                             color: AppTheme.orange, 
-                             onTap: controller.onShuffle,
-                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                // Zone de saisie
+                GameInputArea(
+                  feedbackMessage: controller.feedbackMessage,
+                  currentInput: controller.currentInput,
+                  shuffledLetters: controller.shuffledLetters,
+                  onBackspace: controller.onBackspace,
+                  onValidate: onValidate,
+                  onShuffle: controller.onShuffle,
+                  onLetterTap: controller.onLetterTap,
                 ),
               ],
             ),
           ),
+
+          // 3. Overlays (Pause & Fin)
+          if (controller.isPaused)
+            const GamePauseOverlay(),
+
+          if (controller.status == GameStatus.won || controller.status == GameStatus.lost)
+            GameEndOverlay(
+              isWon: controller.status == GameStatus.won,
+              isCampaign: controller.isCampaign,
+              onQuit: () => Navigator.pop(context),
+              onRestart: () => controller.restartGame(),
+              onContinue: () => Navigator.pop(context),
+            ),
         ],
       ),
     );
   }
 }
-
-

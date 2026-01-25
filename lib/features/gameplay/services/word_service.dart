@@ -35,11 +35,18 @@ class WordService {
     return _words.contains(word.toUpperCase());
   }
 
-  /// Charge le dictionnaire, filtre les mots de 8 lettres et en retourne un qui n'a pas été utilisé.
-  Future<String> getNextCampaignWord(String locale) async {
-    // 1. Charger le dictionnaire si pas chargé ou si on veut juste piocher
-    // Ici on refait le chargement local pour la pioche spécifique (filtrage length=8)
-    // C'est dupliqué mais ça évite de stocker en mémoire RAM tous les mots de 8 lettres séparément en permanence
+  /// Charge le dictionnaire, filtre les mots selon le niveau et en retourne un qui n'a pas été utilisé.
+  /// Stage 1-50 : 6 lettres
+  /// Stage 51-500 : 7 lettres
+  /// Stage 500+ : 8 lettres
+  Future<String> getNextCampaignWord(String locale, {int stage = 1}) async {
+    int wordLength = 6;
+    if (stage > 500) {
+      wordLength = 8;
+    } else if (stage > 50) {
+      wordLength = 7;
+    }
+
     String path = 'assets/words/$locale.txt';
     
     try {
@@ -52,18 +59,28 @@ class WordService {
           .toList();
 
       if (allWords.isEmpty) {
-        throw Exception("Aucun mot de longueur $wordLength trouvé dans le dictionnaire.");
+        // Fallback si pas de mots de cette taille (ex: dico incomplet)
+        debugPrint("Attention: aucun mot de $wordLength lettres. On cherche 8 lettres par défaut.");
+         final List<String> fallbackWords = content
+          .split('\n')
+          .map((w) => w.trim().toUpperCase())
+          .where((w) => w.length == 8)
+          .toList();
+          if (fallbackWords.isNotEmpty) return fallbackWords[Random().nextInt(fallbackWords.length)];
+          throw Exception("Dictionnaire vide ou incompatible.");
       }
 
-      // 2. Récupérer les mots déjà joués
-      final List<String> usedWords = await PlayerProgress.getUsedWords();
-      debugPrint("WordService: ${usedWords.length} mots déjà utilisés et exclus.");
-
+      // Exclure les mots déjà utilisés
+    List<String> used = await PlayerPreferences.getUsedWords();
+    if (stage > 1) {
+       // Si on est à un stage avancé, on s'assure de ne pas ressortir un mot facile
+       // (Logique simplifiée ici)
+    }
       // 3. Trouver les candidats inutilisés
-      final List<String> candidates = allWords.where((w) => !usedWords.contains(w)).toList();
+      final List<String> candidates = allWords.where((w) => !used.contains(w)).toList();
 
       if (candidates.isEmpty) {
-        // Si le joueur a tout épuisé, on reprend dans la liste complète
+        // Si le joueur a tout épuisé pour ce niveau de difficulté, on repioche au hasard
         return allWords[Random().nextInt(allWords.length)];
       }
 
@@ -74,37 +91,18 @@ class WordService {
 
     } catch (e) {
       debugPrint("Erreur chargement dictionnaire pour pick: $e");
-      // Mot de secours
+      // Mot de secours adapté à la difficulté
+      if (wordLength == 6) return "NATURE";
+      if (wordLength == 7) return "BONJOUR";
       return "AVENTURE"; 
     }
   } 
-  /// Génère une liste de [count] mots uniques pour une nouvelle campagne
+
+  /// Génère une liste de mots pour une nouvelle campagne (utilisé pour peupler en masse si besoin)
   Future<List<String>> generateCampaignWords(String locale, int count) async {
-    String path = 'assets/words/$locale.txt';
-    
-    try {
-      final String content = await rootBundle.loadString(path);
-      // Découpage et filtre (8 lettres uniquement pour l'instant)
-      final List<String> allWords = content
-          .split('\n')
-          .map((w) => w.trim().toUpperCase())
-          .where((w) => w.length == wordLength)
-          .toList();
-
-      if (allWords.length < count) {
-        debugPrint("Attention: pas assez de mots dans le dico ($allWords.length) pour la demande ($count).");
-        return allWords;
-      }
-
-      // Mélanger et prendre les N premiers
-      allWords.shuffle();
-      return allWords.take(count).toList();
-
-    } catch (e) {
-      debugPrint("Erreur génération campagne: $e");
-      // Fallback
-      return List.generate(count, (index) => "AVENTURE"); 
-    }
+    // Note: Cette méthode semble peu utilisée maintenant qu'on pioche au fur et à mesure, 
+    // mais on la garde compatible (défaut 6 lettres pour le début)
+    return [await getNextCampaignWord(locale, stage: 1)];
   }
 }
 

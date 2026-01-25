@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:word_train/features/ui/styles/app_theme.dart';
+import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
 
 class LetterButton extends StatelessWidget {
   final String letter;
@@ -10,7 +11,7 @@ class LetterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return BouncingScaleButton(
       onTap: onTap,
       child: Container(
         width: 50,
@@ -18,11 +19,8 @@ class LetterButton extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: AppTheme.cream, 
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppTheme.brown, width: 2),
-          boxShadow: [
-             BoxShadow(color: Colors.black26, offset: Offset(0, 3)),
-          ]
         ),
         child: Text(
           letter,
@@ -51,29 +49,18 @@ class ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          width: 56,
-          height: 56,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.black12, width: 2),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
-                offset: const Offset(0, 3),
-                blurRadius: 0,
-              ),
-            ],
-          ),
-          alignment: Alignment.center,
-          child: Icon(icon, color: Colors.white, size: 32),
+    return BouncingScaleButton(
+      onTap: onTap,
+      child: Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 2),
         ),
+        alignment: Alignment.center,
+        child: Icon(icon, color: Colors.white, size: 32),
       ),
     );
   }

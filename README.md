@@ -9,10 +9,10 @@ Défiez un adversaire IA qui avance continuellement. La vitesse de l'IA s'adapte
 
 ## 🛠 Stack Technique
 
-- **Framework**: Flutter
-- **Moteur de Jeu**: Flame
-- **Gestion d'État**: Provider
-- **Navigation**: GoRouter
+- **Framework**: Flutter 3.38.7
+- **Moteur de Jeu**: Flame 1.33.0
+- **Gestion d'État**: Provider 6.1.5
+- **Navigation**: GoRouter 17.0.1
 - **Localisation**: EasyLocalization (Anglais & Français)
 - **Architecture**: Structure orientée fonctionnalités (Feature-first)
 

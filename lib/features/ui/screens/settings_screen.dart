@@ -4,6 +4,7 @@ import 'package:word_train/features/gameplay/services/player_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:word_train/features/ui/widgets/navigation/app_back_button.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
+import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -18,6 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool musicOn = true;
   bool sfxOn = true;
   String appVersion = '1.0.0';
+  int _currentStage = 1;
 
   @override
   void initState() {
@@ -27,9 +29,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _loadSettings() async {
-    musicOn = await PlayerProgress.isMusicEnabled();
-    sfxOn = await PlayerProgress.isSfxEnabled();
-    setState(() {});
+    final music = await PlayerPreferences.isMusicEnabled();
+    final sfx = await PlayerPreferences.isSfxEnabled();
+    final stage = await PlayerPreferences.getCurrentStage();
+    setState(() {
+      musicOn = music;
+      sfxOn = sfx;
+      _currentStage = stage;
+    });
+    if (mounted) setState(() {});
   }
 
   Future<void> _loadVersion() async {
@@ -41,6 +49,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } catch (e) {
       debugPrint("Erreur chargement version: $e");
     }
+  }
+
+  void _confirmChangeLanguage(BuildContext context, Locale newLocale) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white.withValues(alpha: 0.95),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          tr('settings.changeLanguageConfirmTitle'),
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontFamily: 'Round',
+            color: AppTheme.red,
+            fontWeight: FontWeight.w900,
+            fontSize: 22,
+          ),
+        ),
+        content: Text(
+          tr('settings.changeLanguageConfirmMessage'),
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: AppTheme.textDark,
+            fontSize: 16,
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              tr('settings.cancel'),
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontFamily: 'Round',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await PlayerPreferences.resetCampaign();
+              if (context.mounted) {
+                 await context.setLocale(newLocale);
+                 _loadSettings(); 
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.red,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
+            child: Text(
+              tr('settings.confirm'),
+              style: const TextStyle(fontFamily: 'Round', fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -138,8 +209,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     ),
                                   ],
                                   onChanged: (newLocale) async {
-                                    if (newLocale != null) {
-                                      context.setLocale(newLocale);
+                                    if (newLocale != null && newLocale != context.locale) {
+                                      if (_currentStage > 1) {
+                                        _confirmChangeLanguage(context, newLocale);
+                                      } else {
+                                        context.setLocale(newLocale);
+                                      }
                                     }
                                   },
                                 ),
@@ -161,7 +236,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   textColor: AppTheme.darkBrown,
                                   onChanged: (val) async {
                                     setState(() => musicOn = val);
-                                    await PlayerProgress.setMusicEnabled(val);
+                                    await PlayerPreferences.setMusicEnabled(val);
                                   },
                                 ),
                                 Divider(height: 2, thickness: 2, color: AppTheme.brown.withValues(alpha: 0.2)),
@@ -171,9 +246,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   icon: sfxOn ? Icons.volume_up_rounded : Icons.volume_off_rounded,
                                   color: AppTheme.brown,
                                   textColor: AppTheme.darkBrown,
-                                  onChanged: (val) async {
-                                    setState(() => sfxOn = val);
-                                    await PlayerProgress.setSfxEnabled(val);
+                                  onChanged: (newValue) async {
+                                    if (tr('settings.enableMusic') == tr('settings.enableMusic')) {
+                                      await PlayerPreferences.setMusicEnabled(newValue);
+                                      setState(() => musicOn = newValue);
+                                    } else if (tr('settings.enableSounds') == tr('settings.enableSounds')) {
+                                      await PlayerPreferences.setSfxEnabled(newValue);
+                                      setState(() => sfxOn = newValue);
+                                    }
                                   },
                                 ),
                               ],
@@ -265,20 +345,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           
                           const SizedBox(height: 40),
                           
-                           Container(
-                             decoration: _itemDecoration(const Color(0xFFFFEBEE), AppTheme.red), 
-                             child: ListTile(
-                               leading: const Icon(Icons.delete_forever_rounded, color: AppTheme.red),
-                               title: Text(
-                                 tr('settings.resetCampaign').toUpperCase(),
-                                 style: const TextStyle(
-                                   fontFamily: 'Round',
-                                   color: AppTheme.red,
-                                   fontWeight: FontWeight.bold,
-                                   fontSize: 16,
+                           Opacity(
+                             opacity: _currentStage > 1 ? 1.0 : 0.5,
+                             child: IgnorePointer(
+                               ignoring: _currentStage <= 1,
+                               child: BouncingScaleButton(
+                                 onTap: () => _confirmResetCampaign(context),
+                                 child: Container(
+                                   decoration: BoxDecoration(
+                                      color: _currentStage > 1 ? const Color(0xFFFFEBEE) : Colors.grey.shade200,
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: _currentStage > 1 ? AppTheme.red : Colors.grey.shade400, 
+                                        width: 3
+                                      ),
+                                   ), 
+                                   child: ListTile(
+                                     leading: Icon(
+                                       Icons.delete_forever_rounded, 
+                                       color: _currentStage > 1 ? AppTheme.red : Colors.grey
+                                     ),
+                                     title: Text(
+                                       tr('settings.resetCampaign').toUpperCase(),
+                                       style: TextStyle(
+                                         fontFamily: 'Round',
+                                         color: _currentStage > 1 ? AppTheme.red : Colors.grey,
+                                         fontWeight: FontWeight.bold,
+                                         fontSize: 16,
+                                       ),
+                                     ),
+                                   ),
                                  ),
                                ),
-                               onTap: () => _confirmResetCampaign(context),
                              ),
                            ),
                             const SizedBox(height: 40),
@@ -419,8 +517,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(ctx);
-              await PlayerProgress.resetCampaign();
+              await PlayerPreferences.resetCampaign();
               if (context.mounted) {
+                _loadSettings();
+                
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(tr('settings.resetCampaignSuccess')),
