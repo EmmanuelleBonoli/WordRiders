@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:word_train/features/gameplay/services/player_preferences.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
+import 'package:word_train/features/ui/widgets/common/ad_loading_dialog.dart';
 
 class NoLivesOverlay extends StatefulWidget {
   final VoidCallback onLivesReplenished;
@@ -45,17 +46,10 @@ class _NoLivesOverlayState extends State<NoLivesOverlay> {
   }
 
   Future<void> _watchAd() async {
-    // Simulation d'une pub de 2s
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => const Center(child: CircularProgressIndicator()),
-    );
-    
-    await Future.delayed(const Duration(seconds: 2));
+    // Afficher le loader de pub
+    await AdLoadingDialog.show(context);
     
     if (mounted) {
-      Navigator.of(context).pop(); // Close loader
       final current = await PlayerPreferences.getLives();
       await PlayerPreferences.setLives(current + 1);
       widget.onLivesReplenished();

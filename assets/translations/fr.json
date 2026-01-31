@@ -46,7 +46,14 @@
     "getLives": "Recharger vos vies",
     "watchAd": "Regarder une pub (+1 vie)",
     "buyLives": "Acheter 5 vies (700 pièces)",
-    "notEnoughCoins": "Pas assez de pièces !"
+    "notEnoughCoins": "Pas assez de pièces !",
+    "noAds": "Sans Pub",
+    "noAdsConfirmTitle": "Acheter Sans Pub ?",
+    "noAdsConfirmMessage": "Plus jamais de publicités ! Coût : 2000 pièces",
+    "noAdsConfirmMessageRealMoney": "Plus jamais de publicités ! Coût : 4,99€",
+    "noAdsPurchase": "Acheter",
+    "noAdsPurchased": "Sans Pub activé ! Profitez du jeu sans interruption.",
+    "adBeforeStage": "Publicité avant le niveau {stage}"
   },
   "game": {
     "pause_title": "PAUSE",
@@ -62,9 +69,11 @@
     "level_finished": "Niveau terminé !",
     "training_won": "Le lapin est sauf !",
     "fox_won": "Le renard vous a eu...",
-    "feedback_invalid": "Mot invalide ou déjà utilisé !",
+    "feedback_invalid": "Mot inconnu !",
+    "feedback_already_used": "Déjà trouvé !",
     "compose_words_title": "Composez des mots !",
     "compose_words_subtitle": "Trouvez des mots pour courir plus vite.",
-    "continue_adventure": "Continuer l'aventure"
+    "continue_adventure": "Continuer l'aventure",
+    "watch_ad_double": "X2 (Pub)"
   }
 }

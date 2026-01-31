@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:word_train/features/gameplay/services/ad_service.dart';
 
 class PlayerPreferences {
   static const _keyStage = 'currentStage';
@@ -235,6 +236,7 @@ class PlayerPreferences {
     await prefs.remove(_keyUsedWords);
     await prefs.remove(_keyActiveWord);
     await prefs.remove(_keyCampaignWords);
+    await AdService.resetAdTracking();
     // On ne reset pas les vies ni les pièces, c'est indépendant
   }
 }

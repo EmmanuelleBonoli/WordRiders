@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:word_train/features/gameplay/services/player_preferences.dart';
 import 'package:word_train/features/gameplay/services/word_service.dart';
 
-enum GameStatus { loading, playing, paused, won, lost }
+enum GameStatus { loading, waitingForConfig, playing, paused, won, lost }
 
 class GameController extends ChangeNotifier {
   final bool isCampaign;
@@ -13,6 +14,7 @@ class GameController extends ChangeNotifier {
   String _targetWord = "";
   List<String> _shuffledLetters = [];
   String _currentInput = "";
+  int? _trainingLength;
 
   Timer? _gameTimer;
   final Set<String> _sessionWords = {}; // Mots trouvés dans cette partie
@@ -21,7 +23,7 @@ class GameController extends ChangeNotifier {
   double _foxProgress = 0.0;
   // Vitesse du renard : % du parcours par seconde. 
   // Ralenti pour être plus accessible (approx 100s maintenant)
-  final double _foxSpeed = 0.01;
+  double _foxSpeed = 0.01;
 
   GameStatus get status => _status;
   String get targetWord => _targetWord; // Sert de "Seed" pour les lettres
@@ -52,9 +54,16 @@ class GameController extends ChangeNotifier {
       // 1. On s'assure que le dictionnaire est chargé pour la validation
       await _wordService.loadDictionary(locale);
 
+      if (!isCampaign && _trainingLength == null) {
+        _status = GameStatus.waitingForConfig;
+        notifyListeners();
+        return;
+      }
+
       if (isCampaign) {
          // En mode campagne, on récupère un mot du niveau (juste pour avoir les lettres)
          int currentStage = await PlayerPreferences.getCurrentStage();
+         _currentStageId = currentStage;
          String? stageWord = await PlayerPreferences.getWordForStage(currentStage);
          
          if (stageWord != null && stageWord.isNotEmpty) {
@@ -67,11 +76,24 @@ class GameController extends ChangeNotifier {
            await PlayerPreferences.setWordForStage(currentStage, _targetWord);
            debugPrint("GameController: Generated and saved new word for stage $currentStage: $_targetWord");
          }
+
+         // Ajustement de la difficulté (Vitesse du renard)
+         _foxSpeed = 0.01; // Base : 100 secondes
+         if (currentStage % 5 == 0) {
+           // Distance doublée = Temps doublé pour le joueur
+           // Donc le jeu doit durer 2x plus longtemps de base -> Vitesse / 2
+           _foxSpeed /= 2; 
+         }
+         if (currentStage % 10 == 0) {
+           // Boss Level ! On accélère le renard
+           _foxSpeed *= 1.3;
+         }
       } else {
-        // En mode Entraînement : On n'a pas de "stage" formel, mais on peut simuler un niveau 1 (6 lettres)
-        // ou permettre au joueur de choisir. Par défaut : Facile (6 lettres)
-        // Pour l'entraînement on reste sur du 6 lettres pour l'instant
-        _targetWord = await _wordService.getNextCampaignWord(locale, stage: 1); 
+        // En mode Entraînement
+        // Si on est ici, c'est que startTraining() a été appelé et _trainingLength est set
+        // ou c'est un restart
+        int len = _trainingLength ?? 6;
+        _targetWord = await _wordService.getNextCampaignWord(locale, stage: 1, forceLength: len); 
       }
       
       // Mélange des lettres
@@ -96,6 +118,11 @@ class GameController extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  Future<void> startTraining(int length) async {
+    _trainingLength = length;
+    await _initializeGame();
   }
 
   void _startGameLoop() {
@@ -129,7 +156,7 @@ class GameController extends ChangeNotifier {
   void onLetterTap(String letter) {
     if (_status != GameStatus.playing) return;
 
-    if (_currentInput.length < _targetWord.length) { // Limite arbitraire ou 8 ?
+    if (_currentInput.length < 20) { 
       _currentInput += letter;
       notifyListeners();
     }
@@ -151,6 +178,8 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
+  int _currentStageId = 1;
+
   /// Retourne true si le mot est valide et fait avancer le lapin
   bool validate() {
     if (_status != GameStatus.playing) return false;
@@ -158,10 +187,17 @@ class GameController extends ChangeNotifier {
     final word = _currentInput.toUpperCase();
 
     // 1. Longueur min
-    if (word.length < 3) return false;
+    if (word.length < 3) {
+      clearInput();
+      return false;
+    }
 
     // 2. Déjà trouvé ?
-    if (_sessionWords.contains(word)) return false;
+    if (_sessionWords.contains(word)) {
+      showFeedback(tr('game.feedback_already_used'));
+      clearInput();
+      return false;
+    }
 
     // 3. Existe dans le dico ?
     if (_wordService.isValid(word)) {
@@ -172,6 +208,19 @@ class GameController extends ChangeNotifier {
       // Pour l'instant : fixe ou boost
       double advance = 0.15; // Un mot = 15% de la course
       if (word.length >= 6) advance = 0.25;
+
+      // DIFFICULTÉ : Si stage fini par 5 ou 0, la distance est doublée
+      // Doubler la distance revient à diviser la progression par 2
+      if (isCampaign) {
+         if (_currentStageId % 5 == 0) {
+           advance /= 2.0;
+         }
+      } else {
+         // Entrainement : distance plus longue (progression plus lente) si 7 ou 8 lettres
+         if ((_trainingLength ?? 6) >= 7) {
+             advance /= 2.0;
+         }
+      }
 
       _rabbitProgress += advance;
 
@@ -184,6 +233,9 @@ class GameController extends ChangeNotifier {
       return true;
     }
     
+    // Mot invalide/inconnu
+    showFeedback(tr('game.feedback_invalid'));
+    clearInput();
     return false;
   }
 

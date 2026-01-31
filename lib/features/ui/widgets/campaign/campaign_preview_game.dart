@@ -9,7 +9,6 @@ class CampaignPreviewGame extends FlameGame {
   final int maxVisibleStage;
   late Player _player;
   double? _pendingStage;
-  static const double _horizontalPadding = 24.0;
 
   bool _playerAdded = false;
   bool _shouldPlay = false;
@@ -71,17 +70,13 @@ class CampaignPreviewGame extends FlameGame {
   void _applyStage(double stage) {
     if (!_playerAdded) return;
 
-    // Mapper le niveau [min, max] vers [0, width]
-    final range = (maxVisibleStage - minVisibleStage);
-    // Autoriser le démarrage hors écran
-    // On garde la valeur brute pour permettre de sortir de l'écran si nécessaire
-    final progress = ((stage - minVisibleStage) / range); 
+    // Use fixed geometry matching the Stage Circles (90px slots)
+    // Item 0 Center = 45.0 (half of 90)
+    // Spacing = 90.0
+    final x = 45.0 + ((stage - minVisibleStage) * 90.0) - (_player.size.x / 2);
 
-    final usableWidth = size.x - 2 * _horizontalPadding;
-    // x centre le joueur sur le point de progression
-    final x = _horizontalPadding + (usableWidth * progress) - (_player.size.x / 2);
-
-    final y = (size.y / 2) - (_player.size.y / 2);
+    // Monter le joueur de 50px
+    final y = (size.y / 2) - (_player.size.y / 2) - 50;
 
     _player.position = Vector2(x, y);
   }

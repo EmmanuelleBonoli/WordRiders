@@ -47,17 +47,18 @@ class RaceGame extends FlameGame {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    // SETUP LAPIN (Player) - Toujours présent
-    _player = Player();
-    _player.scale = Vector2.all(0.9);
-    add(_player);
-    
-    // SETUP RENARD (Rival) - Seulement en campagne
+   // SETUP RENARD (Rival) - Seulement en campagne
     if (isCampaign) {
       _rival = Rival();
       _rival!.scale = Vector2.all(0.9);
       add(_rival!);
     }
+
+    // SETUP LAPIN (Player) - Toujours présent
+    _player = Player();
+    _player.scale = Vector2.all(0.9);
+    add(_player);
+    
   }
   
   @override
@@ -69,11 +70,11 @@ class RaceGame extends FlameGame {
     // On centre le lapin verticalement s'il est seul, ou on le met en haut s'il y a le renard
     if (isCampaign) {
        // Mode Duel : 2 Pistes
-       _player.position = Vector2(10, size.y * 0.25 - 50);
-       _rival?.position = Vector2(10, size.y * 0.75 - 50);
+       _player.position = Vector2(10, size.y * 0.75 - 50);
+       _rival?.position = Vector2(10, size.y * 0.25 - 50);
     } else {
        // Mode Solo : Lapin au milieu (ou un peu plus bas pour être sur le sol)
-       _player.position = Vector2(10, size.y * 0.6 - 60); 
+       _player.position = Vector2(10, size.y * 0.75 - 50); 
     }
   }
 }

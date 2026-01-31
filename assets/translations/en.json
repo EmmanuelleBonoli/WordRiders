@@ -46,7 +46,14 @@
     "getLives": "Recharge your lives",
     "watchAd": "Watch an ad (+1 life)",
     "buyLives": "Buy 5 lives (700 coins)",
-    "notEnoughCoins": "Not enough coins!"
+    "notEnoughCoins": "Not enough coins!",
+    "noAds": "No Ads",
+    "noAdsConfirmTitle": "Purchase No Ads?",
+    "noAdsConfirmMessage": "Never see ads again! Cost: 2000 coins",
+    "noAdsConfirmMessageRealMoney": "Never see ads again! Cost: $4.99",
+    "noAdsPurchase": "Purchase",
+    "noAdsPurchased": "No Ads activated! Enjoy the game without interruptions.",
+    "adBeforeStage": "Ad before stage {stage}"
   },
   "game": {
     "pause_title": "PAUSED",
@@ -65,6 +72,7 @@
     "feedback_invalid": "Invalid word or already used!",
     "compose_words_title": "Compose Words!",
     "compose_words_subtitle": "Find words to run faster.",
-    "continue_adventure": "Continue Adventure"
+    "continue_adventure": "Continue Adventure",
+    "watch_ad_double": "X2 (Ad)"
   }
 }

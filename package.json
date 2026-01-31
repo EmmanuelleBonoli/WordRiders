@@ -3,6 +3,8 @@
     "android:start-emulator": "\"C:\\Users\\ebono\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe\" -avd Pixel_7_API_34",
     "android:start-flutter": "flutter run -d emulator-5554",
     "android:start-logs": "start cmd /k flutter logs -d emulator-5554",
-    "android:logs-clean": "flutter logs -d emulator-5554 | findstr /V /C:\"EGL_emulation\" /C:\"ComponentElement\""
+    "android:logs-clean": "flutter logs -d emulator-5554 | findstr /V /C:\"EGL_emulation\" /C:\"ComponentElement\"",
+    "flutter:run-web": "flutter run -d chrome",
+    "flutter:analyze": "flutter analyze"
   }
 }

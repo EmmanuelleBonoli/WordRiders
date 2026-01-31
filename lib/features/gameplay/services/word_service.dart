@@ -39,13 +39,26 @@ class WordService {
   /// Stage 1-50 : 6 lettres
   /// Stage 51-500 : 7 lettres
   /// Stage 500+ : 8 lettres
-  Future<String> getNextCampaignWord(String locale, {int stage = 1}) async {
+  Future<String> getNextCampaignWord(String locale, {int stage = 1, int? forceLength}) async {
     int wordLength = 6;
-    if (stage > 500) {
-      wordLength = 8;
-    } else if (stage > 50) {
-      wordLength = 7;
+    
+    if (forceLength != null) {
+      wordLength = forceLength;
+    } else {
+      // Règle de base : 6 lettres pour < 100, 7 lettres pour >= 100
+      if (stage >= 100) {
+        wordLength = 7;
+      }
+      
+      // Difficulté accrue pour les stages finissant par 5 ou 0 : +1 lettre
+      if (stage % 5 == 0) {
+        wordLength += 1;
+      }
     }
+
+    // Sécurité au cas ou
+    if (wordLength > 8) wordLength = 8;
+    if (wordLength < 3) wordLength = 3; 
 
     String path = 'assets/words/$locale.txt';
     

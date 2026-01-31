@@ -2,8 +2,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:word_train/features/gameplay/services/player_preferences.dart';
+import 'package:word_train/features/gameplay/services/ad_service.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
+import 'package:word_train/features/ui/widgets/common/ad_loading_dialog.dart';
 import 'package:word_train/features/ui/widgets/game/overlays/no_lives_overlay.dart';
+import 'package:word_train/features/ui/widgets/game/game_modal_button.dart';
 
 class GameEndOverlay extends StatefulWidget {
   final bool isWon;
@@ -172,58 +175,72 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
 
   Widget _buildButtons(BuildContext context) {
     if (widget.isCampaign && widget.isWon) {
-      return SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: widget.onContinue, 
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.green,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      return Row(
+        children: [
+          // Bouton Publicité (Bonus)
+          Expanded(
+            child: GameModalButton(
+              onPressed: () async {
+                if (!context.mounted) return;
+                await AdLoadingDialog.show(context);
+                await AdService.simulateAdWatch();
+                await PlayerPreferences.addCoins(60);
+                final currentStage = await PlayerPreferences.getCurrentStage();
+                await AdService.markAdShownForStage(currentStage);
+                if (widget.onContinue != null) widget.onContinue!();
+              },
+              color: Colors.deepPurple,
+              icon: Icons.movie_filter_rounded,
+              label: tr('game.watch_ad_double'),
+              subLabel: "+60",
+            ),
           ),
-          child: Text(tr('game.continue_adventure'), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        ),
+          
+          const SizedBox(width: 16),
+
+          // Bouton Continuer (Classique)
+          Expanded(
+            child: GameModalButton(
+              onPressed: () async {
+                final currentStage = await PlayerPreferences.getCurrentStage();
+                final shouldShowAd = await AdService.shouldShowAdForStage(currentStage);
+                
+                if (shouldShowAd && context.mounted) {
+                  await AdLoadingDialog.show(context);
+                  await AdService.markAdShownForStage(currentStage);
+                }
+                widget.onContinue?.call();
+              }, 
+              color: AppTheme.green,
+              icon: Icons.arrow_forward_rounded,
+              label: tr('game.continue'), // "Continuer"
+            ),
+          ),
+        ],
       );
     }
 
-    return Column(
+    return Row(
       children: [
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () => _handleReplay(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.orange,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            ),
-            child: Row(
-               mainAxisAlignment: MainAxisAlignment.center,
-               children: [
-                 const Icon(Icons.refresh_rounded, color: Colors.white),
-                 const SizedBox(width: 8),
-                 Text(tr('game.replay'), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-               ],
-            ),
+        Expanded(
+          child: GameModalButton(
+            onPressed: widget.onQuit,
+            color: AppTheme.red,
+            icon: Icons.close_rounded,
+            label: tr('game.quit'),
           ),
         ),
-        const SizedBox(height: 12),
-        SizedBox(
-          width: double.infinity,
-          child: TextButton(
-            onPressed: widget.onQuit,
-            style: TextButton.styleFrom(
-              foregroundColor: AppTheme.textDark,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-            ),
-            child: Text(tr('game.quit'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+        const SizedBox(width: 16),
+          Expanded(
+          child: GameModalButton(
+            onPressed: () => _handleReplay(context),
+            color: AppTheme.green,
+            icon: Icons.refresh_rounded,
+            label: tr('game.replay'),
           ),
         ),
       ],
     );
   }
 } 
+

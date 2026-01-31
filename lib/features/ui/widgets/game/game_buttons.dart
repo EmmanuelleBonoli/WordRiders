@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
+import 'package:word_train/features/ui/widgets/common/pushable_button.dart';
 
 class LetterButton extends StatelessWidget {
   final String letter;
@@ -11,24 +11,19 @@ class LetterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BouncingScaleButton(
-      onTap: onTap,
-      child: Container(
-        width: 50,
-        height: 50,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: AppTheme.cream, 
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.brown, width: 2),
-        ),
-        child: Text(
-          letter,
-          style: const TextStyle(
-            fontSize: 24, 
-            fontWeight: FontWeight.bold, 
-            color: AppTheme.darkBrown
-          ),
+    return PushableButton(
+      onPressed: onTap,
+      color: AppTheme.cream,
+      width: 50,
+      height: 50,
+      borderRadius: BorderRadius.circular(12),
+      depth: 6,
+      child: Text(
+        letter,
+        style: const TextStyle(
+          fontSize: 24, 
+          fontWeight: FontWeight.bold, 
+          color: AppTheme.darkBrown
         ),
       ),
     );
@@ -49,19 +44,14 @@ class ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BouncingScaleButton(
-      onTap: onTap,
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 2),
-        ),
-        alignment: Alignment.center,
-        child: Icon(icon, color: Colors.white, size: 32),
-      ),
+    return PushableButton(
+      onPressed: onTap,
+      color: color,
+      width: 56,
+      height: 56,
+      borderRadius: BorderRadius.circular(16),
+      depth: 6,
+      child: Icon(icon, color: Colors.white, size: 32),
     );
   }
 }

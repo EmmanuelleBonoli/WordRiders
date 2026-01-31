@@ -31,34 +31,82 @@ class CoinIndicatorState extends State<CoinIndicator> {
 
   @override
   Widget build(BuildContext context) {
+    // 3D Style Constants
+    const double depth = 4.0;
+    const Color faceColor = Color(0xFFFCE1AE);
+    const Color sideColor = Color(0xFFDCA750);
+    const Color highlightColor = Color(0xFFFFF5D6);
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.brown, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          )
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      height: 48,
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomCenter,
         children: [
-          const Icon(Icons.monetization_on, color: Colors.amber, size: 24),
-          const SizedBox(width: 6),
-          Text(
-            '$_currentCoins',
-            style: const TextStyle(
-              fontFamily: 'Round',
-              fontSize: 20,
-              color: AppTheme.brown,
-              fontWeight: FontWeight.bold,
+          // Ombre/Side
+          Positioned(
+            top: depth,
+            left: 0,
+            right: 0,
+            bottom: -depth,
+            child: Container(
+              decoration: BoxDecoration(
+                color: sideColor,
+                borderRadius: BorderRadius.circular(24),
+                 boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    offset: const Offset(0, 2),
+                    blurRadius: 2,
+                  )
+                ],
+              ),
             ),
           ),
+          // Face
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: faceColor,
+              borderRadius: BorderRadius.circular(24),
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [highlightColor, faceColor],
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.monetization_on, color: Colors.amber, size: 24),
+                const SizedBox(width: 6),
+                Text(
+                  '$_currentCoins',
+                  style: const TextStyle(
+                    fontFamily: 'Round',
+                    fontSize: 20,
+                    color: AppTheme.brown,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+           // Petit reflet glossy sur le haut
+          Positioned(
+            top: 4,
+            left: 12,
+            right: 12,
+            height: 8,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          )
         ],
       ),
     );

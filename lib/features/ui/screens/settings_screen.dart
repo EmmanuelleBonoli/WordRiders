@@ -176,9 +176,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                        child: ListView(
                         shrinkWrap: true,
                         children: [
-                          _buildSectionTitle(tr('settings.language'), AppTheme.brown),
+                          _buildSectionTitle(tr('settings.language'), AppTheme.darkBrown),
                           Container(
-                            decoration: _itemDecoration(AppTheme.cream, AppTheme.brown),
+                            decoration: _itemDecoration(AppTheme.gold, AppTheme.goldShadow),
                             padding: const EdgeInsets.symmetric(vertical: 4),
                             child: ListTile(
                               leading: const Icon(Icons.language, color: AppTheme.brown, size: 28),
@@ -194,7 +194,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               trailing: DropdownButtonHideUnderline(
                                 child: DropdownButton<Locale>(
                                   value: context.locale,
-                                  dropdownColor: AppTheme.cream,
+                                  dropdownColor: AppTheme.gold,
                                   icon: const Icon(Icons.arrow_drop_down_rounded, color: AppTheme.brown, size: 32),
                                   borderRadius: BorderRadius.circular(12),
                                   style: const TextStyle(fontFamily: 'Round', color: AppTheme.darkBrown, fontSize: 18),
@@ -223,16 +223,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           const SizedBox(height: 24),
                           
-                          _buildSectionTitle("AUDIO", AppTheme.brown),
+                          _buildSectionTitle("AUDIO", AppTheme.darkBrown),
                           Container(
-                            decoration: _itemDecoration(AppTheme.cream, AppTheme.brown),
+                            decoration: _itemDecoration(AppTheme.gold, AppTheme.goldShadow),
                             child: Column(
                               children: [
                                 _buildSwitchTile(
                                   title: tr('settings.enableMusic'),
                                   value: musicOn,
                                   icon: musicOn ? Icons.music_note_rounded : Icons.music_off_rounded,
-                                  color: AppTheme.brown,
+                                  color: AppTheme.goldShadow,
                                   textColor: AppTheme.darkBrown,
                                   onChanged: (val) async {
                                     setState(() => musicOn = val);
@@ -244,16 +244,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   title: tr('settings.enableSounds'),
                                   value: sfxOn,
                                   icon: sfxOn ? Icons.volume_up_rounded : Icons.volume_off_rounded,
-                                  color: AppTheme.brown,
+                                  color: AppTheme.goldShadow,
                                   textColor: AppTheme.darkBrown,
                                   onChanged: (newValue) async {
-                                    if (tr('settings.enableMusic') == tr('settings.enableMusic')) {
-                                      await PlayerPreferences.setMusicEnabled(newValue);
-                                      setState(() => musicOn = newValue);
-                                    } else if (tr('settings.enableSounds') == tr('settings.enableSounds')) {
-                                      await PlayerPreferences.setSfxEnabled(newValue);
-                                      setState(() => sfxOn = newValue);
-                                    }
+                                    setState(() => sfxOn = newValue);
+                                    await PlayerPreferences.setSfxEnabled(newValue);
                                   },
                                 ),
                               ],
@@ -262,9 +257,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           
                           const SizedBox(height: 40),
                           
-                          _buildSectionTitle(tr('settings.aboutTitle').toUpperCase(), AppTheme.brown),
+                          _buildSectionTitle(tr('settings.aboutTitle').toUpperCase(), AppTheme.darkBrown),
                           Container(
-                            decoration: _itemDecoration(AppTheme.cream, AppTheme.brown),
+                            decoration: _itemDecoration(AppTheme.gold, AppTheme.goldShadow),
                             child: Column(
                               children: [
                                 ListTile(
@@ -362,7 +357,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                    ), 
                                    child: ListTile(
                                      leading: Icon(
-                                       Icons.delete_forever_rounded, 
+                                       Icons.refresh_rounded, 
                                        color: _currentStage > 1 ? AppTheme.red : Colors.grey
                                      ),
                                      title: Text(
@@ -434,7 +429,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }),
       trackColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
         if (states.contains(WidgetState.selected)) {
-          return AppTheme.brown;
+          return AppTheme.goldShadow;
         }
         return color.withValues(alpha: 0.3);
       }),

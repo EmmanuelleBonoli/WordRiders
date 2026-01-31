@@ -1,14 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../widgets/button_widget.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
 import '../../gameplay/services/player_preferences.dart';
 import '../../gameplay/services/word_service.dart';
 
 import 'package:word_train/features/ui/widgets/common/pulsing_widget.dart';
+import 'package:word_train/features/ui/styles/app_theme.dart';
 
 class MenuGameScreen extends StatelessWidget {
   const MenuGameScreen({super.key});
@@ -74,19 +73,24 @@ class MenuGameScreen extends StatelessWidget {
                             child: MenuButton(
                               text: tr('menu.campaign'),
                               onPressed: () => _handleCampaignTap(context),
+                              backgroundColor: AppTheme.gold,
+                              highlightColor: AppTheme.goldHighlight,
+                              shadowColor: AppTheme.goldShadow,
                             ),
                           ),
                           MenuButton(
                             text: tr('menu.training'),
                             onPressed: () => context.push('/game'),
+                            backgroundColor: AppTheme.gold,
+                            highlightColor: AppTheme.goldHighlight,
+                            shadowColor: AppTheme.goldShadow,
                           ),
                           MenuButton(
                             text: tr('menu.settings'),
                             onPressed: () => context.push('/settings'),
-                          ),
-                          MenuButton(
-                            text: tr('menu.quit'),
-                            onPressed: () => _confirmQuit(context),
+                            backgroundColor: AppTheme.gold,
+                            highlightColor: AppTheme.goldHighlight,
+                            shadowColor: AppTheme.goldShadow,
                           ),
                         ],
                       ),
@@ -130,49 +134,5 @@ class MenuGameScreen extends StatelessWidget {
     // Vérifier que le widget est toujours monté avant de naviguer
     if (!context.mounted) return;
     context.push('/campaign');
-  }
-
-  void _confirmQuit(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.white.withValues(alpha: 0.95),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text(
-          tr("menu.confirmQuitTitle"),
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: Theme.of(context).colorScheme.primary, 
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Text(
-          tr("menu.confirmQuitMessage"),
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-             color: AppTheme.textDark,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(
-              tr("menu.confirmQuitCancel"),
-              style: TextStyle(color: Colors.grey.shade600),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx); 
-              SystemNavigator.pop();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              foregroundColor: Colors.white,
-              elevation: 0,
-            ),
-            child: Text(tr("menu.quit")),
-          ),
-        ],
-      ),
-    );
   }
 }

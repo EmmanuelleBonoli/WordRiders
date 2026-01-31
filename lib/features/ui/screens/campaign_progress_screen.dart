@@ -10,6 +10,7 @@ import '../widgets/navigation/settings_button.dart';
 import '../widgets/campaign/stage_circle_widget.dart';
 import 'package:word_train/features/ui/widgets/campaign/life_indicator.dart';
 import 'package:word_train/features/ui/widgets/campaign/coin_indicator.dart';
+import 'package:word_train/features/ui/widgets/campaign/no_ads_button.dart';
 import 'package:word_train/features/ui/widgets/game/overlays/no_lives_overlay.dart';
 import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
 
@@ -146,8 +147,12 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
 
   void _centerContent() {
     if (_scrollController.hasClients) {
-      final maxScroll = _scrollController.position.maxScrollExtent;
-      _scrollController.jumpTo(maxScroll / 2);
+      // Calculer le centrage exact par rapport à la largeur de l'écran
+      final viewportWidth = MediaQuery.of(context).size.width - 40; // -40 padding
+      const contentWidth = 990.0;
+      final offset = (contentWidth - viewportWidth) / 2;
+      
+      _scrollController.jumpTo(offset);
     }
   }
 
@@ -174,79 +179,83 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
                children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
                       children: [
-                        const AppBackButton(),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            LifeIndicator(key: _lifeIndicatorKey),
-                            const SizedBox(width: 12),
-                            CoinIndicator(key: _coinIndicatorKey),
+                            const AppBackButton(),
+                            Row(
+                              children: [
+                                CoinIndicator(key: _coinIndicatorKey),
+                                const SizedBox(width: 12),
+                                LifeIndicator(key: _lifeIndicatorKey),
+                              ],
+                            ),
+                            const SettingsButton(),
                           ],
                         ),
-                        const SettingsButton(),
+                        const SizedBox(height: 8),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: NoAdsButton(
+                            onPurchased: () {
+                              _coinIndicatorKey.currentState?.reload();
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   ),
                  
                  Expanded(
-                   child: Center(
-                     child: Container(
-                        height: 250, 
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              height: 120,
-                              width: double.infinity,
-                              child: _previewGame == null
-                                  ? const SizedBox.shrink()
-                                  : ClipRRect(
-                                      borderRadius: BorderRadius.circular(16),
-                                      child: GameWidget(
-                                        game: _previewGame!,
-                                      ),
-                                    ),
-                            ),
-                            
-                            const Spacer(),
-                            
-                            SingleChildScrollView(
+                   child: Container(
+                      height: 280,
+                      margin: const EdgeInsets.fromLTRB(20, 80, 20, 0),
+                      child: SingleChildScrollView(
                               controller: _scrollController,
                               scrollDirection: Axis.horizontal,
                               physics: const NeverScrollableScrollPhysics(),
                               clipBehavior: Clip.none,
                               child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    Container(
-                                       width: 900, 
-                                       height: 6,
-                                       decoration: BoxDecoration(
-                                         color: AppTheme.brown,
-                                         borderRadius: BorderRadius.circular(3),
-                                       ),
+                                alignment: Alignment.center,
+                                clipBehavior: Clip.none,
+                                children: [
+                                  // 1. Path Line
+                                  Container(
+                                     width: 990, 
+                                     height: 6,
+                                     decoration: BoxDecoration(
+                                       color: AppTheme.brown,
+                                       borderRadius: BorderRadius.circular(3),
+                                     ),
+                                  ),
+                                  
+                                  // 2. Circles
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: _buildStageCircles(),
+                                  ),
+
+                                  // 3. Player / Game (Overlay inside ScrollView)
+                                  // Positioned relative to the 990px wide content
+                                  if (_previewGame != null)
+                                    Positioned(
+                                      bottom: 15,
+                                      left: 0,
+                                      width: 990,
+                                      height: 250,
+                                      child: IgnorePointer(
+                                          child: GameWidget(
+                                            game: _previewGame!,
+                                          ),
+                                        ),
                                     ),
-                                    
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: _buildStageCircles()
-                                          .map((w) => Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: w))
-                                          .toList(),
-                                    ),
-                                  ],
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                     ),
                    ),
                  ),
-                 
-                 const SizedBox(height: 20),
                ],
              ),
            ),
@@ -260,84 +269,76 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
     final count = _viewMaxStage - _viewMinStage + 1;
     return List.generate(count, (index) {
       final stageNumber = _viewMinStage + index;
+      
+      Widget content;
+
       if (stageNumber < 1) {
         // Espaceur invisible pour maintenir la mise en page
-        return const SizedBox(width: 54, height: 54);
-      }
-      final unlocked = stageNumber <= _currentStage;
-      final isCurrent = stageNumber == _currentStage;
-      
-      Widget circle = StageCircle(number: stageNumber, unlocked: unlocked);
-      
-      // Rendre l'étape actuelle cliquable pour lancer le niveau
-      if (isCurrent) {
-        return BouncingScaleButton(
-          showShadow: false,
-          onTap: () async {
-            if ((_lifeIndicatorKey.currentState?.currentLives ?? 5) <= 0) {
-              // Afficher la modale pour recharger les vies
-              showDialog(
-                context: context,
-                barrierDismissible: true,
-                builder: (ctx) => NoLivesOverlay(
-                  onLivesReplenished: () {
-                    // Recharger les indicateurs après achat/pub
-                    _lifeIndicatorKey.currentState?.reload();
-                    _coinIndicatorKey.currentState?.reload();
-                  },
-                ),
-              );
-              return;
-            }
-
-            // Navigation vers l'écran de jeu en mode Campagne
-            await context.push('/game', extra: {'isCampaign': true});
-            // Au retour, on recharge la progression
-            if (context.mounted) {
-               _loadStageProgress();
-               _lifeIndicatorKey.currentState?.reload();
-               _coinIndicatorKey.currentState?.reload();
-            }
-          },
-          child: AnimatedBuilder(
-            animation: _shakeAnimation,
-            builder: (context, child) {
-              final curvedValue = Curves.easeInOutSine.transform(_shakeController!.value);
-              
-              final scale = 1.0 + (curvedValue * 0.08); 
-              return Transform.scale(
-                scale: scale,
-                filterQuality: FilterQuality.medium,
-                child: RepaintBoundary(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.white.withValues(alpha: 0.6 * curvedValue),
-                          blurRadius: 15 * scale,
-                          spreadRadius: 2 * scale,
-                        ),
-                        BoxShadow(
-                          color: AppTheme.cream.withValues(alpha: 0.6 * curvedValue),
-                          blurRadius: 20 * scale, 
-                          spreadRadius: 2 * scale,
-                        ),
-                      ],
-                    ),
-                    child: child,
+        // Utilisation d'une largeur fixe de 90 pour aligner avec la grille
+        content = const SizedBox(width: 50, height: 50); 
+      } else {
+        final unlocked = stageNumber <= _currentStage;
+        final isCurrent = stageNumber == _currentStage;
+        
+        Widget circle = StageCircle(number: stageNumber, unlocked: unlocked, isCurrent: isCurrent);
+        
+        if (isCurrent) {
+          content = BouncingScaleButton(
+            showShadow: false,
+            onTap: () async {
+              if ((_lifeIndicatorKey.currentState?.currentLives ?? 5) <= 0) {
+                showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (ctx) => NoLivesOverlay(
+                    onLivesReplenished: () {
+                      _lifeIndicatorKey.currentState?.reload();
+                      _coinIndicatorKey.currentState?.reload();
+                    },
                   ),
-                ),
-              );
+                );
+                return;
+              }
+
+              await context.push('/game', extra: {'isCampaign': true});
+              if (context.mounted) {
+                 _loadStageProgress();
+                 _lifeIndicatorKey.currentState?.reload();
+                 _coinIndicatorKey.currentState?.reload();
+              }
             },
-            child: circle,
-          ),
-        );
+            child: AnimatedBuilder(
+              animation: _shakeAnimation,
+              builder: (context, child) {
+                final curvedValue = Curves.easeInOutSine.transform(_shakeController!.value);
+                final scale = 1.0 + (curvedValue * 0.08); 
+                return Transform.scale(
+                  scale: scale,
+                  filterQuality: FilterQuality.medium,
+                  child: RepaintBoundary(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                      ),
+                      child: child,
+                    ),
+                  ),
+                );
+              },
+              child: circle,
+            ),
+          );
+        } else {
+          content = circle;
+        }
       }
-      
-      return circle;
+
+      // Envelopper chaque élément dans un conteneur de largeur fixe (90px)
+      // pour garantir un alignement parfait avec le lapin.
+      return SizedBox(
+        width: 90,
+        child: Center(child: content),
+      );
     });
   }
 }
-
-

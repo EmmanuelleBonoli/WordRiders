@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
+import 'package:word_train/features/ui/widgets/game/game_modal_button.dart';
 
 class GamePauseDialog extends StatefulWidget {
   final String title;
@@ -114,58 +115,44 @@ class _GamePauseDialogState extends State<GamePauseDialog> with SingleTickerProv
 
                   const SizedBox(height: 20),
 
-                  // Boutons
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: widget.onResume, 
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.green,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12), // Réduit
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  // Boutons en ligne
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                       // Quit
+                      Expanded(
+                        child: GameModalButton(
+                          label: tr('game.quit'),
+                          icon: Icons.close_rounded,
+                          color: AppTheme.red,
+                          onPressed: widget.onQuit,
+                        ),
                       ),
-                      child: Text(tr('game.continue'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: widget.onRestart,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.orange,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      
+                      const SizedBox(width: 12),
+                      
+                      // Replay
+                      Expanded(
+                        child: GameModalButton(
+                          label: tr('game.replay'),
+                          icon: Icons.refresh_rounded,
+                          color: AppTheme.orange,
+                          onPressed: widget.onRestart,
+                        ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.refresh_rounded, color: Colors.white, size: 20),
-                          const SizedBox(width: 8),
-                           Text(tr('game.replay'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                        ],
+                      
+                      const SizedBox(width: 12),
+                      
+                      // Resume
+                      Expanded(
+                        child: GameModalButton(
+                          label: tr('game.continue'),
+                          icon: Icons.play_arrow_rounded,
+                          color: AppTheme.green,
+                          onPressed: widget.onResume,
+                        ),
                       ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-                  
-                  SizedBox(
-                    width: double.infinity,
-                    child: TextButton(
-                      onPressed: widget.onQuit,
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppTheme.textDark, 
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                      ),
-                      child: Text(tr('game.quit_game'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                    ),
+                    ],
                   ),
                 ],
               ),

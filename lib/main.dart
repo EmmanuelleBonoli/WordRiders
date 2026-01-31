@@ -4,12 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:word_train/router.dart';
 import 'package:word_train/features/gameplay/services/word_service.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
+import 'package:word_train/features/gameplay/services/iap_service.dart';
 import 'package:flutter/services.dart';
 
 void main() async {
   /// Nécessaire pour l'initialisation des bindings Flutter
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  await IapService.initialize();
 
   /// Initialisation du service de mots et chargement du dictionnaire par défaut
   final wordService = WordService();

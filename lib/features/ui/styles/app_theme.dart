@@ -2,31 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Palette de couleurs du Design "Papier/Nature"
-  static const Color cream = Color(0xFFFFF3E0);      // Fond, Boutons clairs
-  static const Color brown = Color(0xFF8D6E63);      // Couleur principale, Bordures, Icônes
+  // Palette de couleurs du Design "Lingot d'Or"
+  static const Color gold = Color(0xFFFCE1AE);       // Fond principal, Boutons
+  static const Color goldShadow = Color(0xFFDCA750); // Ombres, Bordures
+  static const Color goldHighlight = Color(0xFFFFF5D6); // Reflets
+
+  static const Color beige = Color(0xFFDBCBB0);      // Éléments inactifs/terminés
+  static const Color beigeShadow = Color(0xFFB09B75);
+  static const Color beigeHighlight = Color(0xFFEFE8D8);
+
+  static const Color brown = Color(0xFF8D6E63);      // Textes secondaires, Icônes
   static const Color darkBrown = Color(0xFF5D4037);  // Titres, Textes importants
-  static const Color green = Color(0xFF558B2F);      // Validation, Succès, Accents nature
+  static const Color green = Color(0xFF558B2F);      // Validation, Succès
   static const Color red = Color(0xFFD32F2F);        // Erreur, Reset
   static const Color orange = Color(0xFFFFA07A);     // Accents secondaires
   
   static const Color textDark = Color(0xFF424242);   // Texte courant
 
+  // Alias pour la compatibilité (ou migration)
+  static const Color cream = gold; 
+
   static final ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
-    scaffoldBackgroundColor: cream,
-    primaryColor: brown,
-    fontFamily: 'Round', // Police par défaut pour tout l'app
+    scaffoldBackgroundColor: gold,
+    primaryColor: goldShadow,
+    fontFamily: 'Round',
     
     colorScheme: const ColorScheme.light(
-      primary: brown,
-      secondary: green,
-      tertiary: orange,
-      surface: cream,
+      primary: goldShadow, // Pour les éléments interactifs majeurs
+      secondary: gold,     // Pour les grandes surfaces
+      tertiary: beige,
+      surface: gold,
       error: red,
-      onPrimary: Colors.white,
-      onSecondary: Colors.white,
+      onPrimary: darkBrown,
+      onSecondary: darkBrown,
       onSurface: darkBrown,
       onError: Colors.white,
     ),

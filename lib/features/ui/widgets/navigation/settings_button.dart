@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
+import 'package:word_train/features/ui/widgets/common/pushable_button.dart';
 
 class SettingsButton extends StatelessWidget {
   final VoidCallback? onTap;
@@ -10,22 +10,19 @@ class SettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BouncingScaleButton(
-      onTap: onTap ?? () => context.push('/settings'),
-      child: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: AppTheme.cream,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.brown, width: 2),
-        ),
-        alignment: Alignment.center,
-        child: const Icon(
-          Icons.settings_rounded,
-          color: AppTheme.brown,
-          size: 28,
-        ),
+    return PushableButton(
+      onPressed: onTap ?? () => context.push('/settings'),
+      color: const Color(0xFFFCE1AE),
+      shadowColor: const Color(0xFFDCA750),
+      highlightColor: const Color(0xFFFFF5D6),
+      width: 48,
+      height: 48,
+      borderRadius: BorderRadius.circular(12),
+      depth: 6,
+      child: const Icon(
+        Icons.settings_rounded,
+        color: AppTheme.brown,
+        size: 28,
       ),
     );
   }

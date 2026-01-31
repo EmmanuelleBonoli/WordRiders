@@ -97,46 +97,101 @@ class LifeIndicatorState extends State<LifeIndicator> {
 
   @override
   Widget build(BuildContext context) {
+    // 3D Style Constants
+    const double depth = 4.0;
+    const Color faceColor = Color(0xFFFCE1AE);
+    const Color sideColor = Color(0xFFDCA750);
+    const Color highlightColor = Color(0xFFFFF5D6);
+    
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.brown, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          )
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      height: 48, // Hauteur fixe pour alignement HUD
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomCenter,
         children: [
-          const Icon(Icons.favorite_rounded, color: AppTheme.red, size: 24),
-          const SizedBox(width: 6),
-          Text(
-            '${_currentLives ?? 5}',
-            style: const TextStyle(
-              fontFamily: 'Round',
-              fontSize: 20,
-              color: AppTheme.brown,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          if ((_currentLives ?? 5) < 5 && _timeToNextLife != null) ...[
-            const SizedBox(width: 8),
-            Text(
-              _formatDuration(_timeToNextLife!),
-              style: TextStyle(
-                fontFamily: 'Round',
-                fontSize: 14,
-                color: AppTheme.brown.withValues(alpha: 0.6),
-                fontWeight: FontWeight.bold,
+          // Ombre/Side
+          Positioned(
+            top: depth,
+            left: 0,
+            right: 0,
+            bottom: -depth,
+            child: Container(
+              decoration: BoxDecoration(
+                color: sideColor,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    offset: const Offset(0, 2),
+                    blurRadius: 2,
+                  )
+                ],
               ),
             ),
-          ],
+          ),
+          // Face
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: faceColor,
+              borderRadius: BorderRadius.circular(24),
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [highlightColor, faceColor],
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.favorite_rounded, color: AppTheme.red, size: 24),
+                const SizedBox(width: 6),
+                Text(
+                  '${_currentLives ?? 5}',
+                  style: const TextStyle(
+                    fontFamily: 'Round',
+                    fontSize: 20,
+                    color: AppTheme.brown, // Dark Brown contrast
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                if ((_currentLives ?? 5) < 5 && _timeToNextLife != null) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      _formatDuration(_timeToNextLife!),
+                      style: const TextStyle(
+                        fontFamily: 'Round',
+                        fontSize: 14,
+                        color: AppTheme.brown,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          
+          // Petit reflet glossy sur le haut
+          Positioned(
+            top: 4,
+            left: 12,
+            right: 12,
+            height: 8,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          )
         ],
       ),
     );

@@ -13,6 +13,8 @@ import 'package:word_train/features/ui/widgets/game/overlays/game_pause_overlay.
 import 'package:word_train/features/ui/widgets/game/overlays/game_pause_dialog.dart';
 import 'package:word_train/features/ui/widgets/game/overlays/no_lives_overlay.dart';
 
+import 'package:word_train/features/ui/widgets/game/overlays/training_config_overlay.dart';
+
 class GameScreen extends StatelessWidget {
   final bool isCampaign;
 
@@ -41,11 +43,15 @@ class _GameScreenContent extends StatelessWidget {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    if (controller.status == GameStatus.waitingForConfig) {
+      return TrainingConfigOverlay(
+        onSelectLength: (length) => controller.startTraining(length),
+        onBack: () => context.pop(), 
+      );
+    }
+
     void onValidate() {
-      if (!controller.validate()) {
-        controller.showFeedback(tr('game.feedback_invalid'));
-        controller.clearInput();
-      }
+      controller.validate();
     }
 
     void onSettingsTap() async {
