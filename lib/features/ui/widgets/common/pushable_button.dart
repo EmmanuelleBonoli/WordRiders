@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'shiny_corner_effect.dart';
 
 class PushableButton extends StatefulWidget {
   final Widget child;
@@ -49,12 +50,11 @@ class _PushableButtonState extends State<PushableButton> {
 
   Color _darken(Color color, [double amount = 0.15]) {
     final hsl = HSLColor.fromColor(color);
-    // Pour les couleurs chaudes (Jaune/Orange), on décale la teinte vers l'orange/rouge pour une ombre plus naturelle
-    // et on garde la saturation haute.
+
     double hue = hsl.hue;
     double saturation = hsl.saturation;
     
-    if (hue >= 30 && hue <= 90) { // Jaunes/Oranges
+    if (hue >= 30 && hue <= 90) {
       hue = (hue - 5).clamp(0.0, 360.0);
       saturation = (saturation + 0.1).clamp(0.0, 1.0);
     }
@@ -136,9 +136,20 @@ class _PushableButtonState extends State<PushableButton> {
                     ],
                   ),
                 ),
-                child: Center(
-                  widthFactor: widget.width == null ? 1.0 : null,
-                  child: widget.child,
+                child: Stack(
+                  children: [
+                    Center(
+                      widthFactor: widget.width == null ? 1.0 : null,
+                      child: widget.child,
+                    ),
+                    Positioned.fill(
+                      child: ShinyCornerEffect(
+                        borderRadius: radius,
+                        color: Colors.white.withValues(alpha: 0.4),
+                        strokeWidth: 2.0,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -150,7 +161,7 @@ class _PushableButtonState extends State<PushableButton> {
               top: currentOffset + 4,
               left: 12,
               right: 12,
-              height: (widget.height ?? 64) * 0.15, // Proportionnel
+              height: (widget.height ?? 64) * 0.15,
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(radius.topLeft.x / 2)),

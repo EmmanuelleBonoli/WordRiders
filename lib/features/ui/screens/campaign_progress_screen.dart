@@ -73,8 +73,6 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
       _viewMaxStage = _currentStage + 5;
 
       // Animation : entree de l'extérieur (gauche) vers le centre
-      // On commence 1 unité *avant* le minimum visible.
-      // Progress 0.0 est le bouton visible à gauche.
       final double animStart = _viewMinStage.toDouble() - 1.5; 
       final double animEnd = _currentStage.toDouble();
 
@@ -148,7 +146,7 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
   void _centerContent() {
     if (_scrollController.hasClients) {
       // Calculer le centrage exact par rapport à la largeur de l'écran
-      final viewportWidth = MediaQuery.of(context).size.width - 40; // -40 padding
+      final viewportWidth = MediaQuery.of(context).size.width - 40;
       const contentWidth = 990.0;
       final offset = (contentWidth - viewportWidth) / 2;
       
@@ -238,7 +236,6 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
                                   ),
 
                                   // 3. Player / Game (Overlay inside ScrollView)
-                                  // Positioned relative to the 990px wide content
                                   if (_previewGame != null)
                                     Positioned(
                                       bottom: 15,
@@ -334,7 +331,7 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
       }
 
       // Envelopper chaque élément dans un conteneur de largeur fixe (90px)
-      // pour garantir un alignement parfait avec le lapin.
+      // pour garantir un alignement parfait avec le player.
       return SizedBox(
         width: 90,
         child: Center(child: content),

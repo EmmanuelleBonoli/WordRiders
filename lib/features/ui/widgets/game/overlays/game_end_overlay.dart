@@ -78,7 +78,6 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
         ? (widget.isCampaign ? tr('game.level_finished') : tr('game.training_won'))
         : tr('game.fox_won');
 
-    // Images des personnages
     final imageAsset = isWon 
         ? 'assets/images/characters/rabbit_head.jpg' 
         : 'assets/images/characters/fox_head.jpg';
@@ -213,7 +212,7 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
               }, 
               color: AppTheme.green,
               icon: Icons.arrow_forward_rounded,
-              label: tr('game.continue'), // "Continuer"
+              label: tr('game.continue'),
             ),
           ),
         ],

@@ -11,7 +11,7 @@ class WordService {
   
   WordService();
 
-  /// Charge le dictionnaire complet pour validation
+  // Charge le dictionnaire complet pour validation
   Future<void> loadDictionary(String locale) async {
     if (_loadedLocale == locale) return; // Déjà chargé
     
@@ -26,7 +26,7 @@ class WordService {
     }
   }
 
-  /// Vérifie si un mot est valide
+  // Vérifie si un mot est valide
   bool isValid(String word) {
     if (_words.isEmpty) {
        debugPrint("WordService: Attention, validation demandée avec dictionnaire vide !");
@@ -35,10 +35,10 @@ class WordService {
     return _words.contains(word.toUpperCase());
   }
 
-  /// Charge le dictionnaire, filtre les mots selon le niveau et en retourne un qui n'a pas été utilisé.
-  /// Stage 1-50 : 6 lettres
-  /// Stage 51-500 : 7 lettres
-  /// Stage 500+ : 8 lettres
+  // Charge le dictionnaire, filtre les mots selon le niveau et en retourne un qui n'a pas été utilisé.
+  // Stage 1-50 : 6 lettres
+  // Stage 51-500 : 7 lettres
+  // Stage 500+ : 8 lettres
   Future<String> getNextCampaignWord(String locale, {int stage = 1, int? forceLength}) async {
     int wordLength = 6;
     
@@ -85,11 +85,8 @@ class WordService {
 
       // Exclure les mots déjà utilisés
     List<String> used = await PlayerPreferences.getUsedWords();
-    if (stage > 1) {
-       // Si on est à un stage avancé, on s'assure de ne pas ressortir un mot facile
-       // (Logique simplifiée ici)
-    }
-      // 3. Trouver les candidats inutilisés
+
+      // Trouver les candidats inutilisés
       final List<String> candidates = allWords.where((w) => !used.contains(w)).toList();
 
       if (candidates.isEmpty) {
@@ -110,13 +107,6 @@ class WordService {
       return "AVENTURE"; 
     }
   } 
-
-  /// Génère une liste de mots pour une nouvelle campagne (utilisé pour peupler en masse si besoin)
-  Future<List<String>> generateCampaignWords(String locale, int count) async {
-    // Note: Cette méthode semble peu utilisée maintenant qu'on pioche au fur et à mesure, 
-    // mais on la garde compatible (défaut 6 lettres pour le début)
-    return [await getNextCampaignWord(locale, stage: 1)];
-  }
 }
 
 Set<String> _parseWords(String raw) {

@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-/// Gère l'état du jeu
+// Gère l'état du jeu
 class GameState extends ChangeNotifier {
   Set<String> _wordsList = {};
   String _currentWord = '';

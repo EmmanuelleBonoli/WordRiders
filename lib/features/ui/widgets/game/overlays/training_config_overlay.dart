@@ -24,7 +24,7 @@ class TrainingConfigOverlay extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),
-        // Overlay noir pour le contraste
+
         Positioned.fill(
           child: Container(color: Colors.black.withValues(alpha: 0.4)),
         ),
@@ -60,7 +60,7 @@ class TrainingConfigOverlay extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 30),
                           child: Text(
-                            tr('menu.training'), // "Entraînement"
+                            tr('menu.training'),
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                               color: AppTheme.brown,
@@ -129,11 +129,11 @@ class TrainingConfigOverlay extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0xFFFCE1AE),
+          color: AppTheme.goldButtonFace,
           borderRadius: BorderRadius.circular(12),
           boxShadow: const [
             BoxShadow(
-              color: Color(0xFFDCA750),
+              color: AppTheme.goldButtonShadow,
               offset: Offset(0, 3),
             )
           ],

@@ -43,61 +43,57 @@ class MenuGameScreen extends StatelessWidget {
             ),
           ),
           child: SafeArea(
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 5,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                     Image.asset(
-                    'assets/images/logo_title.png',
-                    height: 200, 
-                    fit: BoxFit.contain
-                  ),
-                    ],
-                  ),
-                ),
-
-                Expanded(
-                  flex: 4,
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 340),
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Logo Image
+                    Image.asset(
+                      'assets/images/logo_title.png',
+                      width: 280,
+                      fit: BoxFit.contain,
+                    ),
+                    
+                    const SizedBox(height: 60),
+              
+                    // Menu Buttons
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 300),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-
                           PulsingWidget(
                             child: MenuButton(
                               text: tr('menu.campaign'),
                               onPressed: () => _handleCampaignTap(context),
-                              backgroundColor: AppTheme.gold,
-                              highlightColor: AppTheme.goldHighlight,
-                              shadowColor: AppTheme.goldShadow,
+                              backgroundColor: AppTheme.goldButtonFace,
+                              highlightColor: AppTheme.goldButtonHighlight,
+                              shadowColor: AppTheme.goldButtonShadow,
                             ),
                           ),
+                          const SizedBox(height: 20),
                           MenuButton(
                             text: tr('menu.training'),
                             onPressed: () => context.push('/game'),
-                            backgroundColor: AppTheme.gold,
-                            highlightColor: AppTheme.goldHighlight,
-                            shadowColor: AppTheme.goldShadow,
+                            backgroundColor: AppTheme.goldButtonFace,
+                            highlightColor: AppTheme.goldButtonHighlight,
+                            shadowColor: AppTheme.goldButtonShadow,
                           ),
+                          const SizedBox(height: 20),
                           MenuButton(
                             text: tr('menu.settings'),
                             onPressed: () => context.push('/settings'),
-                            backgroundColor: AppTheme.gold,
-                            highlightColor: AppTheme.goldHighlight,
-                            shadowColor: AppTheme.goldShadow,
+                            backgroundColor: AppTheme.goldButtonFace,
+                            highlightColor: AppTheme.goldButtonHighlight,
+                            shadowColor: AppTheme.goldButtonShadow,
                           ),
                         ],
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -115,15 +111,11 @@ class MenuGameScreen extends StatelessWidget {
       // Auto-initialiser la campagne silencieusement
       try {
         final service = WordService();
-        final words = await service.generateCampaignWords(locale, 10);
+        final words = [await service.getNextCampaignWord(locale, stage: 1)];
         
         await PlayerPreferences.resetCampaign();
         await PlayerPreferences.setCampaignWords(words);
-        // On recharge la progression
-        // final newStage = await PlayerPreferences.getCurrentStage(); // This line is commented out as it's not used in a StatelessWidget
-        // setState(() { // This line is commented out as it's not used in a StatelessWidget
-        //   _currentStage = newStage; // This line is commented out as it's not used in a StatelessWidget
-        // });
+
         debugPrint("Campagne auto-initialisée avec ${words.length} mots");
       } catch (e) {
         debugPrint("Erreur auto-init campagne : $e");

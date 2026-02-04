@@ -2,7 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:word_train/features/ui/widgets/game/components/player_component.dart';
 
-/// Petit FlameGame utilisé pour prévisualiser le player sur l'écran de progression
+// FlameGame utilisé pour prévisualiser le player sur l'écran de progression
 class CampaignPreviewGame extends FlameGame {
   final double currentAnimationValue;
   final int minVisibleStage;
@@ -14,7 +14,7 @@ class CampaignPreviewGame extends FlameGame {
   bool _shouldPlay = false;
 
   @override
-  Color backgroundColor() => const Color(0x00000000); 
+  Color backgroundColor() => Colors.transparent; 
 
   CampaignPreviewGame({
     required this.minVisibleStage,
@@ -70,9 +70,9 @@ class CampaignPreviewGame extends FlameGame {
   void _applyStage(double stage) {
     if (!_playerAdded) return;
 
-    // Use fixed geometry matching the Stage Circles (90px slots)
-    // Item 0 Center = 45.0 (half of 90)
-    // Spacing = 90.0
+    // Utilise une géométrie fixe correspondant aux cercles d'étape (emplacements de 90px)
+    // Centre de l'élément 0 = 45.0 (moitié de 90)
+    // Espacement = 90.0
     final x = 45.0 + ((stage - minVisibleStage) * 90.0) - (_player.size.x / 2);
 
     // Monter le joueur de 50px

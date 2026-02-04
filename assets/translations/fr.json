@@ -70,6 +70,7 @@
     "training_won": "Le lapin est sauf !",
     "fox_won": "Le renard vous a eu...",
     "feedback_invalid": "Mot inconnu !",
+    "feedback_too_short": "Trop court !",
     "feedback_already_used": "Déjà trouvé !",
     "compose_words_title": "Composez des mots !",
     "compose_words_subtitle": "Trouvez des mots pour courir plus vite.",

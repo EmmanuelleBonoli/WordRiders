@@ -3,16 +3,15 @@ import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Service pour gérer les achats In-App (IAP) via Apple Play Store / Google Play Store
+// Service pour gérer les achats In-App (IAP) via Apple Play Store / Google Play Store
 class IapService {
-  static const String noAdsProductId = 'no_ads_permanent'; // À configurer dans les consoles Store
+  static const String noAdsProductId = 'no_ads_permanent'; // todo: à configurer dans les consoles Store
   static const String _keyNoAds = 'no_ads_purchased';
 
   static final InAppPurchase _iap = InAppPurchase.instance;
   static bool _available = false;
   static List<ProductDetails> _products = [];
 
-  /// Initialise le service IAP
   static Future<void> initialize() async {
     if (kIsWeb) {
       debugPrint('IAP: Web detected, skipping InAppPurchase initialization.');
@@ -35,13 +34,13 @@ class IapService {
     }
   }
 
-  /// Vérifie si le statut "No Ads" est déjà possédé localement
+  // Vérifie si le statut "No Ads" est déjà possédé localement
   static Future<bool> isNoAdsPurchased() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_keyNoAds) ?? false;
   }
 
-  /// Récupère les détails du produit No Ads (prix localisé, etc.)
+  // Récupère les détails du produit No Ads (prix localisé, etc.)
   static ProductDetails? getNoAdsProduct() {
     if (_products.isEmpty) return null;
     for (final product in _products) {
@@ -50,7 +49,7 @@ class IapService {
     return _products.first;
   }
 
-  /// Lance le processus d'achat
+  // Lance le processus d'achat
   static Future<bool> buyNoAds() async {
     if (!_available) {
       debugPrint('IapService: Store non disponible pour le moment.');
@@ -73,7 +72,7 @@ class IapService {
     return true;
   }
 
-  /// Restaure les achats (indispensable pour iOS)
+  // Restaure les achats (indispensable pour iOS)
   static Future<void> restorePurchases() async {
     if (!_available) return;
     

@@ -9,10 +9,9 @@ class GamePauseOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15), // Flou fort pour bien cacher
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
-          color: Colors.white.withValues(alpha: 0.2), // Légère teinte pour unifier
-          // Rien d'autre ! L'utilisateur est concentré sur la modale (Paramètres ou Quitter) qui est par-dessus.
+          color: Colors.white.withValues(alpha: 0.2),
         ),
       ),
     );

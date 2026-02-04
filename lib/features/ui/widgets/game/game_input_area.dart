@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/game/game_buttons.dart';
+import 'package:word_train/features/ui/widgets/common/premium_round_button.dart';
+import 'package:word_train/features/ui/widgets/game/input/game_input_cartridge.dart';
+import 'package:word_train/features/ui/widgets/game/input/game_letter_grid.dart';
 
 class GameInputArea extends StatelessWidget {
   final String? feedbackMessage;
@@ -24,65 +27,119 @@ class GameInputArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Feedback
-          AnimatedOpacity(
-            duration: const Duration(milliseconds: 300),
-            opacity: feedbackMessage != null ? 1.0 : 0.0,
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              decoration: BoxDecoration(color: AppTheme.red, borderRadius: BorderRadius.circular(24)),
-              child: Text(
-                feedbackMessage ?? "",
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-            ),
-          ),
+    final inputRowHeight = 80.0;
+    final halfRow = inputRowHeight / 2;
 
-          // Input Row
-          Row(
-            children: [
-               ActionButton(icon: Icons.backspace_rounded, color: AppTheme.red, onTap: onBackspace),
-               const SizedBox(width: 12),
-               Expanded(
-                 child: Container(
-                    height: 56,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppTheme.brown, width: 2),
-                    ),
-                    child: Text(
-                      currentInput,
-                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: 2, color: AppTheme.textDark),
-                    ),
+    return Stack(
+       clipBehavior: Clip.none, // Permet au fond de s'étendre infiniment
+       children: [
+         // 1. Fond de la zone inférieure (Sous la ligne) - Hauteur infinie simulée
+         Positioned(
+           top: halfRow, 
+           left: -50, // Marges de sécurité pour assurer une couverture totale en largeur
+           right: -50, 
+           height: 3000, // Hauteur massive pour remplir le bas de l'écran
+           child: Container(color: AppTheme.levelSignFace),
+         ),
+
+         // 2. Ligne Dorée (Milieu de la ligne de saisie)
+         Positioned(
+           top: halfRow - 3.5, 
+           left: 0, right: 0,
+           height: 7, 
+           child: Container(
+             decoration: const BoxDecoration(
+               border: Border.symmetric(horizontal: BorderSide(color: AppTheme.coinBorderDark, width: 1.5)),
+               gradient: LinearGradient(
+                 colors: [AppTheme.coinRimTop, AppTheme.coinRimBottom],
+                 begin: Alignment.topCenter, end: Alignment.bottomCenter
+               ),
+               boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
+             ),
+           ),
+         ),
+
+         // 3. Message de Feedback (Flottant au-dessus)
+         if (feedbackMessage != null && feedbackMessage!.isNotEmpty)
+           Positioned(
+             top: -40,
+             left: 0,
+             right: 0,
+             child: Center(
+               child: Text(
+                 feedbackMessage!,
+                 style: TextStyle(
+                   fontFamily: AppTheme.fontFamily,
+                   color: Colors.white,
+                   fontWeight: FontWeight.bold,
+                   fontSize: 18,
+                   shadows: const [
+                     Shadow(color: Colors.black, blurRadius: 4, offset: Offset(0, 2)),
+                     Shadow(color: Colors.black, blurRadius: 8, offset: Offset(0, 4)),
+                   ],
                  ),
                ),
-               const SizedBox(width: 12),
-               ActionButton(icon: Icons.check_circle_rounded, color: AppTheme.green, onTap: onValidate),
-            ],
-          ),
-          
-          const SizedBox(height: 12),
+             ),
+           ),
 
-          // Lettres
-          Wrap(
-            spacing: 8, runSpacing: 8,
-            alignment: WrapAlignment.center,
-            children: [
-              ...shuffledLetters.map((l) => LetterButton(letter: l, onTap: () => onLetterTap(l))),
-              const SizedBox(width: 24),
-              ActionButton(icon: Icons.shuffle_rounded, color: AppTheme.orange, onTap: onShuffle),
-            ],
-          ),
-        ],
-      ),
+         // 4. Contenu
+         Column(
+           mainAxisSize: MainAxisSize.min,
+           children: [
+             // Ligne de saisie
+             SizedBox(
+               height: inputRowHeight,
+               child: Padding(
+                 padding: const EdgeInsets.symmetric(horizontal: 16),
+                 child: Row(
+                   children: [
+                     // Mélanger (Gauche)
+                     PremiumRoundButton(
+                       icon: Icons.shuffle_rounded,
+                       onTap: onShuffle,
+                       size: 64,
+                       showHole: false,
+                       iconGradient: const [AppTheme.coinRimTop, AppTheme.coinRimBottom],
+                     ),
+                     
+                     const SizedBox(width: 8),
+
+                     // Cartouche (Centre étendu)
+                     Expanded(
+                       child: GameInputCartridge(
+                         currentInput: currentInput,
+                         onBackspace: onBackspace,
+                       ),
+                     ),
+
+                     const SizedBox(width: 8),
+
+                     // Valider (Droite)
+                     PremiumRoundButton(
+                       icon: Icons.check_rounded,
+                       onTap: onValidate,
+                       size: 64,
+                       showHole: false,
+                       faceGradient: const [AppTheme.btnValidateHighlight, AppTheme.btnValidate],
+                       iconGradient: const [AppTheme.coinBorderDark, AppTheme.coinBorderDark], 
+                     ),
+                   ],
+                 ),
+               ),
+             ),
+             
+             const SizedBox(height: 8),
+
+             // Zone des lettres
+             GameLetterGrid(
+                shuffledLetters: shuffledLetters,
+                onLetterTap: onLetterTap,
+             ),
+             
+             const SizedBox(height: 16), 
+           ],
+         ),
+       ],
     );
   }
 }

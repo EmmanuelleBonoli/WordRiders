@@ -8,22 +8,21 @@ import 'package:word_train/features/gameplay/services/iap_service.dart';
 import 'package:flutter/services.dart';
 
 void main() async {
-  /// Nécessaire pour l'initialisation des bindings Flutter
+  // Nécessaire pour l'initialisation des bindings Flutter
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await IapService.initialize();
 
-  /// Initialisation du service de mots et chargement du dictionnaire par défaut
+  // Initialisation du service de mots et chargement du dictionnaire par défaut
   final wordService = WordService();
   await wordService.loadDictionary('fr'); 
 
-  /// Forcer l'orientation en mode paysage
+  // Forcer l'orientation en mode portrait
   await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
+    DeviceOrientation.portraitUp,
   ]);
 
-  /// Lancement de l'application
+  // Lancement de l'application
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('fr')],

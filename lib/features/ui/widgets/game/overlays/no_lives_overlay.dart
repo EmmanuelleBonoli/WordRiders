@@ -53,7 +53,7 @@ class _NoLivesOverlayState extends State<NoLivesOverlay> {
       final current = await PlayerPreferences.getLives();
       await PlayerPreferences.setLives(current + 1);
       widget.onLivesReplenished();
-      if (mounted) Navigator.of(context).pop(); // Close modal
+      if (mounted) Navigator.of(context).pop();
     }
   }
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
 import 'package:word_train/features/ui/widgets/common/pushable_button.dart';
 
-/// widget réutilisable pour les boutons du menu
+// widget réutilisable pour les boutons du menu
 class MenuButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
@@ -25,7 +25,7 @@ class MenuButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: PushableButton(
         onPressed: onPressed,
-        color: backgroundColor ?? AppTheme.cream,
+        color: backgroundColor ?? AppTheme.tileFace,
         shadowColor: shadowColor,
         highlightColor: highlightColor,
         width: 250,

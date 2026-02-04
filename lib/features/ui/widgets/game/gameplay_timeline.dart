@@ -28,7 +28,6 @@ class GameplayTimeline extends StatelessWidget {
           }
 
           // Calcule la position horizontale des joueurs en fonction de la progression
-          // On garde une marge pour l'icône (40px)
           final maxPos = (width - 40).clamp(0.0, double.infinity);
           
           double rabbitPos = (maxPos * rabbitProgress);
@@ -50,7 +49,7 @@ class GameplayTimeline extends StatelessWidget {
                   height: 8,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: AppTheme.cream,
+                    color: AppTheme.tileFace,
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(color: AppTheme.brown, width: 2),
                   ),
@@ -70,7 +69,7 @@ class GameplayTimeline extends StatelessWidget {
                 ), 
               ),
 
-              // RENARD (Visible seulement si showFox est true)
+              // Rival (Visible seulement si showFox est true)
               if (showFox)
                 AnimatedPositioned(
                   duration: const Duration(milliseconds: 1000),
@@ -87,9 +86,9 @@ class GameplayTimeline extends StatelessWidget {
                   ),
                 ),
               
-              // LAPIN
+              // Player
                AnimatedPositioned(
-                duration: const Duration(milliseconds: 500), // Glissement pour le lapin
+                duration: const Duration(milliseconds: 500),
                 curve: Curves.easeOutCubic,
                 left: rabbitPos, 
                 top: 0, bottom: 0, 

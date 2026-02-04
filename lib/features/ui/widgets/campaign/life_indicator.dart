@@ -38,7 +38,7 @@ class LifeIndicatorState extends State<LifeIndicator> {
           // Temps écoulé, on synchronise avec le backend
           _loadLives();
         } else {
-          // Mise à jour fluide locale
+          // Mise à jour locale
           if (mounted) {
             setState(() {
               _timeToNextLife = _nextLifeTime!.difference(now);
@@ -97,14 +97,13 @@ class LifeIndicatorState extends State<LifeIndicator> {
 
   @override
   Widget build(BuildContext context) {
-    // 3D Style Constants
     const double depth = 4.0;
-    const Color faceColor = Color(0xFFFCE1AE);
-    const Color sideColor = Color(0xFFDCA750);
-    const Color highlightColor = Color(0xFFFFF5D6);
+    const Color faceColor = AppTheme.woodBoard; 
+    const Color sideColor = AppTheme.woodBoardShadow;
+    const Color highlightColor = AppTheme.woodBoardHighlight;
     
     return Container(
-      height: 48, // Hauteur fixe pour alignement HUD
+      height: 48,
       margin: const EdgeInsets.symmetric(vertical: 4),
       child: Stack(
         clipBehavior: Clip.none,
@@ -152,7 +151,7 @@ class LifeIndicatorState extends State<LifeIndicator> {
                   style: const TextStyle(
                     fontFamily: 'Round',
                     fontSize: 20,
-                    color: AppTheme.brown, // Dark Brown contrast
+                    color: AppTheme.brown,
                     fontWeight: FontWeight.w900,
                   ),
                 ),

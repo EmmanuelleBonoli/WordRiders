@@ -22,14 +22,14 @@ class StageCircle extends StatelessWidget {
 
     // --- Couleurs Palette "Lingot d'Or" via AppTheme ---
     // Active (Current) Stage - Bright & Invitation to click
-    const uFace = AppTheme.gold;      
-    const uSide = AppTheme.goldShadow;      
-    const uHigh = AppTheme.goldHighlight;      
+    const uFace = AppTheme.goldButtonFace;      
+    const uSide = AppTheme.goldButtonShadow;      
+    const uHigh = AppTheme.goldButtonHighlight;      
     
     // Completed Stage - Duller/Dimmed (Terne)
-    const cFace = AppTheme.beige;
-    const cSide = AppTheme.beigeShadow; 
-    const cHigh = AppTheme.beigeHighlight;
+    const cFace = AppTheme.neutralBeige;
+    const cSide = AppTheme.neutralBeigeShadow; 
+    const cHigh = AppTheme.neutralBeigeLight;
 
     // Locked (Gris/Terne)
     final lFace = Colors.grey.shade400;
@@ -49,7 +49,7 @@ class StageCircle extends StatelessWidget {
       sideColor = uSide;
       highColor = uHigh;
     } else {
-      // Completed (Unlocked but not current)
+      // Stage complété mais pas actuel
       faceColor = cFace;
       sideColor = cSide;
       highColor = cHigh;
@@ -69,7 +69,7 @@ class StageCircle extends StatelessWidget {
 
     return Container(
       width: size,
-      height: size + depth, // Compenser la hauteur 3D
+      height: size + depth,
       margin: const EdgeInsets.symmetric(horizontal: 6),
       child: Stack(
         alignment: Alignment.bottomCenter,
@@ -79,7 +79,7 @@ class StageCircle extends StatelessWidget {
             left: 0,
             right: 0,
             bottom: 0,
-            top: depth, // Décalé vers le bas
+            top: depth,
             child: Container(
               decoration: BoxDecoration(
                 color: sideColor,

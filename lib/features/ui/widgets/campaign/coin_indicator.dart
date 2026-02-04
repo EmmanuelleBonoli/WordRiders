@@ -31,11 +31,10 @@ class CoinIndicatorState extends State<CoinIndicator> {
 
   @override
   Widget build(BuildContext context) {
-    // 3D Style Constants
     const double depth = 4.0;
-    const Color faceColor = Color(0xFFFCE1AE);
-    const Color sideColor = Color(0xFFDCA750);
-    const Color highlightColor = Color(0xFFFFF5D6);
+    const Color faceColor = AppTheme.goldButtonFace;
+    const Color sideColor = AppTheme.goldButtonShadow;
+    const Color highlightColor = AppTheme.goldButtonHighlight;
 
     return Container(
       height: 48,

@@ -46,18 +46,16 @@ class _GamePauseDialogState extends State<GamePauseDialog> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
-    // Dialog transparent pour laisser voir notre design custom
     return Dialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      insetPadding: EdgeInsets.zero, // On gère nous même le padding
+      insetPadding: EdgeInsets.zero,
       child: Center(
         child: ScaleTransition(
           scale: _scaleAnim,
           child: Container(
             width: 320,
             margin: const EdgeInsets.symmetric(horizontal: 24),
-            // Padding haut important pour laisser la place à l'icône qui dépasse
             padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -81,7 +79,7 @@ class _GamePauseDialogState extends State<GamePauseDialog> with SingleTickerProv
                       height: 60,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AppTheme.cream,
+                        color: AppTheme.tileFace,
                         border: Border.all(color: AppTheme.brown.withValues(alpha: 0.3), width: 3),
                       ),
                       child: const Icon(
@@ -119,7 +117,7 @@ class _GamePauseDialogState extends State<GamePauseDialog> with SingleTickerProv
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                       // Quit
+                       // Quitter
                       Expanded(
                         child: GameModalButton(
                           label: tr('game.quit'),
@@ -131,7 +129,7 @@ class _GamePauseDialogState extends State<GamePauseDialog> with SingleTickerProv
                       
                       const SizedBox(width: 12),
                       
-                      // Replay
+                      // Rejouer
                       Expanded(
                         child: GameModalButton(
                           label: tr('game.replay'),
@@ -143,7 +141,7 @@ class _GamePauseDialogState extends State<GamePauseDialog> with SingleTickerProv
                       
                       const SizedBox(width: 12),
                       
-                      // Resume
+                      // Continuer
                       Expanded(
                         child: GameModalButton(
                           label: tr('game.continue'),

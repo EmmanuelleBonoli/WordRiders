@@ -107,11 +107,10 @@ class _NoAdsButtonState extends State<NoAdsButton> {
   Widget build(BuildContext context) {
     if (_hasNoAds) {
       // Version "Acheté" (Pas un bouton, juste un indicateur 3D)
-       // 3D Style Constants for Indicator
       const double depth = 4.0;
-      const Color faceColor = AppTheme.green; // Green for "Active/Good"
-      const Color sideColor = Color(0xFF2E7D32);
-      const Color highlightColor = Color(0xFF81C784);
+      const Color faceColor = AppTheme.green;
+      const Color sideColor = AppTheme.greenButtonShadow;
+      const Color highlightColor = AppTheme.greenButtonHighlight;
 
       return Container(
         height: 48,
@@ -174,12 +173,12 @@ class _NoAdsButtonState extends State<NoAdsButton> {
 
     // Version Bouton "Acheter"
     return SizedBox(
-      height: 60, // Hauteur suffisante pour le bouton pushable
+      height: 60,
       child: PushableButton(
         onPressed: _purchaseNoAds,
-        color: const Color(0xFFFCE1AE),
-        shadowColor: const Color(0xFFDCA750),
-        highlightColor: const Color(0xFFFFF5D6),
+        color: AppTheme.goldButtonFace,
+        shadowColor: AppTheme.goldButtonShadow,
+        highlightColor: AppTheme.goldButtonHighlight,
         height: 48,
         depth: 4,
         borderRadius: BorderRadius.circular(24),
@@ -213,7 +212,7 @@ class _NoAdsButtonState extends State<NoAdsButton> {
               ),
               const SizedBox(width: 8),
               const Text(
-                'NO ADS', // Texte explicite demandé
+                'NO ADS',
                 style: TextStyle(
                   fontFamily: 'Round',
                   fontSize: 16,

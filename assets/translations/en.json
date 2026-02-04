@@ -1,9 +1,9 @@
 {
   "loading": {
     "messages": {
-      "0": "message one...",
-      "1": "message two...",
-      "2": "message three..."
+      "0": "Loading magic...",
+      "1": "Sharpening swords...",
+      "2": "Summoning heroes..."
     },
     "title": "Loading..."
   },
@@ -69,7 +69,9 @@
     "level_finished": "Level Complete!",
     "training_won": "The rabbit is safe!",
     "fox_won": "The fox caught you...",
-    "feedback_invalid": "Invalid word or already used!",
+    "feedback_invalid": "Unknown word!",
+    "feedback_too_short": "Too short!",
+    "feedback_already_used": "Already found!",
     "compose_words_title": "Compose Words!",
     "compose_words_subtitle": "Find words to run faster.",
     "continue_adventure": "Continue Adventure",

@@ -17,16 +17,16 @@ class GameController extends ChangeNotifier {
   int? _trainingLength;
 
   Timer? _gameTimer;
-  final Set<String> _sessionWords = {}; // Mots trouvés dans cette partie
+  final Set<String> _sessionWords = {}; // Mots trouvés dans la partie en cours
 
   double _rabbitProgress = 0.0;
   double _foxProgress = 0.0;
   // Vitesse du renard : % du parcours par seconde. 
-  // Ralenti pour être plus accessible (approx 100s maintenant)
   double _foxSpeed = 0.01;
 
   GameStatus get status => _status;
-  String get targetWord => _targetWord; // Sert de "Seed" pour les lettres
+  String get targetWord => _targetWord; 
+  int get currentStage => _currentStageId;
   List<String> get shuffledLetters => List.unmodifiable(_shuffledLetters);
   String get currentInput => _currentInput;
   bool get isLoading => _status == GameStatus.loading;
@@ -51,7 +51,7 @@ class GameController extends ChangeNotifier {
     try {
       debugPrint("GameController: Loading dictionary & word for locale: $locale");
       
-      // 1. On s'assure que le dictionnaire est chargé pour la validation
+      // 1. On s'assure que le dictionnaire est chargé
       await _wordService.loadDictionary(locale);
 
       if (!isCampaign && _trainingLength == null) {
@@ -78,7 +78,6 @@ class GameController extends ChangeNotifier {
          }
 
          // Ajustement de la difficulté (Vitesse du renard)
-         _foxSpeed = 0.01; // Base : 100 secondes
          if (currentStage % 5 == 0) {
            // Distance doublée = Temps doublé pour le joueur
            // Donc le jeu doit durer 2x plus longtemps de base -> Vitesse / 2
@@ -90,8 +89,6 @@ class GameController extends ChangeNotifier {
          }
       } else {
         // En mode Entraînement
-        // Si on est ici, c'est que startTraining() a été appelé et _trainingLength est set
-        // ou c'est un restart
         int len = _trainingLength ?? 6;
         _targetWord = await _wordService.getNextCampaignWord(locale, stage: 1, forceLength: len); 
       }
@@ -128,14 +125,13 @@ class GameController extends ChangeNotifier {
   void _startGameLoop() {
     _gameTimer?.cancel();
     
-    // ENTRAINEMENT : Pas de timer, pas de renard, pas de stress !
+    // ENTRAINEMENT : Pas de timer ni de renard
     if (!isCampaign) return;
 
     // Rafraichissement toutes les 100ms
     _gameTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       if (_status != GameStatus.playing) {
-        // En pause on ne fait rien, mais on ne coupe pas le timer pour autant 
-        // (sauf si fin de partie, géré ailleurs)
+        // En pause on ne fait rien, mais on ne coupe pas le timer pour autant
         return;
       }
 
@@ -150,7 +146,6 @@ class GameController extends ChangeNotifier {
       notifyListeners();
     });
   }
-
 
 
   void onLetterTap(String letter) {
@@ -180,32 +175,32 @@ class GameController extends ChangeNotifier {
 
   int _currentStageId = 1;
 
-  /// Retourne true si le mot est valide et fait avancer le lapin
+  // Retourne true si le mot est valide et fait avancer le lapin
   bool validate() {
     if (_status != GameStatus.playing) return false;
     
     final word = _currentInput.toUpperCase();
 
-    // 1. Longueur min
+    // 1. Longueur min du mot proposé
     if (word.length < 3) {
+      showFeedback(tr('game.feedback_too_short'));
       clearInput();
       return false;
     }
 
-    // 2. Déjà trouvé ?
+    // 2. Mot déjà trouvé ?
     if (_sessionWords.contains(word)) {
       showFeedback(tr('game.feedback_already_used'));
       clearInput();
       return false;
     }
 
-    // 3. Existe dans le dico ?
+    // 3. Mot existe dans le dico ?
     if (_wordService.isValid(word)) {
       _sessionWords.add(word);
       
       // Faire avancer le lapin
       // Formule de progression : plus le mot est long, plus on avance ?
-      // Pour l'instant : fixe ou boost
       double advance = 0.15; // Un mot = 15% de la course
       if (word.length >= 6) advance = 0.25;
 

@@ -8,7 +8,7 @@ class PlayerPreferences {
 
   static Future<int> getCurrentStage() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_keyStage) ?? 1; // 1 = stage de départ
+    return prefs.getInt(_keyStage) ?? 1;
   }
 
   static Future<void> setCurrentStage(int stage) async {
@@ -81,13 +81,12 @@ class PlayerPreferences {
     await prefs.setStringList(_keyCampaignWords, words);
   }
 
-  /// Récupère le mot pour le stage donné (1-based index)
+  // Récupère le mot pour le stage donné
   static Future<String?> getWordForStage(int stage) async {
     final prefs = await SharedPreferences.getInstance();
     final words = prefs.getStringList(_keyCampaignWords);
     if (words == null || words.isEmpty) return null;
     
-    // stage 1 -> index 0
     final index = stage - 1;
     if (index >= 0 && index < words.length) {
       return words[index];
@@ -95,12 +94,11 @@ class PlayerPreferences {
     return null; // Fin de campagne ou erreur
   }
 
-  /// Sauvegarde ou met à jour le mot pour un stage donné
+  // Sauvegarde ou met à jour le mot pour un stage donné
   static Future<void> setWordForStage(int stage, String word) async {
     final prefs = await SharedPreferences.getInstance();
     List<String> words = prefs.getStringList(_keyCampaignWords) ?? [];
     
-    // stage 1 -> index 0
     final index = stage - 1;
     
     // Si la liste est trop petite, on la remplit avec des placeholders
@@ -117,7 +115,7 @@ class PlayerPreferences {
   static const int _maxLives = 5;
   static const int _regenMinutes = 20;
 
-  /// Récupère le nombre de vies, en calculant la régénération
+  // Récupère le nombre de vies, en calculant la régénération
   static Future<int> getLives() async {
     final prefs = await SharedPreferences.getInstance();
     int currentLives = prefs.getInt(_keyLives) ?? _maxLives;
@@ -166,7 +164,7 @@ class PlayerPreferences {
     await prefs.setInt(_keyLives, lives);
   }
 
-  /// Consomme une vie. Retourne true si succès, false si pas assez de vies.
+  // Consomme une vie. Retourne true si succès, false si pas assez de vies.
   static Future<bool> loseLife() async {
     int current = await getLives();
     if (current > 0) {
@@ -187,7 +185,7 @@ class PlayerPreferences {
     return false;
   }
 
-  /// Temps restant avant la prochaine vie (null si full)
+  // Temps restant avant la prochaine vie (null si full)
   static Future<Duration?> getTimeToNextLife() async {
     final prefs = await SharedPreferences.getInstance();
     int currentLives = await getLives(); // Déclenche le calcul de regen si besoin
@@ -195,13 +193,11 @@ class PlayerPreferences {
     if (currentLives >= _maxLives) return null;
     
     final lastRegenStr = prefs.getString(_keyLastRegenTime);
-    if (lastRegenStr == null) return null; // Should not happen if lives < max
+    if (lastRegenStr == null) return null;
     
     final lastRegenTime = DateTime.parse(lastRegenStr);
     final now = DateTime.now();
     final diff = now.difference(lastRegenTime);
-    
-    // final minutesElapsed = diff.inMinutes; // Minutes écoulées sur la période en cours
     
     final timeLeft = Duration(minutes: _regenMinutes) - diff;
     return timeLeft.isNegative ? Duration.zero : timeLeft;

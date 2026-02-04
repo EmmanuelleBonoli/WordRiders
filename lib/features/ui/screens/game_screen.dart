@@ -6,12 +6,14 @@ import 'package:provider/provider.dart';
 import 'package:word_train/features/gameplay/controllers/game_controller.dart';
 import 'package:word_train/features/gameplay/services/player_preferences.dart';
 import 'package:word_train/features/ui/widgets/game/game_header.dart';
+import 'package:word_train/features/ui/widgets/game/game_header_background.dart';
 import 'package:word_train/features/ui/widgets/game/game_input_area.dart';
 import 'package:word_train/features/ui/widgets/game/game_race_area.dart';
 import 'package:word_train/features/ui/widgets/game/overlays/game_end_overlay.dart';
 import 'package:word_train/features/ui/widgets/game/overlays/game_pause_overlay.dart';
 import 'package:word_train/features/ui/widgets/game/overlays/game_pause_dialog.dart';
 import 'package:word_train/features/ui/widgets/game/overlays/no_lives_overlay.dart';
+import 'package:word_train/features/ui/widgets/game/gameplay_timeline.dart';
 
 import 'package:word_train/features/ui/widgets/game/overlays/training_config_overlay.dart';
 
@@ -84,7 +86,7 @@ class _GameScreenContent extends StatelessWidget {
             if (controller.isCampaign) {
                final success = await controller.consumeLifeForRestart();
                if (!success) {
-                 // Plus de vie ! Afficher la modale pour recharger
+                 // Si plus de vie : afficher la modale pour recharger
                  if (context.mounted) {
                    await showDialog(
                      context: context,
@@ -137,39 +139,58 @@ class _GameScreenContent extends StatelessWidget {
             ),
           ),
           
-          // 2. Contenu Principal
+          // 2. Header Background Decoration
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: MediaQuery.of(context).padding.top + 55,
+            child: const GameHeaderBackground(),
+          ),
+
+          // 3. Contenu Principal
           SafeArea(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // En-tête
                 GameHeader(
                   onBack: onBackTap,
                   onSettings: onSettingsTap,
-                  showFox: controller.isCampaign,
-                  rabbitProgress: controller.rabbitProgress,
-                  foxProgress: controller.foxProgress,
+                  isCampaign: controller.isCampaign,
+                  currentStage: controller.currentStage
                 ),
 
-                // Zone centrale (Animation Course)
+                // Timeline
+                GameplayTimeline(
+                  rabbitProgress: controller.rabbitProgress,
+                  foxProgress: controller.foxProgress,
+                  showFox: controller.isCampaign,
+                ),
+
+                // Zone de Course
+                // On utilise un Expanded pour qu'il prenne tout l'espace restant en hauteur
                 Expanded(
                   child: GameRaceArea(isCampaign: controller.isCampaign),
                 ),
 
                 // Zone de saisie
-                GameInputArea(
-                  feedbackMessage: controller.feedbackMessage,
-                  currentInput: controller.currentInput,
-                  shuffledLetters: controller.shuffledLetters,
-                  onBackspace: controller.onBackspace,
-                  onValidate: onValidate,
-                  onShuffle: controller.onShuffle,
-                  onLetterTap: controller.onLetterTap,
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: GameInputArea(
+                    feedbackMessage: controller.feedbackMessage,
+                    currentInput: controller.currentInput,
+                    shuffledLetters: controller.shuffledLetters,
+                    onBackspace: controller.onBackspace,
+                    onValidate: onValidate,
+                    onShuffle: controller.onShuffle,
+                    onLetterTap: controller.onLetterTap,
+                  ),
                 ),
               ],
             ),
           ),
 
-          // 3. Overlays (Pause & Fin)
+          // 4. Overlays (Pause & Fin)
           if (controller.isPaused)
             const GamePauseOverlay(),
 

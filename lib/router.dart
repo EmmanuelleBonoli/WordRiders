@@ -8,13 +8,13 @@ import 'features/ui/screens/settings_screen.dart';
 
 final router = GoRouter(
   routes: [
-    GoRoute(path: '/', builder: (context, state) => LoadingStartScreen()),
-    GoRoute(path: '/menu', builder: (context, state) => MenuGameScreen()),
+    GoRoute(path: '/', builder: (context, state) => const LoadingStartScreen()),
+    GoRoute(path: '/menu', builder: (context, state) => const MenuGameScreen()),
     GoRoute(
       path: '/campaign',
-      builder: (context, state) => CampaignProgressScreen(),
+      builder: (context, state) => const CampaignProgressScreen(),
     ),
-    GoRoute(path: '/settings', builder: (context, state) => SettingsScreen()),
+    GoRoute(path: '/settings', builder: (context, state) => const SettingsScreen()),
     GoRoute(
       path: '/game',
       builder: (context, state) {

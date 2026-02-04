@@ -6,7 +6,7 @@ class Rival extends SpriteComponent {
   @override
   bool isLoaded = false;
 
-  static const double foxWidth = 120; // Même taille que le lapin
+  static const double foxWidth = 120; // Même taille que le player
 
   double _timer = 0;
   bool isPlaying = false;
@@ -39,13 +39,13 @@ class Rival extends SpriteComponent {
 
   Future<void> _loadFrames() async {
     // Pour l'instant, on n'a que fox1.png. On le charge une seule fois.
-    // Si d'autres frames arrivent (fox2, fox3...), on les ajoutera ici.
+    // todo: quand d'autres frames seront disponibles (fox2, fox3...), on les ajoutera ici.
     frames = [
       await Sprite.load('player/fox1.png'),
     ];
   }
 
-  /// Déplace le rival vers l'avant (avec limite)
+  // Déplace le rival vers l'avant (avec limite)
   void moveForward(double amount, double maxX) {
     position.x = (position.x + amount).clamp(0, maxX);
   }
