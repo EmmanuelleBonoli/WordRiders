@@ -46,7 +46,7 @@ class AppTheme {
   static const Color _coinRimTop = Color(0xFFFDEBAB); 
   static const Color _coinRimBottom = Color(0xFFE6BD6D);
   static const Color _coinFaceTop = Color(0xFFF0C882);
-  static const Color _coinFaceBottom = Color(0xFFC98242);
+  static const Color _coinFaceBottom = Color(0xFFE19736);
 
   // ===========================================================================
   // 2. TOKENS SÉMANTIQUES (Usage Fonctionnel)

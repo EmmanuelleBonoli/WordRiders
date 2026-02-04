@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../widgets/button_widget.dart';
+import '../widgets/common/premium_menu_button.dart';
 import '../../gameplay/services/player_preferences.dart';
 import '../../gameplay/services/word_service.dart';
 
@@ -61,32 +61,23 @@ class MenuGameScreen extends StatelessWidget {
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 300),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           PulsingWidget(
-                            child: MenuButton(
+                            child: PremiumMenuButton(
                               text: tr('menu.campaign'),
-                              onPressed: () => _handleCampaignTap(context),
-                              backgroundColor: AppTheme.goldButtonFace,
-                              highlightColor: AppTheme.goldButtonHighlight,
-                              shadowColor: AppTheme.goldButtonShadow,
+                              onTap: () => _handleCampaignTap(context),
                             ),
                           ),
                           const SizedBox(height: 20),
-                          MenuButton(
+                          PremiumMenuButton(
                             text: tr('menu.training'),
-                            onPressed: () => context.push('/game'),
-                            backgroundColor: AppTheme.goldButtonFace,
-                            highlightColor: AppTheme.goldButtonHighlight,
-                            shadowColor: AppTheme.goldButtonShadow,
+                            onTap: () => context.push('/game'),
                           ),
                           const SizedBox(height: 20),
-                          MenuButton(
+                          PremiumMenuButton(
                             text: tr('menu.settings'),
-                            onPressed: () => context.push('/settings'),
-                            backgroundColor: AppTheme.goldButtonFace,
-                            highlightColor: AppTheme.goldButtonHighlight,
-                            shadowColor: AppTheme.goldButtonShadow,
+                            onTap: () => context.push('/settings'),
                           ),
                         ],
                       ),

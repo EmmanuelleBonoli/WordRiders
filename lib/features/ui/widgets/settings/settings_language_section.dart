@@ -89,7 +89,7 @@ class SettingsLanguageSection extends StatelessWidget {
           borderColor: AppTheme.tileShadow,
           padding: const EdgeInsets.symmetric(vertical: 4),
           child: ListTile(
-            leading: const Icon(Icons.language, color: AppTheme.brown, size: 28),
+            leading: const Icon(Icons.language, color: AppTheme.tileShadow, size: 28),
             title: Text(
               tr('settings.language'), 
               style: const TextStyle(

@@ -80,7 +80,7 @@ class SettingsAboutSection extends StatelessWidget {
           child: Column(
             children: [
               ListTile(
-                leading: const Icon(Icons.info_outline_rounded, color: AppTheme.brown, size: 28),
+                leading: const Icon(Icons.info_outline_rounded, color: AppTheme.tileShadow, size: 28),
                 title: Text(
                   tr('settings.version'),
                   style: const TextStyle(
@@ -102,7 +102,7 @@ class SettingsAboutSection extends StatelessWidget {
               ),
               Divider(height: 2, thickness: 2, color: AppTheme.brown.withValues(alpha: 0.2)),
               ListTile(
-                leading: const Icon(Icons.email_outlined, color: AppTheme.brown, size: 28),
+                leading: const Icon(Icons.email_outlined, color: AppTheme.tileShadow, size: 28),
                 title: Text(
                   tr('settings.contact'),
                   style: const TextStyle(
@@ -123,7 +123,7 @@ class SettingsAboutSection extends StatelessWidget {
               ),
               Divider(height: 2, thickness: 2, color: AppTheme.brown.withValues(alpha: 0.2)),
               ListTile(
-                leading: const Icon(Icons.description_outlined, color: AppTheme.brown, size: 28),
+                leading: const Icon(Icons.description_outlined, color: AppTheme.tileShadow, size: 28),
                 title: Text(
                   tr('settings.privacyPolicy'),
                   style: const TextStyle(
@@ -138,7 +138,7 @@ class SettingsAboutSection extends StatelessWidget {
               ),
               Divider(height: 2, thickness: 2, color: AppTheme.brown.withValues(alpha: 0.2)),
               ListTile(
-                leading: const Icon(Icons.gavel_outlined, color: AppTheme.brown, size: 28),
+                leading: const Icon(Icons.gavel_outlined, color: AppTheme.tileShadow, size: 28),
                 title: Text(
                   tr('settings.termsOfService'),
                   style: const TextStyle(
