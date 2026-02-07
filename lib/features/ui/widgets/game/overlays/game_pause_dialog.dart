@@ -46,114 +46,169 @@ class _GamePauseDialogState extends State<GamePauseDialog> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      insetPadding: EdgeInsets.zero,
+    return Material(
+      type: MaterialType.transparency,
       child: Center(
         child: ScaleTransition(
           scale: _scaleAnim,
           child: Container(
             width: 320,
             margin: const EdgeInsets.symmetric(horizontal: 24),
-            padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(32),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Transform.translate(
-                    offset: const Offset(0, -5), 
-                    child: Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppTheme.tileFace,
-                        border: Border.all(color: AppTheme.brown.withValues(alpha: 0.3), width: 3),
-                      ),
-                      child: const Icon(
-                        Icons.pause_rounded,
-                        size: 36,
-                        color: AppTheme.brown,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-                  
-                  Text(
-                    widget.title,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      color: AppTheme.brown,
-                      letterSpacing: 1.0,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  
-                  const SizedBox(height: 4),
-                  
-                  Text(
-                    widget.message,
-                    style: const TextStyle(fontSize: 14, color: AppTheme.textDark, height: 1.3),
-                    textAlign: TextAlign.center,
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Boutons en ligne
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                       // Quitter
-                      Expanded(
-                        child: GameModalButton(
-                          label: tr('game.quit'),
-                          icon: Icons.close_rounded,
-                          color: AppTheme.red,
-                          onPressed: widget.onQuit,
-                        ),
-                      ),
-                      
-                      const SizedBox(width: 12),
-                      
-                      // Rejouer
-                      Expanded(
-                        child: GameModalButton(
-                          label: tr('game.replay'),
-                          icon: Icons.refresh_rounded,
-                          color: AppTheme.orange,
-                          onPressed: widget.onRestart,
-                        ),
-                      ),
-                      
-                      const SizedBox(width: 12),
-                      
-                      // Continuer
-                      Expanded(
-                        child: GameModalButton(
-                          label: tr('game.continue'),
-                          icon: Icons.play_arrow_rounded,
-                          color: AppTheme.green,
-                          onPressed: widget.onResume,
-                        ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.topCenter,
+              children: [
+                // MAIN BOARD
+                Container(
+                  padding: const EdgeInsets.all(1.5),
+                  decoration: BoxDecoration(
+                    color: AppTheme.coinBorderDark,
+                    borderRadius: BorderRadius.circular(32),
+                     boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        blurRadius: 24,
+                        offset: const Offset(0, 12),
                       ),
                     ],
                   ),
-                ],
-              ),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(30.5)),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [AppTheme.coinRimTop, AppTheme.coinRimBottom],
+                      ),
+                    ),
+                    padding: const EdgeInsets.all(4.0),
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(24, 60, 24, 32),
+                      decoration: BoxDecoration(
+                        color: AppTheme.levelSignFace,
+                        borderRadius: BorderRadius.circular(26.5),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Message Text
+                          Text(
+                            widget.message,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: AppTheme.textDark, 
+                              height: 1.3,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          // Horizontal Buttons
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                               // Quitter
+                              Expanded(
+                                child: GameModalButton(
+                                  label: tr('game.quit'),
+                                  icon: Icons.close_rounded,
+                                  color: AppTheme.red,
+                                  textColor: Colors.white,
+                                  iconColor: Colors.white,
+                                  onPressed: widget.onQuit,
+                                ),
+                              ),
+                              
+                              const SizedBox(width: 12),
+                              
+                              // Rejouer
+                              Expanded(
+                                child: GameModalButton(
+                                  label: tr('game.replay'),
+                                  icon: Icons.refresh_rounded,
+                                  color: AppTheme.btnShuffle,
+                                  textColor: Colors.white,
+                                  iconColor: Colors.white,
+                                  onPressed: widget.onRestart,
+                                ),
+                              ),
+                              
+                              const SizedBox(width: 12),
+                              
+                              // Continuer
+                              Expanded(
+                                child: GameModalButton(
+                                  label: tr('game.continue'),
+                                  icon: Icons.play_arrow_rounded,
+                                  color: AppTheme.greenMain,
+                                  textColor: Colors.white,
+                                  iconColor: Colors.white,
+                                  onPressed: widget.onResume,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // HEADER
+                Positioned(
+                  top: -24,
+                  child: _buildHeaderRibbon(context),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+
+
+  Widget _buildHeaderRibbon(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(1.5),
+      decoration: BoxDecoration(
+        color: AppTheme.coinBorderDark,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26, 
+            offset: Offset(0, 4), 
+            blurRadius: 4
+          )
+        ],
+      ),
+      child: Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(14.5)),
+          gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [AppTheme.coinRimTop, AppTheme.coinRimBottom],
+          ),
+        ),
+        padding: const EdgeInsets.all(3.0),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+          decoration: BoxDecoration(
+            color: AppTheme.levelSignFace, 
+            borderRadius: BorderRadius.circular(11.5),
+          ),
+          child: Text(
+            widget.title.toUpperCase(),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: AppTheme.coinBorderDark,
+              fontWeight: FontWeight.w900,
+              fontFamily: 'Round',
+              fontSize: 24,
+              letterSpacing: 1.2,
             ),
           ),
         ),

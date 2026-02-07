@@ -77,11 +77,15 @@ class AppTheme {
   // Bouton/Indicateur Vert Standard
   static const Color green = _greenMain; 
   static const Color success = _greenMain; 
+  static const Color greenMain = _greenMain;
+  static const Color greenLight = _greenLight;
   static const Color greenButtonShadow = _greenMain; 
   static const Color greenButtonHighlight = _greenLight;
 
   static const Color red = _redMain;
   static const Color orange = _orangeBurnt;
+  static const Color orangeSalmon = _orangeSalmon;
+  static const Color orangeBurnt = _orangeBurnt;
   static const Color surfaceLightRed = _redSurface;
 
   // Tuiles & Plateau

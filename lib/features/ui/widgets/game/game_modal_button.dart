@@ -7,6 +7,8 @@ class GameModalButton extends StatelessWidget {
   final Color color;
   final VoidCallback? onPressed;
   final String? subLabel;
+  final Color textColor;
+  final Color iconColor;
 
   const GameModalButton({
     super.key,
@@ -15,6 +17,8 @@ class GameModalButton extends StatelessWidget {
     required this.color,
     required this.onPressed,
     this.subLabel,
+    this.textColor = Colors.white,
+    this.iconColor = Colors.white,
   });
 
   @override
@@ -30,7 +34,7 @@ class GameModalButton extends StatelessWidget {
         children: [
           Icon(
             icon, 
-            color: Colors.white, 
+            color: iconColor, 
             size: 30,
             shadows: [
               Shadow(
@@ -42,13 +46,15 @@ class GameModalButton extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            label.toUpperCase(),
+            label.isEmpty 
+                ? label 
+                : '${label[0].toUpperCase()}${label.substring(1).toLowerCase()}',
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontFamily: 'Round',
-              color: Colors.white,
+              color: textColor,
               fontWeight: FontWeight.bold,
               fontSize: 14,
               shadows: [
@@ -70,8 +76,8 @@ class GameModalButton extends StatelessWidget {
               ),
               child: Text(
                 subLabel!,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: textColor,
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                 ),

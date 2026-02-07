@@ -3,7 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:word_train/features/gameplay/services/ad_service.dart';
 import 'package:word_train/features/gameplay/services/iap_service.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/common/pushable_button.dart';
+import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
 
 class NoAdsButton extends StatefulWidget {
   final VoidCallback? onPurchased;
@@ -106,7 +106,6 @@ class _NoAdsButtonState extends State<NoAdsButton> {
   @override
   Widget build(BuildContext context) {
     if (_hasNoAds) {
-      // Version "Acheté" (Pas un bouton, juste un indicateur 3D)
       const double depth = 4.0;
       const Color faceColor = AppTheme.green;
       const Color sideColor = AppTheme.greenButtonShadow;
@@ -171,58 +170,18 @@ class _NoAdsButtonState extends State<NoAdsButton> {
       );
     }
 
-    // Version Bouton "Acheter"
-    return SizedBox(
-      height: 60,
-      child: PushableButton(
-        onPressed: _purchaseNoAds,
-        color: AppTheme.goldButtonFace,
-        shadowColor: AppTheme.goldButtonShadow,
-        highlightColor: AppTheme.goldButtonHighlight,
-        height: 48,
-        depth: 4,
-        borderRadius: BorderRadius.circular(24),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Icone composée : Caméra + Interdit
-              SizedBox(
-                width: 28,
-                height: 24,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    const Icon(
-                      Icons.videocam_rounded,
-                      color: AppTheme.brown,
-                      size: 24,
-                    ),
-                    Transform.scale(
-                      scale: 1.2,
-                      child: const Icon(
-                        Icons.block,
-                        color: AppTheme.red,
-                        size: 24,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                'NO ADS',
-                style: TextStyle(
-                  fontFamily: 'Round',
-                  fontSize: 16,
-                  color: AppTheme.brown,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ],
-          ),
-        ),
+    final isFr = context.locale.languageCode == 'fr';
+    final imagePath = isFr 
+        ? 'assets/images/indicators/no_ads_fr.png' 
+        : 'assets/images/indicators/no_ads_en.png';
+
+    return BouncingScaleButton(
+      onTap: _purchaseNoAds,
+      showShadow: false,
+      child: Image.asset(
+        imagePath,
+        height: 80,
+        fit: BoxFit.contain,
       ),
     );
   }

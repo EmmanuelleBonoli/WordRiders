@@ -10,6 +10,8 @@ class PremiumMenuButton extends StatelessWidget {
   final double height;
   final List<Color>? rimGradient;
   final List<Color>? faceGradient;
+  final bool forceUpperCase;
+  final Color textColor;
 
   const PremiumMenuButton({
     super.key,
@@ -19,6 +21,8 @@ class PremiumMenuButton extends StatelessWidget {
     this.height = 64.0,
     this.rimGradient,
     this.faceGradient,
+    this.forceUpperCase = true,
+    this.textColor = AppTheme.darkBrown,
   });
 
   @override
@@ -91,12 +95,12 @@ class PremiumMenuButton extends StatelessWidget {
                     alignment: Alignment.center,
                     children: [
                       Text(
-                        text.toUpperCase(),
+                        forceUpperCase ? text.toUpperCase() : text,
                         style: TextStyle(
                           fontFamily: 'Round',
                           fontSize: 24,
                           fontWeight: FontWeight.w900,
-                          color: AppTheme.darkBrown,
+                          color: textColor,
                           letterSpacing: 2,
                           shadows: [
                             Shadow(

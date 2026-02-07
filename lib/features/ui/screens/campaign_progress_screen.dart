@@ -183,25 +183,32 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const AppBackButton(),
-                            Row(
-                              children: [
-                                CoinIndicator(key: _coinIndicatorKey),
-                                const SizedBox(width: 12),
-                                LifeIndicator(key: _lifeIndicatorKey),
-                              ],
+                            Image.asset(
+                             'assets/images/logo_title.png',
+                              width: 150,
+                              fit: BoxFit.contain,
                             ),
                             const SettingsButton(),
                           ],
                         ),
                         const SizedBox(height: 8),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: NoAdsButton(
+                        Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CoinIndicator(key: _coinIndicatorKey),
+                            NoAdsButton(
                             onPurchased: () {
                               _coinIndicatorKey.currentState?.reload();
                             },
-                          ),
+                          )],
                         ),
+                            const SizedBox(width: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                LifeIndicator(key: _lifeIndicatorKey)
+                              ],
+                            ),
                       ],
                     ),
                   ),
@@ -238,7 +245,7 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
                                   // 3. Player / Game (Overlay inside ScrollView)
                                   if (_previewGame != null)
                                     Positioned(
-                                      bottom: 15,
+                                      bottom: 155,
                                       left: 0,
                                       width: 990,
                                       height: 250,

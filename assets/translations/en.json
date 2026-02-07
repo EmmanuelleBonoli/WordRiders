@@ -17,6 +17,12 @@
     "confirmQuitMessage": "Are you sure you want to quit?",
     "confirmQuitCancel": "Cancel"
   },
+  "training": {
+    "choose_difficulty": "Choose difficulty:",
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard"
+  },
   "settings": {
     "title": "Settings",
     "language": "Language",

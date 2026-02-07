@@ -73,6 +73,7 @@ flutter:
     - assets/images/player/
     - assets/images/characters/
     - assets/images/background/
+    - assets/images/indicators/
     - assets/sounds/
     - assets/words/fr.txt
     - assets/words/en.txt
