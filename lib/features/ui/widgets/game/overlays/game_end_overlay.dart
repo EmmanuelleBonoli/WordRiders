@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:word_train/features/gameplay/services/player_preferences.dart';
 import 'package:word_train/features/gameplay/services/ad_service.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/common/ad_loading_dialog.dart';
+import 'package:word_train/features/ui/widgets/game/overlays/ad_loading_dialog.dart';
 import 'package:word_train/features/ui/widgets/game/overlays/no_lives_overlay.dart';
 import 'package:word_train/features/ui/widgets/game/game_modal_button.dart';
 

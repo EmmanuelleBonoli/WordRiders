@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:word_train/features/gameplay/services/player_preferences.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/common/ad_loading_dialog.dart';
+import 'package:word_train/features/ui/widgets/game/overlays/ad_loading_dialog.dart';
 
 class NoLivesOverlay extends StatefulWidget {
   final VoidCallback onLivesReplenished;

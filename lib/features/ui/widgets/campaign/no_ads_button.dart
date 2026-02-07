@@ -106,68 +106,7 @@ class _NoAdsButtonState extends State<NoAdsButton> {
   @override
   Widget build(BuildContext context) {
     if (_hasNoAds) {
-      const double depth = 4.0;
-      const Color faceColor = AppTheme.green;
-      const Color sideColor = AppTheme.greenButtonShadow;
-      const Color highlightColor = AppTheme.greenButtonHighlight;
-
-      return Container(
-        height: 48,
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        child: Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.bottomCenter,
-          children: [
-            Positioned(
-              top: depth,
-              left: 0,
-              right: 0,
-              bottom: -depth,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: sideColor,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      offset: const Offset(0, 2),
-                      blurRadius: 2,
-                    )
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: faceColor,
-                borderRadius: BorderRadius.circular(24),
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [highlightColor, faceColor],
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.check_circle, color: Colors.white, size: 20),
-                  const SizedBox(width: 6),
-                  Text(
-                    tr('campaign.noAds'),
-                    style: const TextStyle(
-                      fontFamily: 'Round',
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
+      return const SizedBox.shrink();
     }
 
     final isFr = context.locale.languageCode == 'fr';

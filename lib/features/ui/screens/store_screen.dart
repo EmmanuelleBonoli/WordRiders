@@ -3,12 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
 import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
+import 'package:word_train/features/ui/widgets/store/store_product_card.dart';
+import 'package:word_train/features/gameplay/services/ad_service.dart';
 
 class StoreScreen extends StatelessWidget {
   const StoreScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+
+    final isFr = context.locale.languageCode == 'fr';
+    final imagePath = isFr 
+        ? 'assets/images/indicators/no_ads_fr2.png' 
+        : 'assets/images/indicators/no_ads_en2.png';
+
     return SingleChildScrollView(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 100),
       child: Column(
@@ -17,58 +25,29 @@ class StoreScreen extends StatelessWidget {
 
 
           // --- SPECIAL OFFERS ---
-          _buildSectionHeader(tr('campaign.store.special_offers')),
-          const SizedBox(height: 12),
-          _buildSpecialOfferCard(context),
-
-          const SizedBox(height: 30),
-
-          // --- COIN PACKS ---
-          _buildSectionHeader(tr('campaign.store.coin_packs')),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 180,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              clipBehavior: Clip.none,
-              children: [
-                _buildProductCard(
-                  title: tr('campaign.store.handful'),
-                  amount: "100",
-                  icon: Icons.monetization_on,
-                  price: "0.99 €",
-                  color: AppTheme.coinRimTop,
-                ),
-                const SizedBox(width: 16),
-                _buildProductCard(
-                  title: tr('campaign.store.pouch'),
-                  amount: "500",
-                  icon: Icons.savings,
-                  price: "3.99 €",
-                  color: AppTheme.coinRimTop,
-                  isPopular: true,
-                ),
-                const SizedBox(width: 16),
-                _buildProductCard(
-                  title: tr('campaign.store.chest'),
-                  amount: "1500",
-                  icon: Icons.account_balance,
-                  price: "9.99 €",
-                  color: AppTheme.coinRimTop,
-                ),
-              ],
-            ),
+          FutureBuilder<bool>(
+            future: AdService.hasNoAds(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data == true) {
+                return const SizedBox.shrink();
+              }
+              return Column(
+                children: [
+                   const SizedBox(height: 12),
+                   _buildSpecialOfferCard(context, imagePath),
+                   const SizedBox(height: 30),
+                ],
+              );
+            },
           ),
 
-          const SizedBox(height: 30),
-
-          // --- CONSUMABLES ---
+   // --- CONSUMABLES ---
           _buildSectionHeader(tr('campaign.store.essentials')),
           const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
-                child: _buildProductCard(
+                child: StoreProductCard(
                   title: tr('campaign.store.refill_lives'),
                   amount: "FULL",
                   icon: Icons.favorite,
@@ -80,7 +59,7 @@ class StoreScreen extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: _buildProductCard(
+                child: StoreProductCard(
                   title: tr('campaign.store.hint_pack'),
                   amount: "x5",
                   icon: Icons.lightbulb,
@@ -92,6 +71,47 @@ class StoreScreen extends StatelessWidget {
               ),
             ],
           ),
+
+
+          const SizedBox(height: 30),
+
+// --- COIN PACKS ---
+          _buildSectionHeader(tr('campaign.store.coin_packs')),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 180,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              clipBehavior: Clip.none,
+              children: [
+                StoreProductCard(
+                  title: tr('campaign.store.handful'),
+                  amount: "100",
+                  icon: Icons.monetization_on,
+                  price: "0.99 €",
+                  color: AppTheme.coinRimTop,
+                ),
+                const SizedBox(width: 16),
+                StoreProductCard(
+                  title: tr('campaign.store.pouch'),
+                  amount: "500",
+                  icon: Icons.savings,
+                  price: "3.99 €",
+                  color: AppTheme.coinRimTop,
+                  isPopular: true,
+                  badgeText: tr('campaign.store.best_badge'),
+                ),
+                const SizedBox(width: 16),
+                StoreProductCard(
+                  title: tr('campaign.store.chest'),
+                  amount: "1500",
+                  icon: Icons.account_balance,
+                  price: "9.99 €",
+                  color: AppTheme.coinRimTop,
+                ),
+              ],
+            ),
+          ),  
         ],
       ),
     );
@@ -118,7 +138,7 @@ class StoreScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSpecialOfferCard(BuildContext context) {
+  Widget _buildSpecialOfferCard(BuildContext context, String imagePath) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -140,14 +160,11 @@ class StoreScreen extends StatelessWidget {
       child: Row(
         children: [
           // Image / Icon
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: const BoxDecoration(
-              color: Colors.white24,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.no_photography, size: 48, color: AppTheme.white),
-          ),
+       Image.asset(
+        imagePath,
+        height: 80,
+        fit: BoxFit.contain,
+      ),
           const SizedBox(width: 16),
           // Content
           Expanded(
@@ -208,131 +225,6 @@ class StoreScreen extends StatelessWidget {
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProductCard({
-    required String title,
-    required String amount,
-    required IconData icon,
-    required String price,
-    required Color color,
-    double height = 180,
-    bool isPopular = false,
-    bool isCurrencyPrice = false,
-  }) {
-    return BouncingScaleButton(
-      onTap: () {},
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            width: 140,
-            height: height,
-            decoration: BoxDecoration(
-              color: AppTheme.tileFace.withValues(alpha: 0.9),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.brown, width: 2),
-              boxShadow: [
-                 BoxShadow(
-                   color: Colors.black.withValues(alpha: 0.3),
-                   offset: const Offset(0, 4),
-                   blurRadius: 6,
-                 )
-              ]
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Header (Amount)
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.2),
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
-                  ),
-                  child: Text(
-                    amount,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Round',
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      color: color == AppTheme.coinRimTop ? AppTheme.orangeBurnt : color,
-                    ),
-                  ),
-                ),
-                
-                // Icon
-                Icon(icon, size: 48, color: color == AppTheme.coinRimTop ? AppTheme.orangeBurnt : color),
-                
-                // Title
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontFamily: 'Round',
-                    fontSize: 14,
-                    color: AppTheme.brown,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-      
-                const SizedBox(height: 4),
-      
-                // Button
-                Container(
-                  margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  decoration: BoxDecoration(
-                    color: isCurrencyPrice ? AppTheme.white : AppTheme.green,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isCurrencyPrice ? AppTheme.brown : Colors.white,
-                      width: isCurrencyPrice ? 2 : 1
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      price,
-                      style: TextStyle(
-                        fontFamily: 'Round',
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: isCurrencyPrice ? AppTheme.brown : Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (isPopular)
-            Positioned(
-              top: -10,
-              left: 35,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppTheme.redBad,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black26, offset: Offset(0, 2), blurRadius: 2)
-                  ]
-                ),
-                child: Text(
-                  tr('campaign.store.best_badge'),
-                  style: TextStyle(
-                    color: Colors.white, 
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10,
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );

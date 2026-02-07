@@ -7,7 +7,7 @@ import 'package:word_train/features/gameplay/controllers/game_controller.dart';
 import 'package:word_train/features/gameplay/services/player_preferences.dart';
 import 'package:word_train/features/ui/widgets/game/game_header.dart';
 import 'package:word_train/features/ui/widgets/game/game_header_background.dart';
-import 'package:word_train/features/ui/widgets/game/game_input_area.dart';
+import 'package:word_train/features/ui/widgets/game/input/game_input_area.dart';
 import 'package:word_train/features/ui/widgets/game/game_race_area.dart';
 import 'package:word_train/features/ui/widgets/game/overlays/game_end_overlay.dart';
 import 'package:word_train/features/ui/widgets/game/overlays/game_pause_overlay.dart';

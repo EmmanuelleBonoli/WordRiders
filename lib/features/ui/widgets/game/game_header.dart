@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/navigation/settings_button.dart';
+import 'package:word_train/features/ui/widgets/settings/settings_button.dart';
 import 'package:word_train/features/ui/widgets/navigation/app_back_button.dart';
 
 class GameHeader extends StatelessWidget {

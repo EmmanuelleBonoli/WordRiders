@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/campaign/coin_indicator.dart';
-import 'package:word_train/features/ui/widgets/campaign/life_indicator.dart';
+import 'package:word_train/features/ui/widgets/common/coin_indicator.dart';
+import 'package:word_train/features/ui/widgets/common/life_indicator.dart';
 import 'package:word_train/features/ui/widgets/campaign/no_ads_button.dart';
 import 'package:word_train/features/ui/widgets/navigation/app_back_button.dart';
-import 'package:word_train/features/ui/widgets/navigation/settings_button.dart';
+import 'package:word_train/features/ui/widgets/settings/settings_button.dart';
 import 'package:word_train/features/ui/widgets/navigation/campaign_bottom_nav_bar.dart';
-import 'package:word_train/features/ui/widgets/graphics/leaf_background.dart';
+import 'package:word_train/features/ui/widgets/common/leaf_background.dart';
 
 class MainScaffold extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
