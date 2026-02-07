@@ -191,7 +191,6 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
                             const SettingsButton(),
                           ],
                         ),
-                        const SizedBox(height: 8),
                         Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -202,7 +201,7 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
                             },
                           )],
                         ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 16),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
