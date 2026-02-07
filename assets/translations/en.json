@@ -59,7 +59,50 @@
     "noAdsConfirmMessageRealMoney": "Never see ads again! Cost: $4.99",
     "noAdsPurchase": "Purchase",
     "noAdsPurchased": "No Ads activated! Enjoy the game without interruptions.",
-    "adBeforeStage": "Ad before stage {stage}"
+    "adBeforeStage": "Ad before stage {stage}",
+    "goals": {
+      "headers": {
+        "daily": "DAILY GOALS",
+        "career": "CAREER PROGRESS"
+      },
+      "common": {
+        "claim": "CLAIM",
+        "claimed": "CLAIMED"
+      },
+      "daily": {
+        "win_3levels": "Win 3 Levels",
+        "words_30": "Find 30 Words",
+        "watch_ad": "Watch an Ad"
+      },
+      "career": {
+        "reach_lvl10": "Apprentice Reader",
+        "reach_lvl10_desc": "Reach Level 10",
+        "words_100": "Word Collector",
+        "words_100_desc": "Find 100 Words",
+        "target_label": "Target:"
+      }
+    },
+    "store": {
+      "lives_pack": "Pack of 5 Lives",
+      "lives_pack_desc": "Don't stop playing!",
+      "hint_pack": "Pack of 3 Hints",
+      "hint_pack_desc": "Stuck? Get a clue!",
+      "starter_pack": "Starter Pack",
+      "starter_pack_desc": "Best value for new players",
+      "mega_bundle": "Mega Bundle",
+      "mega_bundle_desc": "Maximize your game!",
+      "buy": "Buy",
+      "special_offers": "SPECIAL OFFERS",
+      "coin_packs": "COIN PACKS",
+      "essentials": "ESSENTIALS",
+      "no_ads_title": "NO ADS BUNDLE",
+      "no_ads_desc": "Remove ads forever + 500 Coins!",
+      "best_badge": "BEST!",
+      "handful": "Handful",
+      "pouch": "Pouch",
+      "chest": "Chest",
+      "refill_lives": "Refill Lives"
+    }
   },
   "game": {
     "pause_title": "PAUSED",

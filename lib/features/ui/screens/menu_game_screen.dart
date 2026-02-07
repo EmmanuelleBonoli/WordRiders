@@ -115,6 +115,6 @@ class MenuGameScreen extends StatelessWidget {
     
     // Vérifier que le widget est toujours monté avant de naviguer
     if (!context.mounted) return;
-    context.push('/campaign');
+    context.go('/campaign');
   }
 }

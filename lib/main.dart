@@ -5,6 +5,7 @@ import 'package:word_train/router.dart';
 import 'package:word_train/features/gameplay/services/word_service.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
 import 'package:word_train/features/gameplay/services/iap_service.dart';
+import 'package:word_train/features/gameplay/services/goal_service.dart';
 import 'package:flutter/services.dart';
 
 void main() async {
@@ -12,6 +13,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await IapService.initialize();
+  await GoalService().init();
 
   // Initialisation du service de mots et chargement du dictionnaire par défaut
   final wordService = WordService();

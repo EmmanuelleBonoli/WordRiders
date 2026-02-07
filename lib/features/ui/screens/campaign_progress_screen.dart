@@ -1,16 +1,11 @@
-import 'dart:async';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:word_train/features/ui/screens/main_scaffold.dart';
 import 'package:word_train/features/ui/widgets/campaign/campaign_preview_game.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
 import '../../gameplay/services/player_preferences.dart';
-import '../widgets/navigation/app_back_button.dart';
-import '../widgets/navigation/settings_button.dart';
 import '../widgets/campaign/stage_circle_widget.dart';
-import 'package:word_train/features/ui/widgets/campaign/life_indicator.dart';
-import 'package:word_train/features/ui/widgets/campaign/coin_indicator.dart';
-import 'package:word_train/features/ui/widgets/campaign/no_ads_button.dart';
 import 'package:word_train/features/ui/widgets/game/overlays/no_lives_overlay.dart';
 import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
 
@@ -38,12 +33,7 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
   
   int _viewMinStage = 1;
   int _viewMaxStage = 10;
-
-
   
-  final GlobalKey<LifeIndicatorState> _lifeIndicatorKey = GlobalKey<LifeIndicatorState>();
-  final GlobalKey<CoinIndicatorState> _coinIndicatorKey = GlobalKey<CoinIndicatorState>();
-
   @override
   void initState() {
     super.initState();
@@ -160,109 +150,52 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
       return const Center(child: CircularProgressIndicator());
     }
 
-    return Scaffold(
-      body: Stack(
-        children: [
-           Positioned.fill(
-             child: Image.asset(
-               'assets/images/background/game_bg.jpg',
-               fit: BoxFit.cover,
-               alignment: Alignment.center,
-             ),
-           ),
-
-           SafeArea(
-             child: Column(
-               crossAxisAlignment: CrossAxisAlignment.stretch,
-               children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const AppBackButton(),
-                            Image.asset(
-                             'assets/images/logo_title.png',
-                              width: 150,
-                              fit: BoxFit.contain,
-                            ),
-                            const SettingsButton(),
-                          ],
-                        ),
-                        Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            CoinIndicator(key: _coinIndicatorKey),
-                            NoAdsButton(
-                            onPurchased: () {
-                              _coinIndicatorKey.currentState?.reload();
-                            },
-                          )],
-                        ),
-                            const SizedBox(width: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                LifeIndicator(key: _lifeIndicatorKey)
-                              ],
-                            ),
-                      ],
-                    ),
-                  ),
-                 
-                 Expanded(
-                   child: Container(
-                      height: 280,
-                      margin: const EdgeInsets.fromLTRB(20, 80, 20, 0),
-                      child: SingleChildScrollView(
-                              controller: _scrollController,
-                              scrollDirection: Axis.horizontal,
-                              physics: const NeverScrollableScrollPhysics(),
-                              clipBehavior: Clip.none,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                clipBehavior: Clip.none,
-                                children: [
-                                  // 1. Path Line
-                                  Container(
-                                     width: 990, 
-                                     height: 6,
-                                     decoration: BoxDecoration(
-                                       color: AppTheme.brown,
-                                       borderRadius: BorderRadius.circular(3),
-                                     ),
-                                  ),
-                                  
-                                  // 2. Circles
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: _buildStageCircles(),
-                                  ),
-
-                                  // 3. Player / Game (Overlay inside ScrollView)
-                                  if (_previewGame != null)
-                                    Positioned(
-                                      bottom: 155,
-                                      left: 0,
-                                      width: 990,
-                                      height: 250,
-                                      child: IgnorePointer(
-                                          child: GameWidget(
-                                            game: _previewGame!,
-                                          ),
-                                        ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                   ),
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Transform.translate(
+        offset: const Offset(0, 60),
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          scrollDirection: Axis.horizontal,
+          physics: const NeverScrollableScrollPhysics(),
+          clipBehavior: Clip.none,
+          child: Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              // 1. Path Line
+              Container(
+                 width: 990, 
+                 height: 6,
+                 decoration: BoxDecoration(
+                   color: AppTheme.brown,
+                   borderRadius: BorderRadius.circular(3),
                  ),
-               ],
-             ),
-           ),
-        ],
+              ),
+              
+              // 2. Circles
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: _buildStageCircles(),
+              ),
+
+              // 3. Player / Game (Overlay inside ScrollView)
+              if (_previewGame != null)
+                Positioned(
+                  bottom: 125,
+                  left: 0,
+                  width: 990,
+                  height: 230,
+                  child: IgnorePointer(
+                      child: GameWidget(
+                        game: _previewGame!,
+                      ),
+                    ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -288,15 +221,17 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
         if (isCurrent) {
           content = BouncingScaleButton(
             showShadow: false,
-            onTap: () async {
-              if ((_lifeIndicatorKey.currentState?.currentLives ?? 5) <= 0) {
+             onTap: () async {
+              final mainScaffold = context.findAncestorStateOfType<MainScaffoldState>();
+              final lives = mainScaffold?.currentLives ?? 5;
+              
+              if (lives <= 0) {
                 showDialog(
                   context: context,
                   barrierDismissible: true,
                   builder: (ctx) => NoLivesOverlay(
                     onLivesReplenished: () {
-                      _lifeIndicatorKey.currentState?.reload();
-                      _coinIndicatorKey.currentState?.reload();
+                      mainScaffold?.reloadIndicators();
                     },
                   ),
                 );
@@ -306,8 +241,7 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
               await context.push('/game', extra: {'isCampaign': true});
               if (context.mounted) {
                  _loadStageProgress();
-                 _lifeIndicatorKey.currentState?.reload();
-                 _coinIndicatorKey.currentState?.reload();
+                 mainScaffold?.reloadIndicators();
               }
             },
             child: AnimatedBuilder(

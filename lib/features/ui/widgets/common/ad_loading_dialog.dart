@@ -4,8 +4,8 @@ import 'package:word_train/features/gameplay/services/ad_service.dart';
 // Affiche un loader pendant la simulation d'une publicité
 class AdLoadingDialog {
 
-  static Future<void> show(BuildContext context) async {
-    // Afficher le loader
+  static Future<void> show(BuildContext context, {bool isRewarded = false}) async {
+    // Afficher le loader/pub simulée
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -17,7 +17,11 @@ class AdLoadingDialog {
     );
 
     // Simuler la pub
-    await AdService.simulateAdWatch();
+    if (isRewarded) {
+      await AdService.simulateRewardedAdWatch();
+    } else {
+      await AdService.simulateAdWatch();
+    }
 
     // Fermer le loader
     if (context.mounted) {

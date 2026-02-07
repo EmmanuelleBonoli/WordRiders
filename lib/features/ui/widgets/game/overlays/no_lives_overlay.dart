@@ -47,7 +47,7 @@ class _NoLivesOverlayState extends State<NoLivesOverlay> {
 
   Future<void> _watchAd() async {
     // Afficher le loader de pub
-    await AdLoadingDialog.show(context);
+    await AdLoadingDialog.show(context, isRewarded: true);
     
     if (mounted) {
       final current = await PlayerPreferences.getLives();

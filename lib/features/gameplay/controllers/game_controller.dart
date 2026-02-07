@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:word_train/features/gameplay/services/player_preferences.dart';
 import 'package:word_train/features/gameplay/services/word_service.dart';
+import 'package:word_train/features/gameplay/services/goal_service.dart';
 
 enum GameStatus { loading, waitingForConfig, playing, paused, won, lost }
 
@@ -198,6 +199,7 @@ class GameController extends ChangeNotifier {
     // 3. Mot existe dans le dico ?
     if (_wordService.isValid(word)) {
       _sessionWords.add(word);
+      GoalService().incrementWordsFound(1); // Fire and forget
       
       // Faire avancer le lapin
       // Formule de progression : plus le mot est long, plus on avance ?
@@ -245,6 +247,7 @@ class GameController extends ChangeNotifier {
 
     if (isCampaign) {
       await PlayerPreferences.addCoins(60); 
+      await GoalService().incrementLevelsWon(1);
       await PlayerPreferences.addUsedWord(_targetWord); 
       
       int currentStage = await PlayerPreferences.getCurrentStage();

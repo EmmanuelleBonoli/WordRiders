@@ -87,6 +87,8 @@ class AppTheme {
   static const Color orangeSalmon = _orangeSalmon;
   static const Color orangeBurnt = _orangeBurnt;
   static const Color surfaceLightRed = _redSurface;
+  static const Color redBad = Color(0xFFC0392B);
+  static const Color coinBorderLight = Color(0xFFFFE082);
 
   // Tuiles & Plateau
   static const Color tileFace = _cream;

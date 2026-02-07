@@ -1,238 +1,272 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:word_train/features/gameplay/services/ad_service.dart';
+import 'package:word_train/features/gameplay/models/player_profile.dart';
+import 'package:word_train/secrets.dart';
 
 class PlayerPreferences {
-  static const _keyStage = 'currentStage';
-  static const _keyMusic = 'musicEnabled';
-  static const _keySfx = 'sfxEnabled';
-
-  static Future<int> getCurrentStage() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_keyStage) ?? 1;
-  }
-
-  static Future<void> setCurrentStage(int stage) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_keyStage, stage);
-  }
-
-  static Future<bool> isMusicEnabled() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_keyMusic) ?? true;
-  }
-
-  static Future<void> setMusicEnabled(bool enabled) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_keyMusic, enabled);
-  }
-
-  static Future<bool> isSfxEnabled() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_keySfx) ?? true;
-  }
-
-  static Future<void> setSfxEnabled(bool enabled) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_keySfx, enabled);
-  }
-  static const _keyUsedWords = 'usedWords';
-
-  static Future<List<String>> getUsedWords() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList(_keyUsedWords) ?? [];
-  }
-
-  static Future<void> addUsedWord(String word) async {
-    final prefs = await SharedPreferences.getInstance();
-    final used = await getUsedWords();
-    if (!used.contains(word)) {
-      used.add(word);
-      await prefs.setStringList(_keyUsedWords, used);
-    }
-  }
-
-  static const _keyActiveWord = 'activeWord';
+  static const _keyProfile = 'playerProfile';
   
-  static Future<String?> getActiveWord() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyActiveWord);
+  // Instance singleton du Profil pour éviter les rechargements constants
+  static PlayerProfile? _cachedProfile;
+
+  // --- Aides à la Sécurité ---
+  static String _computeSignature(String jsonString) {
+    // Vérification d'intégrité simple : Base64(json + salt)
+    // Pas robuste, mais suffisant pour empêcher l'édition de texte simple.
+    final bytes = utf8.encode(jsonString + Secrets.profileSalt);
+    return base64.encode(bytes);
   }
 
-  static Future<void> setActiveWord(String word) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyActiveWord, word);
-  }
+  // --- Core Access ---
+  static Future<PlayerProfile> getProfile() async {
+    if (_cachedProfile != null) return _cachedProfile!;
 
-  static Future<void> clearActiveWord() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_keyActiveWord);
-  }
-
-  static const _keyCampaignWords = 'campaignWords';
-
-  static Future<bool> isCampaignInitialized() async {
-    final prefs = await SharedPreferences.getInstance();
-    // Campagne initialisée si on a une liste de mots
-    return prefs.containsKey(_keyCampaignWords);
-  }
-
-  static Future<void> setCampaignWords(List<String> words) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(_keyCampaignWords, words);
-  }
-
-  // Récupère le mot pour le stage donné
-  static Future<String?> getWordForStage(int stage) async {
-    final prefs = await SharedPreferences.getInstance();
-    final words = prefs.getStringList(_keyCampaignWords);
-    if (words == null || words.isEmpty) return null;
+    final storedString = prefs.getString(_keyProfile);
     
-    final index = stage - 1;
-    if (index >= 0 && index < words.length) {
-      return words[index];
+    if (storedString != null) {
+      try {
+        // Essayer de décoder comme objet sécurisé enveloppé
+        final Map<String, dynamic> wrapper = jsonDecode(storedString);
+        String data = wrapper['data'];
+        final String signature = wrapper['signature'];
+        
+        // Tentative de décodage Base64 (Obfuscation)
+        // Si ça échoue, c'est que c'est encore en texte clair (format précédent)
+        try {
+           final decodedBytes = base64.decode(data);
+           data = utf8.decode(decodedBytes);
+        } catch (_) {
+           // C'est du texte clair, on continue avec 'data' tel quel
+        }
+
+        // Vérifier l'intégrité
+        final computedSig = _computeSignature(data);
+        if (computedSig != signature) {
+           debugPrint("ALERTE SÉCURITÉ : Fichier de sauvegarde corrompu ou modifié. Réinitialisation.");
+           _cachedProfile = PlayerProfile.initial();
+        } else {
+           _cachedProfile = PlayerProfile.fromJson(jsonDecode(data));
+        }
+
+      } catch (e) {
+        // Solution de repli : peut-être un ancien format (avant la sécurité) ?
+        // Essayer de charger comme JSON direct
+         try {
+            _cachedProfile = PlayerProfile.fromJson(jsonDecode(storedString));
+            // Si réussi, on devrait le sauvegarder de manière sécurisée immédiatement la prochaine fois
+         } catch (_) {
+            _cachedProfile = PlayerProfile.initial();
+         }
+      }
+    } else {
+      _cachedProfile = PlayerProfile.initial();
     }
-    return null; // Fin de campagne ou erreur
+    return _cachedProfile!;
   }
 
-  // Sauvegarde ou met à jour le mot pour un stage donné
-  static Future<void> setWordForStage(int stage, String word) async {
+  static Future<void> saveProfile(PlayerProfile profile) async {
+    _cachedProfile = profile;
     final prefs = await SharedPreferences.getInstance();
-    List<String> words = prefs.getStringList(_keyCampaignWords) ?? [];
     
-    final index = stage - 1;
+    final jsonString = jsonEncode(profile.toJson());
+    // 1. Signature du contenu original (JSON)
+    final signature = _computeSignature(jsonString);
     
-    // Si la liste est trop petite, on la remplit avec des placeholders
-    while (words.length <= index) {
-      words.add(""); 
-    }
+    // 2. Obfuscation du contenu (Base64)
+    final obfuscatedData = base64.encode(utf8.encode(jsonString));
     
-    words[index] = word;
-    await prefs.setStringList(_keyCampaignWords, words);
+    final wrapper = {
+      'data': obfuscatedData,
+      'signature': signature,
+    };
+    
+    await prefs.setString(_keyProfile, jsonEncode(wrapper));
   }
 
-  static const _keyLives = 'playerLives';
-  static const _keyLastRegenTime = 'lastLifeRegenTime';
+  static Future<int> getCurrentStage() async => (await getProfile()).stage;
+  
+  static Future<void> setCurrentStage(int stage) async {
+    final profile = await getProfile();
+    profile.stage = stage;
+    await saveProfile(profile);
+  }
+
+  static Future<int> getCoins() async => (await getProfile()).coins;
+
+  static Future<void> addCoins(int amount) async {
+    final profile = await getProfile();
+    profile.coins += amount;
+    await saveProfile(profile);
+  }
+
+  static Future<void> setCoins(int amount) async {
+    final profile = await getProfile();
+    profile.coins = amount;
+    await saveProfile(profile);
+  }
+  
+  static Future<bool> spendCoins(int amount) async {
+    final profile = await getProfile();
+    if (profile.coins >= amount) {
+      profile.coins -= amount;
+      await saveProfile(profile);
+      return true;
+    }
+    return false;
+  }
+
   static const int _maxLives = 5;
   static const int _regenMinutes = 20;
 
-  // Récupère le nombre de vies, en calculant la régénération
   static Future<int> getLives() async {
-    final prefs = await SharedPreferences.getInstance();
-    int currentLives = prefs.getInt(_keyLives) ?? _maxLives;
+    final profile = await getProfile();
     
-    // Si on est déjà au max, pas de calcul
-    if (currentLives >= _maxLives) {
-      return _maxLives;
-    }
 
-    // Calcul de la régénération
-    final lastRegenStr = prefs.getString(_keyLastRegenTime);
-    if (lastRegenStr == null) {
-      // Cas bizarre: pas au max mais pas de date ? On remet au max par sécurité
-      await setLives(_maxLives);
-      return _maxLives;
-    }
-
-    final lastRegenTime = DateTime.parse(lastRegenStr);
-    final now = DateTime.now();
-    final difference = now.difference(lastRegenTime);
-    
-    final livesToRestore = difference.inMinutes ~/ _regenMinutes;
-    
-    if (livesToRestore > 0) {
-      currentLives += livesToRestore;
-      if (currentLives > _maxLives) currentLives = _maxLives;
+    if (profile.lives < _maxLives) {
+      final now = DateTime.now();
+      final diff = now.difference(profile.lastLifeRegen);
+      final livesRestored = diff.inMinutes ~/ _regenMinutes;
       
-      await setLives(currentLives);
-      
-      // Si on n'est toujours pas au max, on avance le timer d'autant de périodes de 20min complétées
-      // pour garder le "crédit" des minutes restantes
-      if (currentLives < _maxLives) {
-        final newLastRegenTime = lastRegenTime.add(Duration(minutes: livesToRestore * _regenMinutes));
-        await prefs.setString(_keyLastRegenTime, newLastRegenTime.toIso8601String());
-      } else {
-        // Si on est au max, on nettoie le timer
-        await prefs.remove(_keyLastRegenTime);
+      if (livesRestored > 0) {
+        profile.lives += livesRestored;
+        if (profile.lives >= _maxLives) {
+          profile.lives = _maxLives;
+        } else {
+           // Avancer le timer par intervalles consommés
+           profile.lastLifeRegen = profile.lastLifeRegen.add(Duration(minutes: livesRestored * _regenMinutes));
+        }
+        await saveProfile(profile);
       }
     }
+    
+    return profile.lives; 
+  }
 
-    return currentLives;
+  static Future<bool> loseLife() async {
+    final profile = await getProfile();
+    // S'assurer du comptage précis d'abord
+    await getLives(); 
+    
+    if (profile.lives > 0) {
+      // Si c'était au max, démarrer le timer maintenant
+      if (profile.lives == _maxLives) {
+        profile.lastLifeRegen = DateTime.now();
+      }
+      
+      profile.lives--;
+      await saveProfile(profile);
+      return true;
+    }
+    return false;
   }
 
   static Future<void> setLives(int lives) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_keyLives, lives);
-  }
-
-  // Consomme une vie. Retourne true si succès, false si pas assez de vies.
-  static Future<bool> loseLife() async {
-    int current = await getLives();
-    if (current > 0) {
-      current--;
-      await setLives(current);
-      
-      // Si on vient de passer en dessous du max (donc on était à 5, on passe à 4),
-      // on doit initialiser le timer pour la prochaine regen
-      if (current == _maxLives - 1) {
-         final prefs = await SharedPreferences.getInstance();
-         // On vérifie s'il y a déjà un timer (par précaution) mais en théorie non
-         if (!prefs.containsKey(_keyLastRegenTime)) {
-            await prefs.setString(_keyLastRegenTime, DateTime.now().toIso8601String());
-         }
+      final profile = await getProfile();
+      profile.lives = lives;
+      if (lives < _maxLives) {
+          profile.lastLifeRegen = DateTime.now();
       }
-      return true;
-    }
-    return false;
+      await saveProfile(profile);
   }
 
-  // Temps restant avant la prochaine vie (null si full)
   static Future<Duration?> getTimeToNextLife() async {
-    final prefs = await SharedPreferences.getInstance();
-    int currentLives = await getLives(); // Déclenche le calcul de regen si besoin
+    final profile = await getProfile();
+    if (profile.lives >= _maxLives) return null;
     
-    if (currentLives >= _maxLives) return null;
-    
-    final lastRegenStr = prefs.getString(_keyLastRegenTime);
-    if (lastRegenStr == null) return null;
-    
-    final lastRegenTime = DateTime.parse(lastRegenStr);
+    // Calcule relatif au dernier Regen
+    // Puisque getLives() met à jour lastRegen quand on consomme du temps, 
+    // on calcule juste la diff de MAINTENANT à lastRegen + 20min
+    final nextRegenTime = profile.lastLifeRegen.add(const Duration(minutes: _regenMinutes));
     final now = DateTime.now();
-    final diff = now.difference(lastRegenTime);
+    final diff = nextRegenTime.difference(now);
     
-    final timeLeft = Duration(minutes: _regenMinutes) - diff;
-    return timeLeft.isNegative ? Duration.zero : timeLeft;
+    return diff.isNegative ? Duration.zero : diff;
   }
 
-  static const _keyCoins = 'playerCoins';
-
-  static Future<int> getCoins() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_keyCoins) ?? 0;
-  }
-
-  static Future<void> addCoins(int amount) async {
-    final prefs = await SharedPreferences.getInstance();
-    final current = await getCoins();
-    await prefs.setInt(_keyCoins, current + amount);
-  }
-
-  static Future<bool> spendCoins(int amount) async {
-    final prefs = await SharedPreferences.getInstance();
-    final current = await getCoins();
-    if (current >= amount) {
-      await prefs.setInt(_keyCoins, current - amount);
-      return true;
+  static Future<List<String>> getUsedWords() async => (await getProfile()).usedWords;
+  
+  static Future<void> addUsedWord(String word) async {
+    final profile = await getProfile();
+    if (!profile.usedWords.contains(word)) {
+      profile.usedWords.add(word);
+      await saveProfile(profile);
     }
-    return false;
+  }
+
+  static Future<String?> getActiveWord() async => (await getProfile()).activeWord;
+  
+  static Future<void> setActiveWord(String word) async {
+    final profile = await getProfile();
+    profile.activeWord = word;
+    await saveProfile(profile);
+  }
+
+  static Future<void> clearActiveWord() async {
+    final profile = await getProfile();
+    profile.activeWord = null;
+    await saveProfile(profile);
+  }
+
+  static Future<bool> isCampaignInitialized() async { 
+      return (await getProfile()).campaignWords.isNotEmpty; 
+  }
+  
+  static Future<void> setCampaignWords(List<String> words) async {
+      final profile = await getProfile();
+      profile.campaignWords = words;
+      await saveProfile(profile);
+  }
+
+  static Future<String?> getWordForStage(int stage) async {
+      final profile = await getProfile();
+      final index = stage - 1;
+      if (index >= 0 && index < profile.campaignWords.length) {
+          return profile.campaignWords[index];
+      }
+      return null;
+  }
+
+  static Future<void> setWordForStage(int stage, String word) async {
+      final profile = await getProfile();
+      final index = stage - 1;
+      while (profile.campaignWords.length <= index) {
+          profile.campaignWords.add("");
+      }
+      profile.campaignWords[index] = word;
+      await saveProfile(profile);
+  }
+
+  static Future<bool> isMusicEnabled() async => (await getProfile()).musicEnabled;
+
+  static Future<void> setMusicEnabled(bool enabled) async {
+      final profile = await getProfile();
+      profile.musicEnabled = enabled;
+      await saveProfile(profile);
+  }
+
+  static Future<bool> isSfxEnabled() async => (await getProfile()).sfxEnabled;
+
+  static Future<void> setSfxEnabled(bool enabled) async {
+      final profile = await getProfile();
+      profile.sfxEnabled = enabled;
+      await saveProfile(profile);
   }
 
   static Future<void> resetCampaign() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_keyStage, 1);
-    await prefs.remove(_keyUsedWords);
-    await prefs.remove(_keyActiveWord);
-    await prefs.remove(_keyCampaignWords);
-    await AdService.resetAdTracking();
-    // On ne reset pas les vies ni les pièces, c'est indépendant
+    final profile = await getProfile();
+    profile.stage = 1;
+    profile.usedWords.clear();
+    profile.activeWord = null;
+    profile.campaignWords.clear();
+    await saveProfile(profile);
+  }
+  static Future<int> getLastAdStage() async => (await getProfile()).lastAdStage;
+ 
+  static Future<void> setLastAdStage(int stage) async {
+      final profile = await getProfile();
+      profile.lastAdStage = stage;
+      await saveProfile(profile);
   }
 }

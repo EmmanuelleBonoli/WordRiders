@@ -181,8 +181,7 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
             child: GameModalButton(
               onPressed: () async {
                 if (!context.mounted) return;
-                await AdLoadingDialog.show(context);
-                await AdService.simulateAdWatch();
+                await AdLoadingDialog.show(context, isRewarded: true);
                 await PlayerPreferences.addCoins(60);
                 final currentStage = await PlayerPreferences.getCurrentStage();
                 await AdService.markAdShownForStage(currentStage);
