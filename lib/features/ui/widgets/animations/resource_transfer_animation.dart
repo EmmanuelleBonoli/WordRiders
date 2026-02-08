@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:word_train/features/ui/screens/main_scaffold.dart';
+
 class ResourceTransferAnimation extends StatefulWidget {
   final Offset startPosition;
   final Offset endPosition;
@@ -15,6 +17,93 @@ class ResourceTransferAnimation extends StatefulWidget {
     this.itemCount = 10,
     required this.onAnimationComplete,
   });
+
+  // Démarre une animation de transfert de ressources d'un widget source vers une cible.
+  //
+  // [startKey] est le widget d'où part l'animation.
+  // [endKey] (optionnel) est un widget cible spécifique.
+  // [endOffset] (optionnel) est une position cible spécifique si aucune clé de widget n'est disponible.
+  // Si ni [endKey] ni [endOffset] n'est fourni, il tente de trouver les cibles standard (Coin/Heart) dans [MainScaffold].
+  static void start(
+    BuildContext context, {
+    required GlobalKey startKey,
+    required String assetPath,
+    GlobalKey? endKey,
+    Offset? endOffset,
+    VoidCallback? onComplete,
+  }) {
+    // 1. Trouver la position de départ
+    final RenderBox? box = startKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null) {
+      onComplete?.call();
+      return;
+    }
+
+    // Position globale sur l'écran
+    final Offset startPos = box.localToGlobal(box.size.center(Offset.zero));
+
+    // 2. Trouver la position de fin
+    double endX = 0;
+    double endY = 0;
+    bool endFound = false;
+
+    // A. Priorité : Clé de fin explicite
+    if (endKey != null) {
+       final RenderBox? targetBox = endKey.currentContext?.findRenderObject() as RenderBox?;
+       if (targetBox != null) {
+          final center = targetBox.localToGlobal(targetBox.size.center(Offset.zero));
+          endX = center.dx;
+          endY = center.dy;
+          endFound = true;
+       }
+    }
+
+    // B. Offset explicite
+    if (!endFound && endOffset != null) {
+       endX = endOffset.dx;
+       endY = endOffset.dy;
+       endFound = true;
+    }
+
+    // C. Fallback: MainScaffold (Comportement standard)
+    if (!endFound) {
+      final mainState = context.findAncestorStateOfType<MainScaffoldState>();
+      // Fallback par défaut
+      endX = MediaQuery.of(context).size.width - 60;
+      endY = 60;
+
+      if (mainState != null) {
+        final bool isHeart = assetPath.contains('heart');
+        final targetContext = isHeart ? mainState.lifeIndicatorContext : mainState.coinIndicatorContext;
+
+        if (targetContext != null) {
+          final RenderBox? targetBox = targetContext.findRenderObject() as RenderBox?;
+          if (targetBox != null) {
+            final center = targetBox.localToGlobal(targetBox.size.center(Offset.zero));
+            endX = center.dx;
+            endY = center.dy;
+          }
+        }
+      }
+    }
+
+    // 3. Lancement de l'animation via Overlay ROOT
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (context) => ResourceTransferAnimation(
+        startPosition: startPos,
+        endPosition: Offset(endX, endY),
+        assetPath: assetPath,
+        itemCount: 8,
+        onAnimationComplete: () {
+          entry.remove();
+          onComplete?.call();
+        },
+      ),
+    );
+
+    Overlay.of(context, rootOverlay: true).insert(entry);
+  }
 
   @override
   State<ResourceTransferAnimation> createState() => _ResourceTransferAnimationState();

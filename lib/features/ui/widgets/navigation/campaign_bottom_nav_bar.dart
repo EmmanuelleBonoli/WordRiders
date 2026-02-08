@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:word_train/features/gameplay/services/player_preferences.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
 
-class CampaignBottomNavBar extends StatelessWidget {
+class CampaignBottomNavBar extends StatefulWidget {
   final int selectedIndex;
   final Function(int) onTap;
 
@@ -10,6 +12,37 @@ class CampaignBottomNavBar extends StatelessWidget {
     required this.selectedIndex,
     required this.onTap,
   });
+
+  @override
+  State<CampaignBottomNavBar> createState() => _CampaignBottomNavBarState();
+}
+
+class _CampaignBottomNavBarState extends State<CampaignBottomNavBar> {
+  int _unclaimedCount = 0;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkGoals();
+    // Vérifie périodiquement les mises à jour
+    _timer = Timer.periodic(const Duration(seconds: 2), (_) => _checkGoals());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _checkGoals() async {
+    final count = await PlayerPreferences.getUnclaimedGoalsCount();
+    if (mounted && count != _unclaimedCount) {
+      setState(() {
+        _unclaimedCount = count;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,12 +85,11 @@ class CampaignBottomNavBar extends StatelessWidget {
     double selectedWidth,
     double unselectedWidth,
   ) {
-    final isSelected = index == selectedIndex;
+    final isSelected = index == widget.selectedIndex;
     final width = isSelected ? selectedWidth : unselectedWidth;
     
     final double height = isSelected ? 90.0 : 70.0;
     
-
     final double iconSize = isSelected ? 60.0 : 40.0;
     
     final Decoration decoration = isSelected 
@@ -65,7 +97,7 @@ class CampaignBottomNavBar extends StatelessWidget {
              gradient: const LinearGradient(
                begin: Alignment.topCenter,
                end: Alignment.bottomCenter,
-               colors: [AppTheme.coinRimTop, AppTheme.coinRimBottom],
+               colors: [AppTheme.coinRimTop, AppTheme.coinFaceBottom],
              ),
              borderRadius: BorderRadius.circular(20),
              border: Border.all(color: AppTheme.coinBorderDark, width: 2),
@@ -101,7 +133,7 @@ class CampaignBottomNavBar extends StatelessWidget {
            );
 
     return GestureDetector(
-      onTap: () => onTap(index),
+      onTap: () => widget.onTap(index),
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
@@ -116,15 +148,51 @@ class CampaignBottomNavBar extends StatelessWidget {
            width: width - 4,
            margin: const EdgeInsets.only(bottom: 5),
            decoration: decoration,
-           child: Column(
-             mainAxisAlignment: MainAxisAlignment.center,
-             children: [
-               Icon(
-                 icon,
-                 size: iconSize,
-                 color: AppTheme.darkBrown,
-               )
-             ],
+           child: Center(
+             child: Stack(
+               alignment: Alignment.center,
+               clipBehavior: Clip.none,
+               children: [
+                 Icon(
+                   icon,
+                   size: iconSize,
+                   color: isSelected ? AppTheme.darkBrown : AppTheme.tileShadow,
+                 ),
+                 if (index == 2 && _unclaimedCount > 0)
+                   Positioned(
+                     top: -10,
+                     right: -15,
+                     child: Container(
+                       padding: const EdgeInsets.all(6),
+                       decoration: const BoxDecoration(
+                         color: Colors.red,
+                         shape: BoxShape.circle,
+                         boxShadow: [
+                           BoxShadow(
+                             color: Colors.black26,
+                             blurRadius: 4,
+                             offset: Offset(0, 2),
+                           )
+                         ]
+                       ),
+                       constraints: const BoxConstraints(
+                         minWidth: 20,
+                         minHeight: 20,
+                       ),
+                       child: Text(
+                         '$_unclaimedCount',
+                         textAlign: TextAlign.center,
+                         style: const TextStyle(
+                           color: Colors.white,
+                           fontSize: 12,
+                           fontFamily: 'Round',
+                           fontWeight: FontWeight.bold,
+                         ),
+                       ),
+                     ),
+                   ),
+               ],
+             ),
            ),
       ),
       ),

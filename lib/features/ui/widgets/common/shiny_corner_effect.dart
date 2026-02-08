@@ -8,6 +8,7 @@ class ShinyCornerEffect extends StatelessWidget {
   final double strokeWidth;
   final double cornerLength;
   final double padding;
+  final double blurSigma;
 
   const ShinyCornerEffect({
     super.key,
@@ -17,6 +18,7 @@ class ShinyCornerEffect extends StatelessWidget {
     this.strokeWidth = 1.0,
     this.cornerLength = 15.0,
     this.padding = 4.0,
+    this.blurSigma = 0.8,
   });
 
   @override
@@ -30,6 +32,7 @@ class ShinyCornerEffect extends StatelessWidget {
           strokeWidth: strokeWidth,
           cornerLength: cornerLength,
           padding: padding,
+          blurSigma: blurSigma,
         ),
         size: Size.infinite,
       ),
@@ -44,6 +47,7 @@ class _ShinyCornerPainter extends CustomPainter {
   final double strokeWidth;
   final double cornerLength;
   final double padding;
+  final double blurSigma;
 
   _ShinyCornerPainter({
     required this.isCircle,
@@ -52,6 +56,7 @@ class _ShinyCornerPainter extends CustomPainter {
     required this.strokeWidth,
     required this.cornerLength,
     required this.padding,
+    required this.blurSigma,
   });
 
   @override
@@ -63,7 +68,7 @@ class _ShinyCornerPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 0.8);
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, blurSigma);
 
     if (isCircle) {
       _drawCircleCorners(canvas, size, paint);
@@ -81,29 +86,29 @@ class _ShinyCornerPainter extends CustomPainter {
     
     final rect = Rect.fromCircle(center: center, radius: adjustedRadius);
 
-    // Configuration des traits
-    const double smallDash = 0.15;
-    const double gap = 0.4;
-    const double longDash = 0.5;
+    // Calcul des angles basés sur cornerLength (pixels)
+    // Convertir les longueurs en pixels en radians: angle = arc / radius
+    final double longDashAngle = cornerLength / adjustedRadius;
+    final double smallDashAngle = longDashAngle * 0.3; // Le petit tiret fait 30% du long
+    final double gapAngle = longDashAngle * 0.25;      // Gap is 25% of long
     
-    // COIN HAUT-GAUCHE (Centré autour de -135 degrés)
+    final totalSpan = smallDashAngle + gapAngle + longDashAngle;
+    
+    // COIN HAUT-GAUCHE (Centré autour de -135 degrés / -3pi/4)
     const double centerTL = -math.pi * 0.75;
-    
-    // Séquence Symétrique : [Petit] [Espace] [Long]
-    final double startAngleTL = centerTL - (smallDash + gap + longDash) / 2;
+    final double startAngleTL = centerTL - totalSpan / 2;
 
     // Petit trait
-    canvas.drawArc(rect, startAngleTL, smallDash, false, paint);
+    canvas.drawArc(rect, startAngleTL, smallDashAngle, false, paint);
     // Long trait
-    canvas.drawArc(rect, startAngleTL + smallDash + gap, longDash, false, paint);
+    canvas.drawArc(rect, startAngleTL + smallDashAngle + gapAngle, longDashAngle, false, paint);
 
-    // COIN BAS-DROITE (Centré autour de 45 degrés)
+    // COIN BAS-DROITE (Centré autour de 45 degrés / pi/4)
     const double centerBR = math.pi * 0.25;
+    final double startAngleBR = centerBR - totalSpan / 2;
     
-    final double startAngleBR = centerBR - (smallDash + gap + longDash) / 2;
-    
-    canvas.drawArc(rect, startAngleBR, smallDash, false, paint);
-    canvas.drawArc(rect, startAngleBR + smallDash + gap, longDash, false, paint);
+    canvas.drawArc(rect, startAngleBR, smallDashAngle, false, paint);
+    canvas.drawArc(rect, startAngleBR + smallDashAngle + gapAngle, longDashAngle, false, paint);
   }
 
   void _drawRRectCorners(Canvas canvas, Size size, Paint paint) {

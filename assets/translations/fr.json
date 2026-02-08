@@ -11,11 +11,7 @@
     "campaign": "Campagne",
     "training": "Entraînement",
     "coins": "Pièces",
-    "settings": "Paramètres",
-    "quit": "Quitter",
-    "confirmQuitTitle": "Quitter le jeu",
-    "confirmQuitMessage": "Êtes-vous sûr de vouloir quitter ?",
-    "confirmQuitCancel": "Annuler"
+    "settings": "Paramètres"
   },
   "training": {
     "choose_difficulty": "Choisissez la difficulté :",
@@ -26,6 +22,7 @@
   "settings": {
     "title": "Paramètres",
     "language": "Langue",
+    "audio": "Audio",
     "enableMusic": "Activer la musique",
     "enableSounds": "Activer les effets sonores",
     "resetCampaign": "Redémarrer la campagne",
@@ -55,7 +52,6 @@
     "notEnoughCoins": "Pas assez de pièces !",
     "noAds": "Sans Pub",
     "noAdsConfirmTitle": "Acheter Sans Pub ?",
-    "noAdsConfirmMessage": "Plus jamais de publicités ! Coût : 2000 pièces",
     "noAdsConfirmMessageRealMoney": "Plus jamais de publicités ! Coût : 4,99€",
     "noAdsPurchase": "Acheter",
     "noAdsPurchased": "Sans Pub activé ! Profitez du jeu sans interruption.",
@@ -83,25 +79,13 @@
       }
     },
     "store": {
-      "lives_pack": "Pack de 5 Vies",
-      "lives_pack_desc": "Ne t'arrête jamais !",
-      "hint_pack": "Pack de 3 Indices",
-      "hint_pack_desc": "Bloqué ? Prends un indice !",
-      "starter_pack": "Pack Débutant",
-      "starter_pack_desc": "Le meilleur pour démarrer",
-      "mega_bundle": "Mega Bundle",
-      "mega_bundle_desc": "Maximise ton jeu !",
-      "buy": "Acheter",
-      "special_offers": "OFFRES SPÉCIALES",
       "coin_packs": "PACKS DE PIÈCES",
       "essentials": "ESSENTIELS",
       "no_ads_title": "PACK SANS PUB",
       "no_ads_desc": "Supprime les pubs + 500 Pièces !",
-      "best_badge": "TOP !",
-      "handful": "Poignée",
-      "pouch": "Bourse",
-      "chest": "Coffre",
-      "refill_lives": "Recharge Vies"
+      "best_badge": "TOP ACHAT!",
+      "refill_lives": "Recharge Vies",
+      "unlimited_lives": "Vies Illimitées"
     }
   },
   "game": {

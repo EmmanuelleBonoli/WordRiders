@@ -5,12 +5,14 @@ import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart
 class StoreProductCard extends StatelessWidget {
   final String title;
   final String amount;
-  final IconData icon;
+  final IconData? icon;
+  final Widget? customIcon;
   final String price;
   final Color color;
   final double height;
   final bool isPopular;
   final bool isCurrencyPrice;
+  final bool isGold;
   final String? badgeText;
   final VoidCallback? onTap;
 
@@ -18,124 +20,205 @@ class StoreProductCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.amount,
-    required this.icon,
+    this.icon,
+    this.customIcon,
     required this.price,
     required this.color,
     this.height = 180,
     this.isPopular = false,
     this.isCurrencyPrice = false,
+    this.isGold = false,
     this.badgeText,
     this.onTap,
-  });
+  }) : assert(icon != null || customIcon != null, 'Either icon or customIcon must be provided');
 
   @override
   Widget build(BuildContext context) {
+    // 1. Couleurs du thème basées sur isGold ou la couleur locale
+    final Color bgStart = isGold ? AppTheme.coinRimTop : color.withValues(alpha: 0.9);
+    final Color bgEnd = isGold ? AppTheme.coinFaceBottom : color;
+    
+    final Color contentColor = isGold ? AppTheme.brown : Colors.white;
+    final Color buttonBg = isGold ? AppTheme.white : Colors.white;
+    final Color buttonText = isGold ? AppTheme.brown : color;
+
+    // 2. Widget Icône
+    final Widget iconWidget = customIcon ?? Icon(
+      icon,
+      size: 42,
+      color: contentColor,
+    );
+
     return BouncingScaleButton(
       onTap: onTap ?? () {},
+      showShadow: false,
       child: Stack(
         clipBehavior: Clip.none,
+        alignment: Alignment.topCenter,
         children: [
+          // Conteneur principal de la carte
           Container(
-            width: 140,
+            width: 145,
             height: height,
             decoration: BoxDecoration(
-              color: AppTheme.tileFace.withValues(alpha: 0.9),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.brown, width: 2),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [bgStart, bgEnd],
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.4), 
+                width: 2
+              ),
               boxShadow: [
-                 BoxShadow(
-                   color: Colors.black.withValues(alpha: 0.3),
-                   offset: const Offset(0, 4),
-                   blurRadius: 6,
-                 )
-              ]
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.4),
+                  offset: const Offset(0, 6),
+                  blurRadius: 8,
+                ),
+              ],
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Header
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.2),
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
-                  ),
-                  child: Text(
-                    amount,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Round',
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      color: color == AppTheme.coinRimTop ? AppTheme.orangeBurnt : color,
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 12),
                 
-                // Icon
-                Icon(icon, size: 48, color: color == AppTheme.coinRimTop ? AppTheme.orangeBurnt : color),
-                
-                // Title
+                // HEADER AMOUNT
                 Text(
-                  title,
-                  style: const TextStyle(
+                  amount,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
                     fontFamily: 'Round',
-                    fontSize: 14,
-                    color: AppTheme.brown,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                    color: contentColor,
+                    shadows: [
+                      Shadow(
+                        color: isGold ? Colors.white.withValues(alpha: 0.5) : Colors.black.withValues(alpha: 0.2),
+                        offset: const Offset(1, 1),
+                        blurRadius: 2,
+                      )
+                    ],
                   ),
                 ),
-      
-                const SizedBox(height: 4),
-      
-                // Button
-                Container(
-                  margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  decoration: BoxDecoration(
-                    color: isCurrencyPrice ? AppTheme.white : AppTheme.green,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isCurrencyPrice ? AppTheme.brown : Colors.white,
-                      width: isCurrencyPrice ? 2 : 1
-                    ),
-                  ),
+                
+                // CENTER ICON
+                Expanded(
                   child: Center(
+                    child: iconWidget,
+                  ),
+                ),
+                
+                // TITLE (Optionnel)
+                if (title.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: Text(
-                      price,
+                      title,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontFamily: 'Round',
-                        fontSize: 14,
+                        fontSize: 13,
+                        color: contentColor.withValues(alpha: 0.9),
                         fontWeight: FontWeight.bold,
-                        color: isCurrencyPrice ? AppTheme.brown : Colors.white,
                       ),
+                    ),
+                  )
+                else 
+                   const SizedBox(height: 4),
+
+                const SizedBox(height: 8),
+
+                // PRICE PILL BUTTON
+                Container(
+                  margin: const EdgeInsets.only(bottom: 12, left: 16, right: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: buttonBg,
+                    borderRadius: BorderRadius.circular(100),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.15),
+                        offset: const Offset(0, 3),
+                        blurRadius: 4,
+                      )
+                    ],
+                  ),
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          price,
+                          style: TextStyle(
+                            fontFamily: 'Round',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                            color: buttonText,
+                          ),
+                        ),
+                        if (isCurrencyPrice) ...[
+                          const SizedBox(width: 4),
+                          Image.asset(
+                            'assets/images/indicators/coin.png',
+                            width: 16,
+                            height: 16,
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
           ),
+          
+          // POPULAR BADGE
           if (isPopular)
             Positioned(
-              top: -10,
-              left: 35,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppTheme.redBad,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black26, offset: Offset(0, 2), blurRadius: 2)
-                  ]
-                ),
-                child: Text(
-                  badgeText ?? "BEST!", 
-                  style: const TextStyle(
-                    color: Colors.white, 
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10,
+              top: -8,
+              right: -8,
+              child: Transform.rotate(
+                angle: 0.15,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppTheme.redBad, AppTheme.red],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white, width: 2),
+                    boxShadow: const [
+                       BoxShadow(
+                         color: Colors.black26, 
+                         offset: Offset(0, 2), 
+                         blurRadius: 4
+                       )
+                    ]
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                         padding: const EdgeInsets.only(bottom: 1),
+                         child: const Icon(Icons.star, color: Colors.yellow, size: 12)
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        badgeText ?? "BEST", 
+                        style: const TextStyle(
+                          color: Colors.white, 
+                          fontWeight: FontWeight.w900,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

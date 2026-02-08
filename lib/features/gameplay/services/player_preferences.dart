@@ -5,7 +5,7 @@ import 'package:word_train/features/gameplay/models/player_profile.dart';
 import 'package:word_train/secrets.dart';
 
 class PlayerPreferences {
-  static const _keyProfile = 'playerProfile';
+  static const _keyProfile = 'wordTrain_playerProfile';
   
   // Instance singleton du Profil pour éviter les rechargements constants
   static PlayerProfile? _cachedProfile;
@@ -146,6 +146,12 @@ class PlayerPreferences {
 
   static Future<bool> loseLife() async {
     final profile = await getProfile();
+    
+    // Vérifier si les vies illimitées sont actives
+    if (await isUnlimitedLivesActive()) {
+      return true; // Aucune vie perdue, mais l'action est autorisée
+    }
+
     // S'assurer du comptage précis d'abord
     await getLives(); 
     
@@ -169,6 +175,42 @@ class PlayerPreferences {
           profile.lastLifeRegen = DateTime.now();
       }
       await saveProfile(profile);
+  }
+
+  // --- Vies Illimitées ---
+  
+  static Future<DateTime?> getUnlimitedLivesExpiration() async {
+    return (await getProfile()).unlimitedLivesUntil;
+  }
+
+  static Future<void> setUnlimitedLivesExpiration(DateTime? expiration) async {
+    final profile = await getProfile();
+    profile.unlimitedLivesUntil = expiration;
+    await saveProfile(profile);
+  }
+
+  static Future<void> addUnlimitedLivesTime(Duration duration) async {
+    final profile = await getProfile();
+    final now = DateTime.now();
+    
+    if (profile.unlimitedLivesUntil != null && profile.unlimitedLivesUntil!.isAfter(now)) {
+      // Étendre le temps existant
+      profile.unlimitedLivesUntil = profile.unlimitedLivesUntil!.add(duration);
+    } else {
+      // Démarrer un nouveau temps
+      profile.unlimitedLivesUntil = now.add(duration);
+    }
+    
+    // Remplir aussi les vies au maximum lors de l'obtention d'un accès illimité
+    profile.lives = _maxLives;
+    
+    await saveProfile(profile);
+  }
+
+  static Future<bool> isUnlimitedLivesActive() async {
+    final expiration = await getUnlimitedLivesExpiration();
+    if (expiration == null) return false;
+    return expiration.isAfter(DateTime.now());
   }
 
   static Future<Duration?> getTimeToNextLife() async {
@@ -267,6 +309,27 @@ class PlayerPreferences {
   static Future<void> setLastAdStage(int stage) async {
       final profile = await getProfile();
       profile.lastAdStage = stage;
+      await saveProfile(profile);
+  }
+  static Future<int> getUnclaimedGoalsCount() async {
+    final profile = await getProfile();
+    int count = 0;
+    
+    for (final goal in profile.dailyGoals) {
+      if (goal.isCompleted && !goal.isClaimed) count++;
+    }
+    
+    for (final goal in profile.careerGoals) {
+      if (goal.isCompleted && !goal.isClaimed) count++;
+    }
+    
+    return count;
+  }
+  static Future<String?> getLocale() async => (await getProfile()).locale;
+
+  static Future<void> setLocale(String locale) async {
+      final profile = await getProfile();
+      profile.locale = locale;
       await saveProfile(profile);
   }
 }

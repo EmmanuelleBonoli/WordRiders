@@ -1,13 +1,227 @@
-
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
 import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
 import 'package:word_train/features/ui/widgets/store/store_product_card.dart';
 import 'package:word_train/features/gameplay/services/ad_service.dart';
+import 'package:word_train/features/gameplay/services/player_preferences.dart';
+import 'package:word_train/features/ui/widgets/animations/resource_transfer_animation.dart';
+import 'package:word_train/features/ui/screens/main_scaffold.dart';
+import 'package:word_train/data/store_data.dart';
 
-class StoreScreen extends StatelessWidget {
+class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});
+
+  @override
+  State<StoreScreen> createState() => _StoreScreenState();
+}
+
+class _StoreScreenState extends State<StoreScreen> {
+  final GlobalKey _refillLivesKey = GlobalKey();
+  final GlobalKey _unlimitedLivesKey = GlobalKey();
+
+  GlobalKey? _getKeyForId(String id) {
+    if (id == 'refill_lives') return _refillLivesKey;
+    if (id == 'unlimited_lives') return _unlimitedLivesKey;
+    return null;
+  }
+  
+  VoidCallback? _getOnTapForId(String id) {
+    if (id == 'refill_lives') return () => _buyRefillLives(context);
+    if (id == 'unlimited_lives') return () => _buyUnlimitedLives(context);
+    if (id == 'no_ads') {
+       return () {
+         ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Purchase simulation: No Ads Bundle")),
+        );
+      };
+    }
+    return null;
+  }
+
+  Widget _buildProductCard(StoreItemData item) {
+    // 1. Déterminer la couleur
+    Color cardColor;
+    bool isGold = false;
+    
+    switch (item.colorType) {
+      case StoreItemColorType.blue:
+        cardColor = Colors.blue;
+        break;
+      case StoreItemColorType.purple:
+        cardColor = Colors.purpleAccent;
+        break;
+      case StoreItemColorType.gold:
+      case StoreItemColorType.goldDark:
+        cardColor = AppTheme.coinRimTop;
+        isGold = true;
+        break;
+    }
+
+    // 2. Déterminer l'icône/visuel
+    Widget visualContent;
+    
+    switch (item.visualType) {
+      case StoreVisualType.unlimited:
+        visualContent = SizedBox(
+          width: 60,
+          height: 60,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+               Positioned(
+                child: Image(
+                  image: AssetImage(item.assetPath),
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              const Positioned(
+                bottom: 0,
+                right: 0,
+                child: Icon(Icons.all_inclusive, color: Colors.white, size: 24),
+              ),
+            ],
+          ),
+        );
+        break;
+        
+      case StoreVisualType.stackedCoins:
+        visualContent = SizedBox(
+          width: 95, 
+          height: 95,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+               Positioned(
+                 left: 25, top: 0,
+                 child: Image(image: AssetImage(item.assetPath), width: 45),
+               ),
+               Positioned(
+                 left: 0, top: 35,
+                 child: Image(image: AssetImage(item.assetPath), width: 45),
+               ),
+               Positioned(
+                 left: 50, top: 35,
+                 child: Image(image: AssetImage(item.assetPath), width: 45),
+               ),
+            ],
+          ),
+        );
+        break;
+        
+      case StoreVisualType.chest:
+        visualContent = Image(
+          image: AssetImage(item.assetPath),
+          width: 120, 
+          height: 120,
+          fit: BoxFit.contain,
+        );
+        break;
+
+      default:
+        visualContent = item.assetPath.isNotEmpty 
+          ? Image(
+              image: AssetImage(item.assetPath),
+              width: item.colorType == StoreItemColorType.gold ? 42 : 50, 
+              height: item.colorType == StoreItemColorType.gold ? 42 : 50,
+              fit: BoxFit.contain,
+            )
+          : const SizedBox(); // Pour les offres sans pub gérées ailleurs
+        break;
+    }
+
+    return StoreProductCard(
+      key: _getKeyForId(item.id) ?? ValueKey(item.id),
+      title: item.titleKey.isNotEmpty ? tr(item.titleKey) : "",
+      amount: item.amount,
+      customIcon: visualContent,
+      price: item.price,
+      color: cardColor,
+      isGold: isGold,
+      isPopular: item.isPopular,
+      isCurrencyPrice: item.isCurrencyPrice,
+      badgeText: item.badgeTextKey != null ? tr(item.badgeTextKey!) : null,
+      height: item.height,
+      onTap: _getOnTapForId(item.id),
+    );
+  }
+
+  Future<void> _buyRefillLives(BuildContext context) async {
+    final int cost = 900;
+    
+    // 1. Vérifier si déjà full (sauf si illimité)
+    final isUnlimited = await PlayerPreferences.isUnlimitedLivesActive();
+    if (!context.mounted) return;
+
+    if (isUnlimited) {
+       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Vous avez déjà des vies illimitées !")));
+       return;
+    }
+    
+    final currentLives = await PlayerPreferences.getLives();
+    if (!context.mounted) return;
+
+    if (currentLives >= 5) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Vos vies sont déjà pleines !")));
+      return;
+    }
+
+    // 2. Vérifier les fonds
+    final currentCoins = await PlayerPreferences.getCoins();
+    if (!context.mounted) return;
+
+    if (currentCoins < cost) {
+       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Pas assez de pièces !")));
+       // TODO: Ouvrir popup d'achat de pièces ?
+       return;
+    }
+
+    // 3. Effectuer l'achat
+    await PlayerPreferences.spendCoins(cost);
+    await PlayerPreferences.setLives(5);
+
+    // 4. Animation & Feedback
+    if (context.mounted) {
+       ResourceTransferAnimation.start(
+         context, 
+         startKey: _refillLivesKey, 
+         assetPath: 'assets/images/indicators/heart.png',
+       );
+       
+       // Mettre à jour l'UI
+       context.findAncestorStateOfType<MainScaffoldState>()?.reloadIndicators();
+    }
+  }
+
+  Future<void> _buyUnlimitedLives(BuildContext context) async {
+    final int cost = 1500;
+    
+    // 1. Vérifier les fonds
+    final currentCoins = await PlayerPreferences.getCoins();
+    if (!context.mounted) return;
+    
+    if (currentCoins < cost) {
+       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Pas assez de pièces !")));
+       return;
+    }
+
+    // 2. Effectuer l'achat
+    await PlayerPreferences.spendCoins(cost);
+    await PlayerPreferences.addUnlimitedLivesTime(const Duration(minutes: 90)); // 1h30
+
+    // 3. Animation & Feedback
+    if (context.mounted) {
+       ResourceTransferAnimation.start(
+         context, 
+         startKey: _unlimitedLivesKey, 
+         assetPath: 'assets/images/indicators/heart.png',
+       );
+       // Mettre à jour l'UI
+       context.findAncestorStateOfType<MainScaffoldState>()?.reloadIndicators();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,92 +238,60 @@ class StoreScreen extends StatelessWidget {
         children: [
 
 
-          // --- SPECIAL OFFERS ---
+          // --- OFFRES SPÉCIALES ---
           FutureBuilder<bool>(
             future: AdService.hasNoAds(),
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data == true) {
                 return const SizedBox.shrink();
               }
+              // Si vide, ne pas afficher la colonne
+              if (specialOfferItems.isEmpty) return const SizedBox.shrink();
+              
               return Column(
                 children: [
                    const SizedBox(height: 12),
-                   _buildSpecialOfferCard(context, imagePath),
-                   const SizedBox(height: 30),
+                   ...specialOfferItems.map((item) => 
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 30),
+                        child: _buildSpecialOfferCard(context, item, imagePath),
+                      )
+                   ),
                 ],
               );
             },
           ),
 
-   // --- CONSUMABLES ---
-          _buildSectionHeader(tr('campaign.store.essentials')),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: StoreProductCard(
-                  title: tr('campaign.store.refill_lives'),
-                  amount: "FULL",
-                  icon: Icons.favorite,
-                  price: "200 Coins",
-                  color: AppTheme.redBad,
-                  height: 180,
-                  isCurrencyPrice: true,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: StoreProductCard(
-                  title: tr('campaign.store.hint_pack'),
-                  amount: "x5",
-                  icon: Icons.lightbulb,
-                  price: "150 Coins",
-                  color: Colors.blueAccent,
-                  height: 180,
-                  isCurrencyPrice: true,
-                ),
-              ),
-            ],
-          ),
+   // --- CONSOMMABLES ---
+           _buildSectionHeader(tr('campaign.store.essentials')),
+           const SizedBox(height: 12),
+           Row(
+             children: consumableItems.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value;
+                final widget = Expanded(child: _buildProductCard(item));
+                
+                if (index < consumableItems.length - 1) {
+                  return [widget, const SizedBox(width: 16)];
+                }
+                return [widget];
+             }).expand((x) => x).toList(),
+           ),
 
 
           const SizedBox(height: 30),
 
-// --- COIN PACKS ---
+           // --- PACKS DE PIÈCES ---
           _buildSectionHeader(tr('campaign.store.coin_packs')),
           const SizedBox(height: 12),
           SizedBox(
-            height: 180,
-            child: ListView(
+            height: coinPackItems.isNotEmpty ? coinPackItems.first.height : 220,
+            child: ListView.separated(
               scrollDirection: Axis.horizontal,
               clipBehavior: Clip.none,
-              children: [
-                StoreProductCard(
-                  title: tr('campaign.store.handful'),
-                  amount: "100",
-                  icon: Icons.monetization_on,
-                  price: "0.99 €",
-                  color: AppTheme.coinRimTop,
-                ),
-                const SizedBox(width: 16),
-                StoreProductCard(
-                  title: tr('campaign.store.pouch'),
-                  amount: "500",
-                  icon: Icons.savings,
-                  price: "3.99 €",
-                  color: AppTheme.coinRimTop,
-                  isPopular: true,
-                  badgeText: tr('campaign.store.best_badge'),
-                ),
-                const SizedBox(width: 16),
-                StoreProductCard(
-                  title: tr('campaign.store.chest'),
-                  amount: "1500",
-                  icon: Icons.account_balance,
-                  price: "9.99 €",
-                  color: AppTheme.coinRimTop,
-                ),
-              ],
+              itemCount: coinPackItems.length,
+              separatorBuilder: (context, index) => const SizedBox(width: 16),
+              itemBuilder: (ctx, index) => _buildProductCard(coinPackItems[index]),
             ),
           ),  
         ],
@@ -138,66 +320,63 @@ class StoreScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSpecialOfferCard(BuildContext context, String imagePath) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppTheme.orangeBurnt, AppTheme.coinRimBottom],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.coinBorderDark, width: 3),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.4),
-            offset: const Offset(0, 6),
-            blurRadius: 8,
+  Widget _buildSpecialOfferCard(BuildContext context, StoreItemData item, String imagePath) {
+    return BouncingScaleButton(
+      onTap: _getOnTapForId(item.id) ?? () {},
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [AppTheme.orangeBurnt, AppTheme.coinRimBottom],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Image / Icon
-       Image.asset(
-        imagePath,
-        height: 80,
-        fit: BoxFit.contain,
-      ),
-          const SizedBox(width: 16),
-          // Content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  tr('campaign.store.no_ads_title'),
-                  style: const TextStyle(
-                    fontFamily: 'Round',
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.white,
-                    shadows: [Shadow(color: Colors.black26, offset: Offset(1,1))],
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppTheme.coinBorderDark, width: 3),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.4),
+              offset: const Offset(0, 6),
+              blurRadius: 8,
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Image / Icon
+         Image.asset(
+          imagePath,
+          height: 80,
+          fit: BoxFit.contain,
+        ),
+            const SizedBox(width: 16),
+            // Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    tr(item.titleKey),
+                    style: const TextStyle(
+                      fontFamily: 'Round',
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.white,
+                      shadows: [Shadow(color: Colors.black26, offset: Offset(1,1))],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  tr('campaign.store.no_ads_desc'),
-                  style: TextStyle(
-                    fontFamily: 'Round',
-                    fontSize: 12,
-                    color: AppTheme.white,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                BouncingScaleButton(
-                  onTap: () {
-                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Purchase simulation: No Ads Bundle")),
-                    );
-                  },
-                  child: Container(
+                  const SizedBox(height: 4),
+                  if (item.descriptionKey != null)
+                    Text(
+                      tr(item.descriptionKey!),
+                      style: TextStyle(
+                        fontFamily: 'Round',
+                        fontSize: 12,
+                        color: AppTheme.white,
+                      ),
+                    ),
+                  const SizedBox(height: 12),
+                  Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: AppTheme.green,
@@ -211,9 +390,9 @@ class StoreScreen extends StatelessWidget {
                          )
                       ]
                     ),
-                    child: const Text(
-                      "4.99 €",
-                      style: TextStyle(
+                    child: Text(
+                      item.price,
+                      style: const TextStyle(
                         fontFamily: 'Round',
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -221,11 +400,11 @@ class StoreScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

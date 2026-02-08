@@ -24,6 +24,10 @@ class PlayerProfile {
   
   // Tracking
   int lastAdStage;
+  DateTime? unlimitedLivesUntil;
+  
+  // Localization
+  String? locale;
 
   PlayerProfile({
     this.stage = 1,
@@ -40,6 +44,8 @@ class PlayerProfile {
     this.activeWord,
     List<String>? campaignWords,
     this.lastAdStage = 0,
+    this.unlimitedLivesUntil,
+    this.locale,
   }) : 
     lastLifeRegen = lastLifeRegen ?? DateTime.now(),
     dailyGoals = dailyGoals ?? [],
@@ -75,6 +81,10 @@ class PlayerProfile {
           ?.map((e) => e as String)
           .toList(),
       lastAdStage: json['lastAdStage'] as int? ?? 0,
+       unlimitedLivesUntil: json['unlimitedLivesUntil'] == null
+          ? null
+          : DateTime.parse(json['unlimitedLivesUntil'] as String),
+      locale: json['locale'] as String?,
     );
   }
 
@@ -93,6 +103,8 @@ class PlayerProfile {
         'activeWord': activeWord,
         'campaignWords': campaignWords,
         'lastAdStage': lastAdStage,
+        'unlimitedLivesUntil': unlimitedLivesUntil?.toIso8601String(),
+        'locale': locale,
       };
 
   factory PlayerProfile.initial() => PlayerProfile();

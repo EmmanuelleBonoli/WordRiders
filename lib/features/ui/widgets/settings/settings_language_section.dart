@@ -56,6 +56,7 @@ class SettingsLanguageSection extends StatelessWidget {
             onPressed: () async {
               Navigator.pop(ctx);
               await PlayerPreferences.resetCampaign();
+              await PlayerPreferences.setLocale(newLocale.languageCode);
               if (context.mounted) {
                  await context.setLocale(newLocale);
                  onSettingsChanged(); 
@@ -121,7 +122,10 @@ class SettingsLanguageSection extends StatelessWidget {
                     if (currentStage > 1) {
                       _confirmChangeLanguage(context, newLocale);
                     } else {
-                      await context.setLocale(newLocale);
+                      await PlayerPreferences.setLocale(newLocale.languageCode);
+                      if (context.mounted) {
+                        await context.setLocale(newLocale);
+                      }
                     }
                   }
                 },

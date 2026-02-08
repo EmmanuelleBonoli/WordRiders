@@ -246,7 +246,6 @@ class GameController extends ChangeNotifier {
     _gameTimer?.cancel();
 
     if (isCampaign) {
-      await PlayerPreferences.addCoins(60); 
       await GoalService().incrementLevelsWon(1);
       await PlayerPreferences.addUsedWord(_targetWord); 
       

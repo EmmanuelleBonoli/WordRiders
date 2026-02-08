@@ -6,6 +6,7 @@ class ResourceBadge extends StatelessWidget {
   final Widget content;
   final double imageSize;
   final double imageTopOffset;
+  final Widget? overlayIcon;
 
   const ResourceBadge({
     super.key,
@@ -13,6 +14,7 @@ class ResourceBadge extends StatelessWidget {
     required this.content,
     this.imageSize = 56.0,
     this.imageTopOffset = -10.0,
+    this.overlayIcon,
   });
 
   @override
@@ -80,11 +82,23 @@ class ResourceBadge extends StatelessWidget {
         Positioned(
           left: -8,
           top: imageTopOffset, 
-          child: Image.asset(
-            imageAsset,
-            width: imageSize,
-            height: imageSize,
-            fit: BoxFit.contain,
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              Image.asset(
+                imageAsset,
+                width: imageSize,
+                height: imageSize,
+                fit: BoxFit.contain,
+              ),
+              if (overlayIcon != null)
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: overlayIcon!,
+                ),
+            ],
           ),
         ),
       ],

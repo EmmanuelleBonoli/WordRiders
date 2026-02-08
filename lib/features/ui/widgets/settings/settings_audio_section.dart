@@ -60,7 +60,7 @@ class SettingsAudioSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SettingsSectionTitle(title: "AUDIO", color: AppTheme.darkBrown),
+        SettingsSectionTitle(title: tr('settings.audio'), color: AppTheme.darkBrown),
         SettingsContainer(
           backgroundColor: AppTheme.tileFace,
           borderColor: AppTheme.tileShadow,

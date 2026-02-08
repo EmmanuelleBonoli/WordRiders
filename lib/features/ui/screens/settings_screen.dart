@@ -111,48 +111,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
                      child: Container(
                        constraints: const BoxConstraints(maxWidth: 600),
                        margin: const EdgeInsets.all(24),
-                       child: ListView(
-                        shrinkWrap: true,
-                        children: [
-                          SettingsLanguageSection(
-                            currentStage: _currentStage,
-                            onSettingsChanged: _loadSettings,
-                          ),
-                          const SizedBox(height: 24),
-                          
-                          SettingsAudioSection(
-                            musicOn: musicOn,
-                            sfxOn: sfxOn,
-                            onMusicChanged: (val) => setState(() => musicOn = val),
-                            onSfxChanged: (val) => setState(() => sfxOn = val),
-                          ),
-                          
-                          const SizedBox(height: 40),
-                          
-                          SettingsAboutSection(appVersion: appVersion),
-                          
-                          const SizedBox(height: 40),
-                          
-                          SettingsResetSection(
-                            currentStage: _currentStage,
-                            onResetComplete: _loadSettings,
-                          ),
+                       child: SingleChildScrollView(
+                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SettingsLanguageSection(
+                              key: ValueKey('lang-${context.locale}'),
+                              currentStage: _currentStage,
+                              onSettingsChanged: _loadSettings,
+                            ),
+                            const SizedBox(height: 24),
+                            
+                            SettingsAudioSection(
+                              key: ValueKey('audio-${context.locale}'),
+                              musicOn: musicOn,
+                              sfxOn: sfxOn,
+                              onMusicChanged: (val) => setState(() => musicOn = val),
+                              onSfxChanged: (val) => setState(() => sfxOn = val),
+                            ),
+                            
                             const SizedBox(height: 40),
-                          
-                          // Copyright
-                          Center(
-                            child: Text(
-                              tr('settings.copyright'),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontFamily: 'Round',
-                                color: AppTheme.brown.withValues(alpha: 0.7),
-                                fontSize: 12,
-                                height: 1.5,
+                            
+                            SettingsAboutSection(
+                              key: ValueKey('about-${context.locale}'),
+                              appVersion: appVersion
+                            ),
+                            
+                            const SizedBox(height: 40),
+                            
+                            SettingsResetSection(
+                              key: ValueKey('reset-${context.locale}'),
+                              currentStage: _currentStage,
+                              onResetComplete: _loadSettings,
+                            ),
+                              const SizedBox(height: 40),
+                            
+                            // Copyright
+                            Center(
+                              child: Text(
+                                tr('settings.copyright'),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'Round',
+                                  color: AppTheme.brown.withValues(alpha: 0.7),
+                                  fontSize: 12,
+                                  height: 1.5,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                         ),
                        ),
                      ),
                    ),

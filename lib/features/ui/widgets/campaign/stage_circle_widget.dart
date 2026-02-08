@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
+import '../common/shiny_corner_effect.dart';
 
 class StageCircle extends StatelessWidget {
   final int number;
@@ -20,18 +21,17 @@ class StageCircle extends StatelessWidget {
     final isBoss = number % 10 == 0;
     final isHard = !isBoss && (number % 5 == 0);
 
-    // --- Couleurs Palette "Lingot d'Or" via AppTheme ---
-    // Active (Current) Stage - Bright & Invitation to click
+    // Stage actif
     const uFace = AppTheme.goldButtonFace;      
     const uSide = AppTheme.goldButtonShadow;      
     const uHigh = AppTheme.goldButtonHighlight;      
     
-    // Completed Stage - Duller/Dimmed (Terne)
+    // Stage complété
     const cFace = AppTheme.neutralBeige;
     const cSide = AppTheme.neutralBeigeShadow; 
     const cHigh = AppTheme.neutralBeigeLight;
 
-    // Locked (Gris/Terne)
+    // Stage verrouillé
     final lFace = Colors.grey.shade400;
     final lSide = Colors.grey.shade600;
     final lHigh = Colors.grey.shade300;
@@ -117,35 +117,34 @@ class StageCircle extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                   // Reflet Glossy (Haut)
-                   Positioned(
-                     top: size * 0.1,
-                     child: Container(
-                       width: size * 0.5,
-                       height: size * 0.25,
-                       decoration: BoxDecoration(
-                         borderRadius: BorderRadius.all(Radius.elliptical(size, size/2)),
-                         color: Colors.white.withValues(alpha: 0.7),
-                       ),
+                   Positioned.fill(
+                     child: ShinyCornerEffect(
+                       isCircle: true,
+                       color: Colors.white.withValues(alpha: unlocked ? 0.6 : 0.4),
+                       strokeWidth: 7.0,
+                       blurSigma: 3.0,
+                       cornerLength: 20.0, 
+                       padding: 5.0, 
                      ),
                    ),
 
-                   // Numéro
-                   Padding(
-                     padding: EdgeInsets.only(bottom: (isBoss || isHard) ? 10 : 0),
-                     child: Text(
-                      '$number',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: textColor,
-                        fontWeight: FontWeight.w900,
-                        fontFamily: 'Round',
-                        fontSize: isBoss ? 26 : 22,
-                        shadows: unlocked ? [
-                          Shadow(color: Colors.white.withValues(alpha: 0.5), offset: const Offset(0,1), blurRadius: 0)
-                        ] : null,
+                   // Numéro (Uniquement si débloqué)
+                   if (unlocked)
+                     Padding(
+                       padding: EdgeInsets.only(bottom: (isBoss || isHard) ? 10 : 0),
+                       child: Text(
+                        '$number',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          color: textColor,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Round',
+                          fontSize: isBoss ? 26 : 22,
+                          shadows: [
+                            Shadow(color: Colors.white.withValues(alpha: 0.5), offset: const Offset(0,1), blurRadius: 0)
+                          ],
+                        ),
                       ),
-                    ),
-                   ),
+                     ),
                   
                   // Etoiles (Indicateurs Boss/Hard)
                   if (isHard)

@@ -9,6 +9,7 @@ class GameModalButton extends StatelessWidget {
   final String? subLabel;
   final Color textColor;
   final Color iconColor;
+  final Widget? labelWidget;
 
   const GameModalButton({
     super.key,
@@ -17,6 +18,7 @@ class GameModalButton extends StatelessWidget {
     required this.color,
     required this.onPressed,
     this.subLabel,
+    this.labelWidget,
     this.textColor = Colors.white,
     this.iconColor = Colors.white,
   });
@@ -45,27 +47,30 @@ class GameModalButton extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          Text(
-            label.isEmpty 
-                ? label 
-                : '${label[0].toUpperCase()}${label.substring(1).toLowerCase()}',
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontFamily: 'Round',
-              color: textColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              shadows: [
-                Shadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  offset: const Offset(0, 1.5),
-                  blurRadius: 2,
-                )
-              ],
+          if (labelWidget != null)
+            labelWidget!
+          else
+            Text(
+              label.isEmpty 
+                  ? label 
+                  : '${label[0].toUpperCase()}${label.substring(1).toLowerCase()}',
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontFamily: 'Round',
+                color: textColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    offset: const Offset(0, 1.5),
+                    blurRadius: 2,
+                  )
+                ],
+              ),
             ),
-          ),
           if (subLabel != null) ...[
             const SizedBox(height: 4),
             Container(

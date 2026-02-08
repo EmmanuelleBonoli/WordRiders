@@ -6,6 +6,7 @@ import 'package:word_train/features/gameplay/services/word_service.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
 import 'package:word_train/features/gameplay/services/iap_service.dart';
 import 'package:word_train/features/gameplay/services/goal_service.dart';
+import 'package:word_train/features/gameplay/services/player_preferences.dart';
 import 'package:flutter/services.dart';
 
 void main() async {
@@ -19,6 +20,13 @@ void main() async {
   final wordService = WordService();
   await wordService.loadDictionary('fr'); 
 
+  // Charger la langue du joueur
+  final savedLocaleCode = await PlayerPreferences.getLocale();
+  Locale? startLocale;
+  if (savedLocaleCode != null) {
+    startLocale = Locale(savedLocaleCode);
+  }
+
   // Forcer l'orientation en mode portrait
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -30,6 +38,8 @@ void main() async {
       supportedLocales: const [Locale('en'), Locale('fr')],
       path: 'assets/translations',
       fallbackLocale: const Locale('fr'),
+      startLocale: startLocale,
+      saveLocale: false, // Utilise PlayerPreferences à la place
       child: Provider<WordService>.value(
         value: wordService,
         child: WordTrainApp(),
