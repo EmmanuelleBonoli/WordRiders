@@ -4,11 +4,11 @@ import 'package:word_train/features/gameplay/services/player_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:word_train/features/ui/widgets/navigation/app_back_button.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:word_train/features/ui/widgets/settings/settings_about_section.dart';
 import 'package:word_train/features/ui/widgets/settings/settings_audio_section.dart';
 import 'package:word_train/features/ui/widgets/settings/settings_language_section.dart';
 import 'package:word_train/features/ui/widgets/settings/settings_reset_section.dart';
+import 'package:word_train/config/app_config.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -20,14 +20,13 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool musicOn = true;
   bool sfxOn = true;
-  String appVersion = '1.0.0';
+  final String appVersion = AppConfig.version;
   int _currentStage = 1;
 
   @override
   void initState() {
     super.initState();
     _loadSettings();
-    _loadVersion();
   }
 
   Future<void> _loadSettings() async {
@@ -40,17 +39,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _currentStage = stage;
     });
     if (mounted) setState(() {});
-  }
-
-  Future<void> _loadVersion() async {
-    try {
-      final packageInfo = await PackageInfo.fromPlatform();
-      setState(() {
-        appVersion = packageInfo.version;
-      });
-    } catch (e) {
-      debugPrint("Erreur chargement version: $e");
-    }
   }
 
   @override
