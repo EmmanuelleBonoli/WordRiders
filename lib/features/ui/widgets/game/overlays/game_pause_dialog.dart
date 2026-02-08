@@ -112,7 +112,7 @@ class _GamePauseDialogState extends State<GamePauseDialog> with SingleTickerProv
                                // Quitter
                               Expanded(
                                 child: GameModalButton(
-                                  label: tr('game.quit'),
+                                  label: context.tr('game.quit'),
                                   icon: Icons.close_rounded,
                                   color: AppTheme.red,
                                   textColor: Colors.white,
@@ -126,7 +126,7 @@ class _GamePauseDialogState extends State<GamePauseDialog> with SingleTickerProv
                               // Rejouer
                               Expanded(
                                 child: GameModalButton(
-                                  label: tr('game.replay'),
+                                  label: context.tr('game.replay'),
                                   icon: Icons.refresh_rounded,
                                   color: AppTheme.btnShuffle,
                                   textColor: Colors.white,
@@ -140,7 +140,7 @@ class _GamePauseDialogState extends State<GamePauseDialog> with SingleTickerProv
                               // Continuer
                               Expanded(
                                 child: GameModalButton(
-                                  label: tr('game.continue'),
+                                  label: context.tr('game.continue'),
                                   icon: Icons.play_arrow_rounded,
                                   color: AppTheme.greenMain,
                                   textColor: Colors.white,

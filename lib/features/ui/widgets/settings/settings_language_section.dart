@@ -22,7 +22,7 @@ class SettingsLanguageSection extends StatelessWidget {
         backgroundColor: Colors.white.withValues(alpha: 0.95),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(
-          tr('settings.changeLanguageConfirmTitle'),
+          context.tr('settings.changeLanguageConfirmTitle'),
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontFamily: 'Round',
@@ -32,7 +32,7 @@ class SettingsLanguageSection extends StatelessWidget {
           ),
         ),
         content: Text(
-          tr('settings.changeLanguageConfirmMessage'),
+          context.tr('settings.changeLanguageConfirmMessage'),
           textAlign: TextAlign.center,
           style: const TextStyle(
             color: AppTheme.textDark,
@@ -44,7 +44,7 @@ class SettingsLanguageSection extends StatelessWidget {
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              tr('settings.cancel'),
+              context.tr('settings.cancel'),
               style: TextStyle(
                 color: Colors.grey.shade600,
                 fontFamily: 'Round',
@@ -70,7 +70,7 @@ class SettingsLanguageSection extends StatelessWidget {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
             child: Text(
-              tr('settings.confirm'),
+              context.tr('settings.confirm'),
               style: const TextStyle(fontFamily: 'Round', fontWeight: FontWeight.bold),
             ),
           ),
@@ -84,7 +84,7 @@ class SettingsLanguageSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SettingsSectionTitle(title: tr('settings.language'), color: AppTheme.darkBrown),
+        SettingsSectionTitle(title: context.tr('settings.language'), color: AppTheme.darkBrown),
         SettingsContainer(
           backgroundColor: AppTheme.tileFace,
           borderColor: AppTheme.tileShadow,
@@ -92,7 +92,7 @@ class SettingsLanguageSection extends StatelessWidget {
           child: ListTile(
             leading: const Icon(Icons.language, color: AppTheme.tileShadow, size: 28),
             title: Text(
-              tr('settings.language'), 
+              context.tr('settings.language'), 
               style: const TextStyle(
                 fontFamily: 'Round', 
                 color: AppTheme.darkBrown, 

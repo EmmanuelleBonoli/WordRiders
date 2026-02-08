@@ -42,7 +42,7 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // --- SECTION 1 : SUCCÈS QUOTIDIENS ---
-          _buildSectionHeader(tr('campaign.goals.headers.daily')),
+          _buildSectionHeader(context.tr('campaign.goals.headers.daily')),
           const SizedBox(height: 12),
           SizedBox(
             height: 155,
@@ -65,7 +65,7 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
           const SizedBox(height: 30),
 
           // --- SECTION 2 : PROGRESSION DE CARRIÈRE ---
-          _buildSectionHeader(tr('campaign.goals.headers.career')),
+          _buildSectionHeader(context.tr('campaign.goals.headers.career')),
           const SizedBox(height: 12),
           
           Container(

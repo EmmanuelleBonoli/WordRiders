@@ -80,10 +80,10 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
   Widget build(BuildContext context) {
     final isWon = widget.isWon;
     final mainColor = isWon ? AppTheme.green : AppTheme.red;
-    final title = isWon ? tr('game.victory') : tr('game.defeat');
+    final title = isWon ? context.tr('game.victory') : context.tr('game.defeat');
     final message = isWon 
-        ? (widget.isCampaign ? tr('game.level_finished') : tr('game.training_won'))
-        : tr('game.fox_won');
+        ? (widget.isCampaign ? context.tr('game.level_finished') : context.tr('game.training_won'))
+        : context.tr('game.fox_won');
 
     final imageAsset = isWon 
         ? 'assets/images/characters/rabbit_head.jpg' 
@@ -292,7 +292,7 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
               }, 
               color: AppTheme.green,
               icon: Icons.arrow_forward_rounded,
-              label: tr('game.continue'),
+              label: context.tr('game.continue'),
             ),
           ),
         ],
@@ -306,7 +306,7 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
             onPressed: widget.onQuit,
             color: AppTheme.red,
             icon: Icons.close_rounded,
-            label: tr('game.quit'),
+            label: context.tr('game.quit'),
           ),
         ),
         const SizedBox(width: 16),
@@ -315,7 +315,7 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
             onPressed: () => _handleReplay(context),
             color: AppTheme.green,
             icon: Icons.refresh_rounded,
-            label: tr('game.replay'),
+            label: context.tr('game.replay'),
           ),
         ),
       ],

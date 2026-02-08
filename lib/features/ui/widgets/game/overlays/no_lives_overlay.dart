@@ -37,7 +37,7 @@ class _NoLivesOverlayState extends State<NoLivesOverlay> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(tr('campaign.notEnoughCoins')),
+            content: Text(context.tr('campaign.notEnoughCoins')),
             backgroundColor: AppTheme.red,
           ),
         );
@@ -79,7 +79,7 @@ class _NoLivesOverlayState extends State<NoLivesOverlay> {
               const Icon(Icons.favorite_border_rounded, size: 40, color: AppTheme.red),
               const SizedBox(height: 8),
               Text(
-                tr('campaign.noLives'),
+                context.tr('campaign.noLives'),
                 style: const TextStyle(
                   fontFamily: 'Round',
                   fontSize: 18,
@@ -90,7 +90,7 @@ class _NoLivesOverlayState extends State<NoLivesOverlay> {
               ),
               const SizedBox(height: 4),
               Text(
-                tr('campaign.noLivesMessage'),
+                context.tr('campaign.noLivesMessage'),
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 13, color: AppTheme.textDark),
               ),
@@ -113,7 +113,7 @@ class _NoLivesOverlayState extends State<NoLivesOverlay> {
               ),
               const SizedBox(height: 12),
               _buildCompactButton(
-                text: tr('campaign.watchAd'),
+                text: context.tr('campaign.watchAd'),
                 icon: Icons.play_circle_outline,
                 color: AppTheme.green,
                 onPressed: _watchAd,
@@ -121,7 +121,7 @@ class _NoLivesOverlayState extends State<NoLivesOverlay> {
               ),
               const SizedBox(height: 8),
               _buildCompactButton(
-                text: '${tr('campaign.buyLives')} (700 🪙)',
+                text: '${context.tr('campaign.buyLives')} (700 🪙)',
                 icon: Icons.shopping_cart_outlined,
                 color: Colors.amber,
                 onPressed: _buyLives,

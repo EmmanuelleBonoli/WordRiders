@@ -40,6 +40,8 @@
     "privacyPolicy": "Politique de confidentialité",
     "termsOfService": "Conditions d'utilisation",
     "copyright": "© 2026 Major Manu Productions\nTous droits réservés",
+    "restorePurchases": "Restaurer les achats",
+    "restoreStarted": "Restauration des achats en cours...",
     "emailError": "Impossible d'ouvrir l'application email",
     "linkError": "Impossible d'ouvrir le lien"
   },

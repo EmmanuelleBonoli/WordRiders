@@ -32,6 +32,9 @@ class StoreItemData {
   final StoreVisualType visualType;
   final StoreItemColorType colorType;
   
+  // Logic
+  final int rewardValue; // Quantité de récompense (pièces) donnée lors de l'achat
+  
   // Flags
   final bool isPopular;
   final bool isCurrencyPrice; // Utilise la monnaie virtuelle (pièces) au lieu de l'argent réel
@@ -47,6 +50,7 @@ class StoreItemData {
     required this.assetPath,
     required this.colorType,
     this.visualType = StoreVisualType.standard,
+    this.rewardValue = 0,
     this.isPopular = false,
     this.isCurrencyPrice = false,
     this.height = 180,
@@ -89,6 +93,7 @@ final List<StoreItemData> coinPackItems = [
     titleKey: "",
     amount: "+ 100",
     price: "0.99 €",
+    rewardValue: 100,
     assetPath: 'assets/images/indicators/coin.png',
     colorType: StoreItemColorType.gold,
     height: 220,
@@ -99,6 +104,7 @@ final List<StoreItemData> coinPackItems = [
     titleKey: "",
     amount: "+ 500",
     price: "3.99 €",
+    rewardValue: 500,
     assetPath: 'assets/images/indicators/coin.png',
     colorType: StoreItemColorType.gold,
     visualType: StoreVisualType.stackedCoins,
@@ -110,6 +116,7 @@ final List<StoreItemData> coinPackItems = [
     titleKey: "",
     amount: "+ 2000",
     price: "9.99 €",
+    rewardValue: 2000,
     assetPath: 'assets/images/indicators/chest_of_coins.png',
     colorType: StoreItemColorType.gold,
     visualType: StoreVisualType.chest,

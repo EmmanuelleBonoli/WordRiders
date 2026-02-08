@@ -23,9 +23,9 @@ class _LoadingMessagesWidgetState extends State<LoadingMessagesWidget> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _messages = [
-      tr('loading.messages.0'),
-      tr('loading.messages.1'),
-      tr('loading.messages.2'),
+      context.tr('loading.messages.0'),
+      context.tr('loading.messages.1'),
+      context.tr('loading.messages.2'),
     ];
     _timer ??= Timer.periodic(const Duration(seconds: 2), (timer) {
       if (mounted) {
@@ -51,7 +51,7 @@ class _LoadingMessagesWidgetState extends State<LoadingMessagesWidget> {
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 500),
           child: Text(
-            _messages.isNotEmpty ? _messages[_index] : tr('loading.title'),
+            _messages.isNotEmpty ? _messages[_index] : context.tr('loading.title'),
             key: ValueKey(_index),
             style: TextStyle(
               fontSize: 16,

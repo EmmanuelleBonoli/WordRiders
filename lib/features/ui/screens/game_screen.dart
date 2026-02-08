@@ -66,14 +66,14 @@ class _GameScreenContent extends StatelessWidget {
       controller.pauseGame();
       
       final String subtitle = controller.isCampaign 
-          ? tr('game.quit_confirm_subtitle_campaign')
-          : tr('game.quit_confirm_subtitle_training');
+          ? context.tr('game.quit_confirm_subtitle_campaign')
+          : context.tr('game.quit_confirm_subtitle_training');
 
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (ctx) => GamePauseDialog(
-          title: tr('game.pause_title'),
+          title: context.tr('game.pause_title'),
           message: subtitle,
           onResume: () {
             Navigator.pop(ctx); 

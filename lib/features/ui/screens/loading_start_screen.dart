@@ -72,7 +72,7 @@ class _LoadingStartScreenState extends State<LoadingStartScreen> {
                     color: theme.colorScheme.secondary,
                     strokeWidth: 5,
                   ),
-                  const SizedBox(height: 120), 
+                  const SizedBox(height: 50), 
                 ],
               ),
             ),

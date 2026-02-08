@@ -26,7 +26,7 @@ class SettingsAboutSection extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(tr('settings.emailError')),
+            content: Text(context.tr('settings.emailError')),
             backgroundColor: AppTheme.red,
           ),
         );
@@ -43,7 +43,7 @@ class SettingsAboutSection extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(tr('settings.linkError')),
+            content: Text(context.tr('settings.linkError')),
             backgroundColor: AppTheme.red,
           ),
         );
@@ -60,7 +60,7 @@ class SettingsAboutSection extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(tr('settings.linkError')),
+            content: Text(context.tr('settings.linkError')),
             backgroundColor: AppTheme.red,
           ),
         );
@@ -73,7 +73,7 @@ class SettingsAboutSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SettingsSectionTitle(title: tr('settings.aboutTitle'), color: AppTheme.darkBrown),
+        SettingsSectionTitle(title: context.tr('settings.aboutTitle'), color: AppTheme.darkBrown),
         SettingsContainer(
           backgroundColor: AppTheme.tileFace,
           borderColor: AppTheme.tileShadow,
@@ -82,7 +82,7 @@ class SettingsAboutSection extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.info_outline_rounded, color: AppTheme.tileShadow, size: 28),
                 title: Text(
-                  tr('settings.version'),
+                  context.tr('settings.version'),
                   style: const TextStyle(
                     fontFamily: 'Round',
                     color: AppTheme.darkBrown,
@@ -104,7 +104,7 @@ class SettingsAboutSection extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.email_outlined, color: AppTheme.tileShadow, size: 28),
                 title: Text(
-                  tr('settings.contact'),
+                  context.tr('settings.contact'),
                   style: const TextStyle(
                     fontFamily: 'Round',
                     color: AppTheme.darkBrown,
@@ -125,7 +125,7 @@ class SettingsAboutSection extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.description_outlined, color: AppTheme.tileShadow, size: 28),
                 title: Text(
-                  tr('settings.privacyPolicy'),
+                  context.tr('settings.privacyPolicy'),
                   style: const TextStyle(
                     fontFamily: 'Round',
                     color: AppTheme.darkBrown,
@@ -140,7 +140,7 @@ class SettingsAboutSection extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.gavel_outlined, color: AppTheme.tileShadow, size: 28),
                 title: Text(
-                  tr('settings.termsOfService'),
+                  context.tr('settings.termsOfService'),
                   style: const TextStyle(
                     fontFamily: 'Round',
                     color: AppTheme.darkBrown,

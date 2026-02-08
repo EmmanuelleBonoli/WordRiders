@@ -8,6 +8,7 @@ import 'package:word_train/features/ui/widgets/settings/settings_about_section.d
 import 'package:word_train/features/ui/widgets/settings/settings_audio_section.dart';
 import 'package:word_train/features/ui/widgets/settings/settings_language_section.dart';
 import 'package:word_train/features/ui/widgets/settings/settings_reset_section.dart';
+import 'package:word_train/features/ui/widgets/settings/settings_restore_section.dart';
 import 'package:word_train/config/app_config.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -72,7 +73,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                        
                        Expanded(
                          child: Text(
-                           tr('settings.title').toUpperCase(),
+                           context.tr('settings.title').toUpperCase(),
                            textAlign: TextAlign.center,
                            style: const TextStyle(
                              fontFamily: 'Round',
@@ -124,20 +125,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               key: ValueKey('about-${context.locale}'),
                               appVersion: appVersion
                             ),
-                            
+                                                
                             const SizedBox(height: 40),
-                            
+                            const SettingsRestoreSection(),
+                            const SizedBox(height: 12),
                             SettingsResetSection(
                               key: ValueKey('reset-${context.locale}'),
                               currentStage: _currentStage,
                               onResetComplete: _loadSettings,
                             ),
-                              const SizedBox(height: 40),
+
+                            const SizedBox(height: 40),
                             
                             // Copyright
                             Center(
                               child: Text(
-                                tr('settings.copyright'),
+                                context.tr('settings.copyright'),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontFamily: 'Round',

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // ===========================================================================
@@ -121,9 +120,7 @@ class AppTheme {
   static const Color coinIconOutline = _coinRimBottom;
   static const Color inputCartridgeFill = Color(0xFFD19B5B);
 
-  // Fonts
-  static String get fontFamily => GoogleFonts.fredoka().fontFamily!;
-
+  static const String fontFamily = 'sans-serif-rounded';
 
   // ===========================================================================
   // 3. THEME DATA
@@ -134,7 +131,7 @@ class AppTheme {
     brightness: Brightness.light,
     scaffoldBackgroundColor: tileFace,
     primaryColor: tileShadow,
-    fontFamily: GoogleFonts.fredoka().fontFamily,
+    fontFamily: fontFamily,
     
     colorScheme: const ColorScheme.light(
       primary: tileShadow,
@@ -148,23 +145,21 @@ class AppTheme {
       onError: Colors.white,
     ),
     
-    textTheme: GoogleFonts.fredokaTextTheme(
-      ThemeData.light().textTheme,
-    ).copyWith(
+    textTheme: const TextTheme(
       displayLarge: TextStyle(
-        fontFamily: GoogleFonts.fredoka().fontFamily,
+        fontFamily: fontFamily,
         fontSize: 32,
         fontWeight: FontWeight.bold,
         color: darkBrown,
       ),
       displayMedium: TextStyle(
-        fontFamily: GoogleFonts.fredoka().fontFamily,
+        fontFamily: fontFamily,
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: darkBrown,
       ),
       titleLarge: TextStyle(
-        fontFamily: GoogleFonts.fredoka().fontFamily,
+        fontFamily: fontFamily,
         fontSize: 20,
         fontWeight: FontWeight.bold,
         color: brown,
@@ -190,7 +185,7 @@ class AppTheme {
         ),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
         textStyle: TextStyle(
-          fontFamily: GoogleFonts.fredoka().fontFamily,
+          fontFamily: fontFamily,
           fontSize: 18, 
           fontWeight: FontWeight.w900, 
         ),

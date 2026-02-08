@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:word_train/features/ui/styles/app_theme.dart';
 import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
 import 'package:word_train/features/ui/widgets/store/store_product_card.dart';
 import 'package:word_train/features/gameplay/services/ad_service.dart';
 import 'package:word_train/features/gameplay/services/player_preferences.dart';
+import 'package:word_train/features/gameplay/services/iap_service.dart';
 import 'package:word_train/features/ui/widgets/animations/resource_transfer_animation.dart';
 import 'package:word_train/features/ui/screens/main_scaffold.dart';
 import 'package:word_train/data/store_data.dart';
@@ -20,21 +22,54 @@ class _StoreScreenState extends State<StoreScreen> {
   final GlobalKey _refillLivesKey = GlobalKey();
   final GlobalKey _unlimitedLivesKey = GlobalKey();
 
+  @override
+  void initState() {
+    super.initState();
+    // Écoute les retours de l'IAP Service pour afficher des feedbacks
+    IapService.onErrorOrSuccess = (message, isError) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: isError ? AppTheme.red : AppTheme.green,
+        ),
+      );
+      // Recharger l'UI pour mettre à jour les crédits/vies
+      setState(() {});
+    };
+  }
+
+  @override
+  void dispose() {
+    IapService.onErrorOrSuccess = null;
+    super.dispose();
+  }
+
   GlobalKey? _getKeyForId(String id) {
     if (id == 'refill_lives') return _refillLivesKey;
     if (id == 'unlimited_lives') return _unlimitedLivesKey;
     return null;
   }
   
-  VoidCallback? _getOnTapForId(String id) {
-    if (id == 'refill_lives') return () => _buyRefillLives(context);
-    if (id == 'unlimited_lives') return () => _buyUnlimitedLives(context);
-    if (id == 'no_ads') {
-       return () {
-         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Purchase simulation: No Ads Bundle")),
-        );
-      };
+  VoidCallback? _getOnTapForItem(StoreItemData item) {
+    // 1. Achats virtuels (Vies)
+    if (item.id == 'refill_lives') return () => _buyRefillLives(context);
+    if (item.id == 'unlimited_lives') return () => _buyUnlimitedLives(context);
+    
+    // 2. Achats Réels (IAP)
+    if (item.productId != null) {
+       return () async {
+         final product = IapService.getProductById(item.productId!);
+         if (product != null) {
+           await IapService.buy(product);
+         } else {
+           // Fallback si le produit n'est pas chargé (ex: offline ou web)
+           // On pourrait tenter IapService.buy() avec un faux produit ou afficher une erreur
+           ScaffoldMessenger.of(context).showSnackBar(
+             const SnackBar(content: Text("Produit indisponible (Store non connecté)")),
+           );
+         }
+       };
     }
     return null;
   }
@@ -128,23 +163,32 @@ class _StoreScreenState extends State<StoreScreen> {
               height: item.colorType == StoreItemColorType.gold ? 42 : 50,
               fit: BoxFit.contain,
             )
-          : const SizedBox(); // Pour les offres sans pub gérées ailleurs
+          : const SizedBox(); 
         break;
+    }
+
+    // 3. Résolution du prix réel (IAP)
+    String displayPrice = item.price;
+    if (item.productId != null) {
+      final product = IapService.getProductById(item.productId!);
+      if (product != null) {
+        displayPrice = product.price; // Prix formaté localisé par le store (ex: "4,99 €")
+      }
     }
 
     return StoreProductCard(
       key: _getKeyForId(item.id) ?? ValueKey(item.id),
-      title: item.titleKey.isNotEmpty ? tr(item.titleKey) : "",
+      title: item.titleKey.isNotEmpty ? context.tr(item.titleKey) : "",
       amount: item.amount,
       customIcon: visualContent,
-      price: item.price,
+      price: displayPrice,
       color: cardColor,
       isGold: isGold,
       isPopular: item.isPopular,
       isCurrencyPrice: item.isCurrencyPrice,
-      badgeText: item.badgeTextKey != null ? tr(item.badgeTextKey!) : null,
+      badgeText: item.badgeTextKey != null ? context.tr(item.badgeTextKey!) : null,
       height: item.height,
-      onTap: _getOnTapForId(item.id),
+      onTap: _getOnTapForItem(item),
     );
   }
 
@@ -174,7 +218,6 @@ class _StoreScreenState extends State<StoreScreen> {
 
     if (currentCoins < cost) {
        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Pas assez de pièces !")));
-       // TODO: Ouvrir popup d'achat de pièces ?
        return;
     }
 
@@ -240,7 +283,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
           // --- OFFRES SPÉCIALES ---
           FutureBuilder<bool>(
-            future: AdService.hasNoAds(),
+            future: IapService.isNoAdsPurchased(),
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data == true) {
                 return const SizedBox.shrink();
@@ -263,7 +306,7 @@ class _StoreScreenState extends State<StoreScreen> {
           ),
 
    // --- CONSOMMABLES ---
-           _buildSectionHeader(tr('campaign.store.essentials')),
+           _buildSectionHeader(context.tr('campaign.store.essentials')),
            const SizedBox(height: 12),
            Row(
              children: consumableItems.asMap().entries.map((entry) {
@@ -282,7 +325,7 @@ class _StoreScreenState extends State<StoreScreen> {
           const SizedBox(height: 30),
 
            // --- PACKS DE PIÈCES ---
-          _buildSectionHeader(tr('campaign.store.coin_packs')),
+          _buildSectionHeader(context.tr('campaign.store.coin_packs')),
           const SizedBox(height: 12),
           SizedBox(
             height: coinPackItems.isNotEmpty ? coinPackItems.first.height : 220,
@@ -321,8 +364,17 @@ class _StoreScreenState extends State<StoreScreen> {
   }
 
   Widget _buildSpecialOfferCard(BuildContext context, StoreItemData item, String imagePath) {
+    // Résolution du prix réel (IAP)
+    String displayPrice = item.price;
+    if (item.productId != null) {
+      final product = IapService.getProductById(item.productId!);
+      if (product != null) {
+        displayPrice = product.price;
+      }
+    }
+
     return BouncingScaleButton(
-      onTap: _getOnTapForId(item.id) ?? () {},
+      onTap: _getOnTapForItem(item) ?? () {},
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -356,7 +408,7 @@ class _StoreScreenState extends State<StoreScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    tr(item.titleKey),
+                    context.tr(item.titleKey),
                     style: const TextStyle(
                       fontFamily: 'Round',
                       fontSize: 18,
@@ -368,7 +420,7 @@ class _StoreScreenState extends State<StoreScreen> {
                   const SizedBox(height: 4),
                   if (item.descriptionKey != null)
                     Text(
-                      tr(item.descriptionKey!),
+                      context.tr(item.descriptionKey!),
                       style: TextStyle(
                         fontFamily: 'Round',
                         fontSize: 12,
@@ -391,7 +443,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       ]
                     ),
                     child: Text(
-                      item.price,
+                      displayPrice,
                       style: const TextStyle(
                         fontFamily: 'Round',
                         fontSize: 16,

@@ -28,8 +28,8 @@ class CareerGoalTile extends StatelessWidget {
 
     // utilise descriptionKey si disponible, sinon réutilise le titre ou vide
     final String description = goal.descriptionKey.isNotEmpty 
-        ? tr(goal.descriptionKey) 
-        : '${tr('campaign.goals.career.target_label')} ${goal.target}'; 
+        ? context.tr(goal.descriptionKey) 
+        : '${context.tr('campaign.goals.career.target_label')} ${goal.target}'; 
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -56,7 +56,7 @@ class CareerGoalTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  tr(goal.titleKey),
+                  context.tr(goal.titleKey),
                   style: TextStyle(
                     fontFamily: 'Round',
                     fontSize: 16,
@@ -112,7 +112,8 @@ class CareerGoalTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: const [BoxShadow(color: Colors.black26, offset: Offset(0, 2), blurRadius: 4)]
                   ),
-                  child: Text(tr('campaign.goals.common.claim'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: Text(context.tr('campaign.goals.common.claim'), 
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
              )
         ],

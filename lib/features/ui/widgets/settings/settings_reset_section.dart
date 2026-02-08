@@ -21,7 +21,7 @@ class SettingsResetSection extends StatelessWidget {
         backgroundColor: Colors.white.withValues(alpha: 0.95),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(
-          tr('settings.resetCampaignConfirmTitle'),
+          context.tr('settings.resetCampaignConfirmTitle'),
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontFamily: 'Round',
@@ -31,7 +31,7 @@ class SettingsResetSection extends StatelessWidget {
           ),
         ),
         content: Text(
-          tr('settings.resetCampaignConfirmMessage'),
+          context.tr('settings.resetCampaignConfirmMessage'),
           textAlign: TextAlign.center,
           style: const TextStyle(
             color: AppTheme.textDark,
@@ -43,7 +43,7 @@ class SettingsResetSection extends StatelessWidget {
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              tr('settings.cancel'),
+              context.tr('settings.cancel'),
               style: TextStyle(
                 color: Colors.grey.shade600,
                 fontFamily: 'Round',
@@ -60,7 +60,7 @@ class SettingsResetSection extends StatelessWidget {
                 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(tr('settings.resetCampaignSuccess')),
+                    content: Text(context.tr('settings.resetCampaignSuccess')),
                     backgroundColor: AppTheme.green,
                     duration: const Duration(seconds: 2),
                   ),
@@ -75,7 +75,7 @@ class SettingsResetSection extends StatelessWidget {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
             child: Text(
-              tr('settings.resetCampaignConfirm'),
+              context.tr('settings.resetCampaignConfirm'),
               style: const TextStyle(fontFamily: 'Round', fontWeight: FontWeight.bold),
             ),
           ),
@@ -107,7 +107,7 @@ class SettingsResetSection extends StatelessWidget {
                 color: currentStage > 1 ? AppTheme.red : Colors.grey
               ),
               title: Text(
-                tr('settings.resetCampaign').toUpperCase(),
+                context.tr('settings.resetCampaign').toUpperCase(),
                 style: TextStyle(
                   fontFamily: 'Round',
                   color: currentStage > 1 ? AppTheme.red : Colors.grey,

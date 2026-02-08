@@ -60,14 +60,14 @@ class SettingsAudioSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SettingsSectionTitle(title: tr('settings.audio'), color: AppTheme.darkBrown),
+        SettingsSectionTitle(title: context.tr('settings.audio'), color: AppTheme.darkBrown),
         SettingsContainer(
           backgroundColor: AppTheme.tileFace,
           borderColor: AppTheme.tileShadow,
           child: Column(
             children: [
               _buildSwitchTile(
-                title: tr('settings.enableMusic'),
+                title: context.tr('settings.enableMusic'),
                 value: musicOn,
                 icon: musicOn ? Icons.music_note_rounded : Icons.music_off_rounded,
                 color: AppTheme.tileShadow,
@@ -79,7 +79,7 @@ class SettingsAudioSection extends StatelessWidget {
               ),
               Divider(height: 2, thickness: 2, color: AppTheme.brown.withValues(alpha: 0.2)),
               _buildSwitchTile(
-                title: tr('settings.enableSounds'),
+                title: context.tr('settings.enableSounds'),
                 value: sfxOn,
                 icon: sfxOn ? Icons.volume_up_rounded : Icons.volume_off_rounded,
                 color: AppTheme.tileShadow,

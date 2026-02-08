@@ -61,7 +61,7 @@ class DailyGoalCard extends StatelessWidget {
             color: completed ? AppTheme.darkBrown : AppTheme.brown,
           ),
           Text(
-            tr(goal.titleKey),
+            context.tr(goal.titleKey),
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -79,7 +79,7 @@ class DailyGoalCard extends StatelessWidget {
                  color: AppTheme.darkBrown,
                  borderRadius: BorderRadius.circular(12),
                ),
-               child: Text(tr('campaign.goals.common.claimed'), style: const TextStyle(color: AppTheme.coinFaceTop, fontSize: 10, fontWeight: FontWeight.bold)),
+               child: Text(context.tr('campaign.goals.common.claimed'), style: const TextStyle(color: AppTheme.coinFaceTop, fontSize: 10, fontWeight: FontWeight.bold)),
              )
           else if (canClaim)
              Builder(
@@ -95,7 +95,7 @@ class DailyGoalCard extends StatelessWidget {
                          BoxShadow(color: Colors.black26, offset: Offset(0, 2), blurRadius: 4)
                        ]
                      ),
-                     child: Text(tr('campaign.goals.common.claim'), style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                     child: Text(context.tr('campaign.goals.common.claim'), style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
                    ),
                  );
                }

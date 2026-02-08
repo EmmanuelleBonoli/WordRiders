@@ -64,18 +64,18 @@ class MenuGameScreen extends StatelessWidget {
                         children: [
                           PulsingWidget(
                             child: PremiumMenuButton(
-                              text: tr('menu.campaign'),
+                              text: context.tr('menu.campaign'),
                               onTap: () => _handleCampaignTap(context),
                             ),
                           ),
                           const SizedBox(height: 20),
                           PremiumMenuButton(
-                            text: tr('menu.training'),
+                            text: context.tr('menu.training'),
                             onTap: () => context.push('/game'),
                           ),
                           const SizedBox(height: 20),
                           PremiumMenuButton(
-                            text: tr('menu.settings'),
+                            text: context.tr('menu.settings'),
                             onTap: () => context.push('/settings'),
                           ),
                         ],
