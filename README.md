@@ -1,6 +1,6 @@
-# Word Train 🚂
+# Word Riders
 
-**Word Train** est un jeu de puzzle de mots mobile développé avec [Flutter](https://flutter.dev) et le [Moteur Flame](https://flame-engine.org/). Les joueurs doivent former des mots en utilisant les lettres fournies pour alimenter leur train et faire la course jusqu'à la ligne d'arrivée.
+**Word Riders** est un jeu de puzzle de mots mobile développé avec [Flutter](https://flutter.dev) et le [Moteur Flame](https://flame-engine.org/). Les joueurs doivent former des mots en utilisant les lettres fournies pour alimenter leur train et faire la course jusqu'à la ligne d'arrivée.
 
 ## 🎮 Modes de Jeu
 
