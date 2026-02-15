@@ -17,7 +17,7 @@ class SettingsAboutSection extends StatelessWidget {
     final Uri emailUri = Uri(
       scheme: 'mailto',
       path: 'contact@majormanuprod.com',
-      query: 'subject=Word Train - Contact',
+      query: 'subject=Word Riders - Contact',
     );
     
     if (await canLaunchUrl(emailUri)) {
