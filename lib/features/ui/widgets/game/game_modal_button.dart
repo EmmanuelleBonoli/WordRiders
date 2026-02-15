@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:word_train/features/ui/widgets/common/pushable_button.dart';
+import 'package:word_riders/features/ui/widgets/common/pushable_button.dart';
 
 class GameModalButton extends StatelessWidget {
   final String label;
@@ -9,7 +9,11 @@ class GameModalButton extends StatelessWidget {
   final String? subLabel;
   final Color textColor;
   final Color iconColor;
+  final double iconSize;
   final Widget? labelWidget;
+  final double? height;
+  final Gradient? gradient;
+  final BoxBorder? border;
 
   const GameModalButton({
     super.key,
@@ -21,6 +25,10 @@ class GameModalButton extends StatelessWidget {
     this.labelWidget,
     this.textColor = Colors.white,
     this.iconColor = Colors.white,
+    this.iconSize = 30.0,
+    this.height,
+    this.gradient,
+    this.border,
   });
 
   @override
@@ -29,7 +37,9 @@ class GameModalButton extends StatelessWidget {
       onPressed: onPressed,
       color: color,
       width: double.infinity,
-      height: 100,
+      height: height ?? 100,
+      gradient: gradient,
+      border: border,
       borderRadius: BorderRadius.circular(24),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -37,7 +47,7 @@ class GameModalButton extends StatelessWidget {
           Icon(
             icon, 
             color: iconColor, 
-            size: 30,
+            size: iconSize,
             shadows: [
               Shadow(
                 color: Colors.black.withValues(alpha: 0.2),

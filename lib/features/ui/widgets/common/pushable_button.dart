@@ -23,7 +23,12 @@ class PushableButton extends StatefulWidget {
     this.height,
     this.borderRadius,
     this.depth = 4.0,
+    this.gradient,
+    this.border,
   });
+
+  final Gradient? gradient;
+  final BoxBorder? border;
 
   @override
   State<PushableButton> createState() => _PushableButtonState();
@@ -127,7 +132,8 @@ class _PushableButtonState extends State<PushableButton> {
                 decoration: BoxDecoration(
                   color: effectiveColor,
                   borderRadius: radius,
-                  gradient: LinearGradient(
+                  border: widget.border,
+                  gradient: widget.gradient ?? LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [

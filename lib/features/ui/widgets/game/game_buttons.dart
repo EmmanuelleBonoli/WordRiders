@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/common/pushable_button.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/pushable_button.dart';
 
 class LetterButton extends StatelessWidget {
   final String letter;

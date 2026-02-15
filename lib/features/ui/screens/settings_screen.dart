@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:word_train/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:go_router/go_router.dart';
-import 'package:word_train/features/ui/widgets/navigation/app_back_button.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/settings/settings_about_section.dart';
-import 'package:word_train/features/ui/widgets/settings/settings_audio_section.dart';
-import 'package:word_train/features/ui/widgets/settings/settings_language_section.dart';
-import 'package:word_train/features/ui/widgets/settings/settings_reset_section.dart';
-import 'package:word_train/features/ui/widgets/settings/settings_restore_section.dart';
-import 'package:word_train/config/app_config.dart';
+import 'package:word_riders/features/ui/widgets/navigation/app_back_button.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/settings/settings_about_section.dart';
+import 'package:word_riders/features/ui/widgets/settings/settings_audio_section.dart';
+import 'package:word_riders/features/ui/widgets/settings/settings_language_section.dart';
+import 'package:word_riders/features/ui/widgets/settings/settings_reset_section.dart';
+import 'package:word_riders/features/ui/widgets/settings/settings_restore_section.dart';
+import 'package:word_riders/config/app_config.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

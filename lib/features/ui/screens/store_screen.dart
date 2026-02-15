@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
-import 'package:word_train/features/ui/widgets/store/store_product_card.dart';
-import 'package:word_train/features/gameplay/services/ad_service.dart';
-import 'package:word_train/features/gameplay/services/player_preferences.dart';
-import 'package:word_train/features/gameplay/services/iap_service.dart';
-import 'package:word_train/features/ui/widgets/animations/resource_transfer_animation.dart';
-import 'package:word_train/features/ui/screens/main_scaffold.dart';
-import 'package:word_train/data/store_data.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/widgets/store/store_product_card.dart';
+import 'package:word_riders/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/features/gameplay/services/iap_service.dart';
+import 'package:word_riders/features/ui/widgets/animations/resource_transfer_animation.dart';
+import 'package:word_riders/features/ui/screens/main_scaffold.dart';
+import 'package:word_riders/data/store_data.dart';
 
 class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});

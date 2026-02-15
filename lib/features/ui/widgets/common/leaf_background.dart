@@ -44,14 +44,17 @@ class _LeafBackgroundState extends State<LeafBackground> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: widget.backgroundColor,
-      child: CustomPaint(
-        painter: _LeafPainter(
-          leaves: _leaves,
-          baseColor: widget.leafColor,
+    return ClipRect(
+      clipBehavior: Clip.hardEdge,
+      child: Container(
+        color: widget.backgroundColor,
+        child: CustomPaint(
+          painter: _LeafPainter(
+            leaves: _leaves,
+            baseColor: widget.leafColor,
+          ),
+          child: widget.child ?? Container(),
         ),
-        child: widget.child ?? Container(),
       ),
     );
   }

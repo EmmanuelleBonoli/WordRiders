@@ -1,13 +1,13 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:word_train/features/ui/screens/main_scaffold.dart';
-import 'package:word_train/features/ui/widgets/campaign/campaign_preview_game.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
-import '../../gameplay/services/player_preferences.dart';
-import '../widgets/campaign/stage_circle_widget.dart';
-import 'package:word_train/features/ui/widgets/game/overlays/no_lives_overlay.dart';
-import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/screens/main_scaffold.dart';
+import 'package:word_riders/features/ui/widgets/campaign/campaign_preview_game.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/features/ui/widgets/campaign/stage_circle_widget.dart';
+import 'package:word_riders/features/ui/widgets/game/overlays/no_lives_overlay.dart';
+import 'package:word_riders/features/ui/widgets/common/bouncing_scale_button.dart';
 
 class CampaignProgressScreen extends StatefulWidget {
   const CampaignProgressScreen({super.key});
@@ -231,6 +231,7 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
                   barrierDismissible: true,
                   builder: (ctx) => NoLivesOverlay(
                     onLivesReplenished: () {
+                      final mainScaffold = context.findAncestorStateOfType<MainScaffoldState>();
                       mainScaffold?.reloadIndicators();
                     },
                   ),

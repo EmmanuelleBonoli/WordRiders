@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/settings/settings_button.dart';
-import 'package:word_train/features/ui/widgets/navigation/app_back_button.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/settings/settings_button.dart';
+import 'package:word_riders/features/ui/widgets/navigation/app_back_button.dart';
 
 class GameHeader extends StatelessWidget {
   final VoidCallback onBack;
@@ -98,7 +99,7 @@ class GameHeader extends StatelessWidget {
                child: FittedBox(
                  fit: BoxFit.scaleDown,
                  child: Text(
-                    "LEVEL $currentStage",
+                    "${context.tr('game.level')} $currentStage",
                     style: TextStyle(
                       fontFamily: AppTheme.fontFamily,
                       fontSize: 22,

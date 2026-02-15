@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:word_train/features/gameplay/services/ad_service.dart';
+import 'package:word_riders/features/gameplay/services/ad_service.dart';
 
 // Affiche un loader pendant la simulation d'une publicité
 class AdLoadingDialog {

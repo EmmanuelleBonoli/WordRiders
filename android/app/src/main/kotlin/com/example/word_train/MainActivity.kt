@@ -1,4 +1,4 @@
-package com.example.word_train
+package com.example.word_riders
 
 import io.flutter.embedding.android.FlutterActivity
 

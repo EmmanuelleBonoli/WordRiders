@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/bouncing_scale_button.dart';
 
 class GameLetterGrid extends StatelessWidget {
   final List<String> shuffledLetters;
