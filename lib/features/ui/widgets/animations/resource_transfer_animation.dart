@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:word_train/features/ui/screens/main_scaffold.dart';
+import 'package:word_riders/features/ui/screens/main_scaffold.dart';
 
 class ResourceTransferAnimation extends StatefulWidget {
   final Offset startPosition;

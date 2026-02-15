@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../styles/app_theme.dart';
 import 'shiny_corner_effect.dart';
-import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/widgets/common/bouncing_scale_button.dart';
 
 class PremiumMenuButton extends StatelessWidget {
   final String text;

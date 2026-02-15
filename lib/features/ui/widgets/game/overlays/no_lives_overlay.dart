@@ -1,39 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:word_train/features/gameplay/services/player_preferences.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/game/overlays/ad_loading_dialog.dart';
+import 'package:word_riders/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/widgets/common/premium_round_button.dart';
+import 'package:word_riders/features/ui/widgets/game/overlays/ad_loading_dialog.dart';
+
+import 'package:go_router/go_router.dart';
+import 'package:word_riders/features/ui/widgets/common/life_indicator.dart';
+import 'package:word_riders/features/ui/widgets/common/coin_indicator.dart';
 
 class NoLivesOverlay extends StatefulWidget {
   final VoidCallback onLivesReplenished;
+  final bool fromGame;
 
-  const NoLivesOverlay({super.key, required this.onLivesReplenished});
+  const NoLivesOverlay({
+    super.key,
+    required this.onLivesReplenished,
+    this.fromGame = false,
+  });
 
   @override
   State<NoLivesOverlay> createState() => _NoLivesOverlayState();
 }
 
-class _NoLivesOverlayState extends State<NoLivesOverlay> {
-  int _coins = 0;
+class _NoLivesOverlayState extends State<NoLivesOverlay> with SingleTickerProviderStateMixin {
+  // int _coins = 0;
+  bool _isManualReplenish = false;
+  late AnimationController _animController;
+  late Animation<double> _scaleAnim;
+
+  final GlobalKey<CoinIndicatorState> _coinIndicatorKey = GlobalKey<CoinIndicatorState>();
 
   @override
   void initState() {
     super.initState();
-    _loadCoins();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _scaleAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOutBack);
+    _animController.forward();
   }
 
-  Future<void> _loadCoins() async {
-    final c = await PlayerPreferences.getCoins();
-    if (mounted) setState(() => _coins = c);
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
   }
 
   Future<void> _buyLives() async {
-    final success = await PlayerPreferences.spendCoins(700);
+    _isManualReplenish = true;
+    final success = await PlayerPreferences.spendCoins(500);
     if (success) {
-      await PlayerPreferences.setLives(5);
+      _coinIndicatorKey.currentState?.reload(); // Mise à jour coin display
+      final current = await PlayerPreferences.getLives();
+      await PlayerPreferences.setLives(current + 1); // +1 vie
       widget.onLivesReplenished();
       if (mounted) Navigator.of(context).pop();
     } else {
+      _isManualReplenish = false;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -46,6 +72,7 @@ class _NoLivesOverlayState extends State<NoLivesOverlay> {
   }
 
   Future<void> _watchAd() async {
+    _isManualReplenish = true;
     // Afficher le loader de pub
     await AdLoadingDialog.show(context, isRewarded: true);
     
@@ -57,113 +84,286 @@ class _NoLivesOverlayState extends State<NoLivesOverlay> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: 320,
-          maxHeight: MediaQuery.of(context).size.height * 0.8,
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppTheme.brown, width: 3),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.favorite_border_rounded, size: 40, color: AppTheme.red),
-              const SizedBox(height: 8),
-              Text(
-                context.tr('campaign.noLives'),
-                style: const TextStyle(
-                  fontFamily: 'Round',
-                  fontSize: 18,
-                  color: AppTheme.red,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                context.tr('campaign.noLivesMessage'),
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 13, color: AppTheme.textDark),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.monetization_on, color: Colors.amber, size: 18),
-                  const SizedBox(width: 4),
-                  Text(
-                    '$_coins',
-                    style: const TextStyle(
-                      fontFamily: 'Round',
-                      fontSize: 16,
-                      color: AppTheme.brown,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              _buildCompactButton(
-                text: context.tr('campaign.watchAd'),
-                icon: Icons.play_circle_outline,
-                color: AppTheme.green,
-                onPressed: _watchAd,
-                enabled: true,
-              ),
-              const SizedBox(height: 8),
-              _buildCompactButton(
-                text: '${context.tr('campaign.buyLives')} (700 🪙)',
-                icon: Icons.shopping_cart_outlined,
-                color: Colors.amber,
-                onPressed: _buyLives,
-                enabled: _coins >= 700,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  Future<void> _checkLives() async {
+    if (!mounted) return;
+    try {
+      final int lives = await PlayerPreferences.getLives();
+      final bool isManual = _isManualReplenish;
+      
+      if (lives > 0 && !isManual) {
+        // Fermer l'overlay si les vies sont récupérées naturellement
+        if (mounted) {
+           Navigator.of(context).pop();
+           if (widget.fromGame) {
+             context.go('/campaign');
+           } else {
+              widget.onLivesReplenished();
+           }
+        }
+      }
+    } catch (e, stack) {
+      debugPrint("Error checking lives: $e\n$stack");
+    }
   }
 
-  Widget _buildCompactButton({
-    required String text,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onPressed,
-    required bool enabled,
-  }) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: enabled ? onPressed : null,
-        icon: Icon(icon, size: 20),
-        label: Text(
-          text,
-          style: const TextStyle(
-            fontFamily: 'Round',
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        // LIFE INDICATOR (TOP LEFT)
+        Positioned(
+          top: 30,
+          left: 30,
+          child: SafeArea(
+            child: LifeIndicator(
+              onLivesChanged: _checkLives,
+            ),
           ),
         ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: enabled ? color : Colors.grey.shade300,
-          foregroundColor: enabled ? Colors.white : Colors.grey.shade500,
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-          elevation: enabled ? 2 : 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+
+        // COIN INDICATOR (TOP RIGHT)
+        Positioned(
+          top: 30,
+          right: 30,
+          child: SafeArea(
+            child: CoinIndicator(key: _coinIndicatorKey),
           ),
         ),
-      ),
+
+        Material(
+          type: MaterialType.transparency,
+          child: Center(
+            child: ScaleTransition(
+              scale: _scaleAnim,
+              child: Container(
+                width: 320,
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.topCenter,
+                  children: [
+                    // MAIN BOARD
+                    Padding(
+                      padding: const EdgeInsets.all(30),
+                      child: Container(
+                        padding: const EdgeInsets.all(1.5),
+                        decoration: BoxDecoration(
+                          color: AppTheme.coinBorderDark,
+                          borderRadius: BorderRadius.circular(32),
+                           boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.5),
+                              blurRadius: 24,
+                              offset: const Offset(0, 12),
+                            ),
+                          ],
+                        ),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(30.5)),
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [AppTheme.coinRimTop, AppTheme.coinRimBottom],
+                            ),
+                          ),
+                          padding: const EdgeInsets.all(4.0),
+                          child: Container(
+                            padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
+                            decoration: BoxDecoration(
+                              color: AppTheme.levelSignFace,
+                              borderRadius: BorderRadius.circular(26.5),
+                            ),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Heart Container
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 48),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.coinFaceTop.withValues(alpha: 0.3),
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: AppTheme.coinBorderDark.withValues(alpha: 0.1),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        // Broken Heart Icon
+                                        Image.asset(
+                                          'assets/images/indicators/heart_broken.png',
+                                          width: 80,
+                                          height: 80,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          context.tr('campaign.noLives').toUpperCase(),
+                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                            color: AppTheme.coinBorderDark,
+                                            fontWeight: FontWeight.w900,
+                                            fontFamily: 'Round',
+                                            fontSize: 24,
+                                            letterSpacing: 1.2,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+  
+                                  const SizedBox(height: 32),
+  
+                                  // Horizontal Buttons
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                       // Buy 1 Life (500 Coins)
+                                       Stack(
+                                        clipBehavior: Clip.none,
+                                        alignment: Alignment.center,
+                                        children: [
+                                          PremiumRoundButton(
+                                            icon: Icons.favorite_rounded,
+                                            size: 88,
+                                            onTap: _buyLives,
+                                            faceGradient: const [AppTheme.coinFaceTop, AppTheme.coinFaceBottom],
+                                            iconGradient: const [AppTheme.red, AppTheme.red],
+                                          ),
+                                          Positioned(
+                                            bottom: -12,
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: AppTheme.coinBorderDark,
+                                                borderRadius: BorderRadius.circular(12),
+                                                border: Border.all(color: AppTheme.coinRimBottom, width: 2),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black.withValues(alpha: 0.3),
+                                                    blurRadius: 4,
+                                                    offset: const Offset(0, 2),
+                                                  )
+                                                ],
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Text(
+                                                    "500",
+                                                    style: TextStyle(
+                                                      color: AppTheme.tileFace,
+                                                      fontWeight: FontWeight.w900,
+                                                      fontSize: 16,
+                                                      fontFamily: 'Round',
+                                                   ),
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Image.asset(
+                                                    'assets/images/indicators/coin.png',
+                                                    width: 16,
+                                                    height: 16,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                       ),
+                                      
+                                      // Watch Ad
+                                       Stack(
+                                        clipBehavior: Clip.none,
+                                        alignment: Alignment.center,
+                                        children: [
+                                      PremiumRoundButton(
+                                        icon: Icons.videocam_rounded,
+                                        size: 88,
+                                        onTap: _watchAd,
+                                        faceGradient: const [AppTheme.btnBlueTop, AppTheme.btnBlueBottom],
+                                        iconGradient: const [AppTheme.white, AppTheme.white],
+                                      ),
+                                    Positioned(
+                                          bottom: -12,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.coinBorderDark,
+                                              borderRadius: BorderRadius.circular(12),
+                                              border: Border.all(color: AppTheme.coinRimBottom, width: 2),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withValues(alpha: 0.3),
+                                                  blurRadius: 4,
+                                                  offset: const Offset(0, 2),
+                                                )
+                                              ],
+                                            ),
+                                            child: const Text(
+                                                  "FREE",
+                                                  style: TextStyle(
+                                                    color: AppTheme.tileFace,
+                                                    fontWeight: FontWeight.w900,
+                                                    fontSize: 16,
+                                                    fontFamily: 'Round',
+                                                  ),
+                                                ),
+                                          ),
+                                        ),
+                                      ],
+                                     ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                    // CLOSE BUTTON
+                    Positioned(
+                      top: 14,
+                      right: 16,
+                      child: BouncingScaleButton(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          if (widget.fromGame) {
+                             context.go('/campaign');
+                          }
+                        },
+                        child: Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppTheme.brown,
+                            border: Border.all(color: AppTheme.coinRimBottom, width: 2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.3),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              )
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.close_rounded,
+                            color: AppTheme.tileFace,
+                            size: 30,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -120,6 +120,21 @@ class AppTheme {
   static const Color coinIconOutline = _coinRimBottom;
   static const Color inputCartridgeFill = Color(0xFFD19B5B);
 
+  // Button Gradients
+  static const Color btnPurpleTop = Color(0xFF9C27B0);
+  static const Color btnPurpleBottom = Color(0xFF6A1B9A);
+  
+  static const Color btnGreenTop = Color(0xFF66BB6A);
+  static const Color btnGreenBottom = Color(0xFF2E7D32);
+
+  static const Color btnRedTop = Color(0xFFFF5252);
+  static const Color btnRedBottom = Color(0xFFD32F2F);
+
+  static const Color btnBlueTop = Color(0xFF42A5F5);
+  static const Color btnBlueBottom = Color(0xFF1565C0);
+
+  static const Color rewardBadgeBg = Colors.amber;
+
   static const String fontFamily = 'sans-serif-rounded';
 
   // ===========================================================================
@@ -164,11 +179,11 @@ class AppTheme {
         fontWeight: FontWeight.bold,
         color: brown,
       ),
-      bodyLarge: const TextStyle(
+      bodyLarge: TextStyle(
         fontSize: 16,
         color: textDark,
       ),
-      bodyMedium: const TextStyle(
+      bodyMedium: TextStyle(
         fontSize: 14,
         color: textDark,
       ),

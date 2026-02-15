@@ -3,19 +3,18 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'package:word_train/features/gameplay/controllers/game_controller.dart';
-import 'package:word_train/features/gameplay/services/player_preferences.dart';
-import 'package:word_train/features/ui/widgets/game/game_header.dart';
-import 'package:word_train/features/ui/widgets/game/game_header_background.dart';
-import 'package:word_train/features/ui/widgets/game/input/game_input_area.dart';
-import 'package:word_train/features/ui/widgets/game/game_race_area.dart';
-import 'package:word_train/features/ui/widgets/game/overlays/game_end_overlay.dart';
-import 'package:word_train/features/ui/widgets/game/overlays/game_pause_overlay.dart';
-import 'package:word_train/features/ui/widgets/game/overlays/game_pause_dialog.dart';
-import 'package:word_train/features/ui/widgets/game/overlays/no_lives_overlay.dart';
-import 'package:word_train/features/ui/widgets/game/gameplay_timeline.dart';
+import 'package:word_riders/features/gameplay/controllers/game_controller.dart';
+import 'package:word_riders/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/features/ui/widgets/game/game_header.dart';
+import 'package:word_riders/features/ui/widgets/game/game_header_background.dart';
+import 'package:word_riders/features/ui/widgets/game/input/game_input_area.dart';
+import 'package:word_riders/features/ui/widgets/game/game_race_area.dart';
+import 'package:word_riders/features/ui/widgets/game/overlays/game_end_overlay.dart';
+import 'package:word_riders/features/ui/widgets/game/overlays/game_pause_dialog.dart';
+import 'package:word_riders/features/ui/widgets/game/overlays/no_lives_overlay.dart';
+import 'package:word_riders/features/ui/widgets/game/gameplay_timeline.dart';
 
-import 'package:word_train/features/ui/widgets/game/overlays/training_config_overlay.dart';
+import 'package:word_riders/features/ui/widgets/game/overlays/training_config_overlay.dart';
 
 class GameScreen extends StatelessWidget {
   final bool isCampaign;
@@ -65,16 +64,12 @@ class _GameScreenContent extends StatelessWidget {
     void onBackTap() {
       controller.pauseGame();
       
-      final String subtitle = controller.isCampaign 
-          ? context.tr('game.quit_confirm_subtitle_campaign')
-          : context.tr('game.quit_confirm_subtitle_training');
-
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (ctx) => GamePauseDialog(
           title: context.tr('game.pause_title'),
-          message: subtitle,
+          isCampaign: controller.isCampaign,
           onResume: () {
             Navigator.pop(ctx); 
             controller.resumeGame();
@@ -92,6 +87,7 @@ class _GameScreenContent extends StatelessWidget {
                      context: context,
                      barrierDismissible: true,
                      builder: (dialogCtx) => NoLivesOverlay(
+                       fromGame: true,
                        onLivesReplenished: () {
                          // Après recharge, on peut restart
                          controller.restartGame();
@@ -191,16 +187,19 @@ class _GameScreenContent extends StatelessWidget {
           ),
 
           // 4. Overlays (Pause & Fin)
-          if (controller.isPaused)
-            const GamePauseOverlay(),
-
           if (controller.status == GameStatus.won || controller.status == GameStatus.lost)
             GameEndOverlay(
               isWon: controller.status == GameStatus.won,
               isCampaign: controller.isCampaign,
-              onQuit: () => Navigator.pop(context),
+              onQuit: () async {
+                  if (controller.isCampaign && controller.status == GameStatus.lost) {
+                    await controller.concedeGame();
+                  }
+                  if (context.mounted) Navigator.pop(context);
+              },
               onRestart: () => controller.restartGame(),
               onContinue: () => Navigator.pop(context),
+              onRevive: () => controller.revive(),
             ),
         ],
       ),

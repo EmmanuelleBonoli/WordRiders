@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/common/premium_round_button.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/premium_round_button.dart';
 
 class SettingsButton extends StatelessWidget {
   final VoidCallback? onTap;

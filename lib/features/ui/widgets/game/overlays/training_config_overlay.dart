@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
-import 'package:word_train/features/ui/widgets/common/premium_menu_button.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/widgets/common/premium_menu_button.dart';
 
 class TrainingConfigOverlay extends StatelessWidget {
   final Function(int) onSelectLength;
@@ -44,8 +44,10 @@ class TrainingConfigOverlay extends StatelessWidget {
                 alignment: Alignment.topCenter,
                 children: [
                   // 1. The MAIN PANEL
-                  Container(
-                    padding: const EdgeInsets.all(1.5),
+                  Padding(
+                    padding: const EdgeInsets.all(30),
+                    child: Container(
+                      padding: const EdgeInsets.all(1.5),
                     decoration: BoxDecoration(
                       color: AppTheme.coinBorderDark,
                       borderRadius: BorderRadius.circular(32),
@@ -95,19 +97,20 @@ class TrainingConfigOverlay extends StatelessWidget {
                           ],
                         ),
                       ),
-                    ),
+                      ),
+                  ),
                   ),
 
                   // 2. The HEADER (Title)
                   Positioned(
-                    top: -24,
+                    top: 6,
                     child: _buildHeaderRibbon(context),
                   ),
 
                   // 3. Close Button
                   Positioned(
-                    top: -16,
-                    right: -14,
+                    top: 14,
+                    right: 16,
                     child: BouncingScaleButton(
                       onTap: onBack,
                       child: Container(
@@ -128,7 +131,7 @@ class TrainingConfigOverlay extends StatelessWidget {
                         child: const Icon(
                           Icons.close_rounded,
                           color: AppTheme.tileFace,
-                          size: 22,
+                          size: 30,
                         ),
                       ),
                     ),

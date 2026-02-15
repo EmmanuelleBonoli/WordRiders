@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:word_train/features/gameplay/services/player_preferences.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/common/resource_badge.dart';
+import 'package:word_riders/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/resource_badge.dart';
 
 class CoinIndicator extends StatefulWidget {
   const CoinIndicator({super.key});

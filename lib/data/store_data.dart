@@ -89,7 +89,7 @@ final List<StoreItemData> consumableItems = [
 final List<StoreItemData> coinPackItems = [
   const StoreItemData(
     id: 'coins_100',
-    productId: 'word_train_coins_100',
+    productId: 'word_riders_coins_100',
     titleKey: "",
     amount: "+ 100",
     price: "0.99 €",
@@ -100,7 +100,7 @@ final List<StoreItemData> coinPackItems = [
   ),
   const StoreItemData(
     id: 'coins_500',
-    productId: 'word_train_coins_500',
+    productId: 'word_riders_coins_500',
     titleKey: "",
     amount: "+ 500",
     price: "3.99 €",
@@ -112,7 +112,7 @@ final List<StoreItemData> coinPackItems = [
   ),
   const StoreItemData(
     id: 'coins_2000',
-    productId: 'word_train_coins_2000',
+    productId: 'word_riders_coins_2000',
     titleKey: "",
     amount: "+ 2000",
     price: "9.99 €",
@@ -130,7 +130,7 @@ final List<StoreItemData> coinPackItems = [
 final List<StoreItemData> specialOfferItems = [
   const StoreItemData(
     id: 'no_ads',
-    productId: 'word_train_no_ads',
+    productId: 'word_riders_no_ads',
     titleKey: 'campaign.store.no_ads_title',
     descriptionKey: 'campaign.store.no_ads_desc',
     amount: "∞",

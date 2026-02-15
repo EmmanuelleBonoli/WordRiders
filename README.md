@@ -39,7 +39,7 @@ Ce projet est un point de départ pour une application Flutter.
 
 1. Cloner le dépôt :
    ```bash
-   git clone https://github.com/EmmanuelleBonoli/WordTrain.git
+   git clone https://github.com/EmmanuelleBonoli/wordRiders.git
    ```
 2. Installer les dépendances :
    ```bash

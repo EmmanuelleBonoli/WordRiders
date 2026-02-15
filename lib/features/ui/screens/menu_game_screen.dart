@@ -6,7 +6,7 @@ import '../widgets/common/premium_menu_button.dart';
 import '../../gameplay/services/player_preferences.dart';
 import '../../gameplay/services/word_service.dart';
 
-import 'package:word_train/features/ui/widgets/common/pulsing_widget.dart';
+import 'package:word_riders/features/ui/widgets/common/pulsing_widget.dart';
 
 class MenuGameScreen extends StatelessWidget {
   const MenuGameScreen({super.key});
@@ -49,7 +49,7 @@ class MenuGameScreen extends StatelessWidget {
                   children: [
                     // Logo Image
                     Image.asset(
-                      'assets/images/logo_title.png',
+                      'assets/images/logo_title_v3.png',
                       width: 280,
                       fit: BoxFit.contain,
                     ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
 import '../common/shiny_corner_effect.dart';
 
 class StageCircle extends StatelessWidget {

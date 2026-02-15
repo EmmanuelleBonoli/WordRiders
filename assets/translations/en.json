@@ -44,7 +44,7 @@
     "linkError": "Unable to open link"
   },
   "campaign": {
-    "noLives": "You're out of lives!",
+    "noLives": "No lives left!",
     "noLivesMessage": "Wait for your lives to recharge or use your coins.",
     "getLives": "Recharge your lives",
     "watchAd": "Watch an ad (+1 life)",
@@ -90,15 +90,13 @@
   },
   "game": {
     "pause_title": "PAUSED",
-    "quit_confirm_title": "Quit Game?",
-    "quit_confirm_subtitle_campaign": "The fox will win if you give up!",
-    "quit_confirm_subtitle_training": "Your current progress will be lost.",
     "continue": "RESUME",
     "replay": "REPLAY",
-    "quit": "Quit",
+    "quit": "QUIT",
     "quit_game": "Quit Game",
-    "victory": "VICTORY!",
-    "defeat": "GAME OVER...",
+    "victory": "Well done!",
+    "defeat": "Continue?",
+    "level": "Level",
     "level_finished": "Level Complete!",
     "training_won": "The rabbit is safe!",
     "fox_won": "The fox caught you...",

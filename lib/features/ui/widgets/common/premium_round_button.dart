@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../styles/app_theme.dart';
 import 'shiny_corner_effect.dart';
 
-import 'package:word_train/features/ui/widgets/common/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/widgets/common/bouncing_scale_button.dart';
 
 class PremiumRoundButton extends StatelessWidget {
   final IconData icon;
@@ -28,7 +28,7 @@ class PremiumRoundButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconSize = size * 0.45;
+    final iconSize = size * 0.50;
     
     final effectiveBorder = borderColor ?? AppTheme.coinBorderDark;
     final effectiveRim = rimGradient ?? [AppTheme.coinRimTop, AppTheme.coinRimBottom];

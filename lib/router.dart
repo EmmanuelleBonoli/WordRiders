@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-import 'package:word_train/features/ui/screens/game_screen.dart';
+import 'package:word_riders/features/ui/screens/game_screen.dart';
 
 import 'features/ui/screens/campaign_progress_screen.dart';
 import 'features/ui/screens/loading_start_screen.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/gameplay/models/goal.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/gameplay/models/goal.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class DailyGoalCard extends StatelessWidget {

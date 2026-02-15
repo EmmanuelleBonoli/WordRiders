@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
-import 'package:word_train/router.dart';
-import 'package:word_train/features/gameplay/services/word_service.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/gameplay/services/iap_service.dart';
-import 'package:word_train/features/gameplay/services/goal_service.dart';
-import 'package:word_train/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/router.dart';
+import 'package:word_riders/features/gameplay/services/word_service.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/gameplay/services/iap_service.dart';
+import 'package:word_riders/features/gameplay/services/goal_service.dart';
+import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:flutter/services.dart';
 
 void main() async {
@@ -42,20 +42,20 @@ void main() async {
       saveLocale: false, // Utilise PlayerPreferences à la place
       child: Provider<WordService>.value(
         value: wordService,
-        child: WordTrainApp(),
+        child: const WordRidersApp(),
       ),
     ),
   );
 }
 
-class WordTrainApp extends StatelessWidget {
-  const WordTrainApp({super.key});
+class WordRidersApp extends StatelessWidget {
+  const WordRidersApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Word Train',
+      title: 'Word Riders',
       theme: AppTheme.lightTheme,
 
       localizationsDelegates: context.localizationDelegates,

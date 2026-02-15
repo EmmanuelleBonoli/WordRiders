@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:word_train/features/ui/widgets/animations/resource_transfer_animation.dart';
+import 'package:word_riders/features/ui/widgets/animations/resource_transfer_animation.dart';
 
 class AnimationService {
   static final AnimationService _instance = AnimationService._internal();
