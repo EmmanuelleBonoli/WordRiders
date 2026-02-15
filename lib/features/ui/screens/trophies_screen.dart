@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
 
-import 'package:word_train/features/gameplay/models/goal.dart';
-import 'package:word_train/features/gameplay/services/goal_service.dart';
-import 'package:word_train/features/gameplay/services/animation_service.dart';
-import 'package:word_train/features/ui/screens/main_scaffold.dart';
-import 'package:word_train/features/ui/widgets/goals/daily_goal_card.dart';
-import 'package:word_train/features/ui/widgets/goals/career_goal_tile.dart';
+import 'package:word_riders/features/gameplay/models/goal.dart';
+import 'package:word_riders/features/gameplay/services/goal_service.dart';
+import 'package:word_riders/features/gameplay/services/animation_service.dart';
+import 'package:word_riders/features/ui/screens/main_scaffold.dart';
+import 'package:word_riders/features/ui/widgets/goals/daily_goal_card.dart';
+import 'package:word_riders/features/ui/widgets/goals/career_goal_tile.dart';
 
 class TrophiesScreen extends StatefulWidget {
   const TrophiesScreen({super.key});

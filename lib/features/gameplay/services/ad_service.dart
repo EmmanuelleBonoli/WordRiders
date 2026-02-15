@@ -1,6 +1,6 @@
-import 'package:word_train/features/gameplay/services/iap_service.dart';
-import 'package:word_train/features/gameplay/services/goal_service.dart';
-import 'package:word_train/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/features/gameplay/services/iap_service.dart';
+import 'package:word_riders/features/gameplay/services/goal_service.dart';
+import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 
 // Service pour gérer les publicités et le statut "No Ads"
 class AdService {

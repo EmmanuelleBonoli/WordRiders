@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/common/premium_round_button.dart';
-import 'package:word_train/features/ui/widgets/game/input/game_input_cartridge.dart';
-import 'package:word_train/features/ui/widgets/game/input/game_letter_grid.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/premium_round_button.dart';
+import 'package:word_riders/features/ui/widgets/game/input/game_input_cartridge.dart';
+import 'package:word_riders/features/ui/widgets/game/input/game_letter_grid.dart';
 
 class GameInputArea extends StatelessWidget {
   final String? feedbackMessage;

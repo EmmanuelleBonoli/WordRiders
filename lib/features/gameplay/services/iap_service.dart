@@ -2,10 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:word_train/features/gameplay/services/player_preferences.dart';
-import 'package:word_train/data/store_data.dart';
+import 'package:word_riders/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/data/store_data.dart';
 
 // Service pour gérer les achats In-App (IAP)
 class IapService {
@@ -14,7 +13,8 @@ class IapService {
   static const String _keyNoAds = 'no_ads_purchased';
 
   // Instance IAP officielle
-  static final InAppPurchase _iap = InAppPurchase.instance;
+  // Instance IAP officielle (Nullable pour gérer les cas d'erreur/Web)
+  static InAppPurchase? _iap;
   
   // État du service
   static bool _isStoreAvailable = false;
@@ -29,21 +29,47 @@ class IapService {
 
   // Initialisation du service complet
   static Future<void> initialize() async {
-    // 1. Écouter le flux d'achats (Indispensable pour la prod : gère les achats en cours, interrompus, etc.)
-    final purchaseUpdated = _iap.purchaseStream;
-    _subscription = purchaseUpdated.listen(
-      _onPurchaseUpdate, 
-      onDone: () => _subscription?.cancel(), 
-      onError: (error) {
-         debugPrint("[IAP] Erreur de stream : $error");
-      },
-    );
+    // Déterminer si on est sur une plateforme mobile supportée (Android/iOS)
+    // Sur Web ou Desktop, on force _iap à null pour éviter les crashs
+    bool isMobile = false;
+    if (!kIsWeb) {
+      try {
+        isMobile = Platform.isAndroid || Platform.isIOS;
+      } catch (_) {}
+    }
 
-    // 2. Vérifier la disponibilité du Store (Google Play / App Store)
-    try {
-      _isStoreAvailable = await _iap.isAvailable();
-    } catch (e) {
-      _isStoreAvailable = false; // Sécurité si l'appel plante (ex: pas de play services)
+    if (isMobile) {
+      try {
+        _iap = InAppPurchase.instance;
+      } catch (e) {
+        debugPrint("[IAP] Initialisation échouée : $e");
+        _iap = null;
+      }
+    } else {
+      _iap = null;
+      debugPrint("[IAP] Plateforme non supportée (Web/Desktop). IAP désactivé.");
+    }
+
+    if (_iap != null) {
+      // 1. Écouter le flux d'achats (Indispensable pour la prod : gère les achats en cours, interrompus, etc.)
+      try {
+        final purchaseUpdated = _iap!.purchaseStream;
+        _subscription = purchaseUpdated.listen(
+          _onPurchaseUpdate, 
+          onDone: () => _subscription?.cancel(), 
+          onError: (error) {
+             debugPrint("[IAP] Erreur de stream : $error");
+          },
+        );
+
+        // 2. Vérifier la disponibilité du Store (Google Play / App Store)
+        _isStoreAvailable = await _iap!.isAvailable();
+      } catch (e) {
+        debugPrint("[IAP] Erreur lors de l'accès au store: $e");
+        _isStoreAvailable = false;
+      }
+    } else {
+      _isStoreAvailable = false;
     }
 
     if (_isStoreAvailable) {
@@ -64,12 +90,18 @@ class IapService {
 
   // Chargement des vrais produits depuis le Store
   static Future<void> _loadStoreProducts() async {
+    if (_iap == null) return;
+
     final Set<String> ids = {};
-    for (final item in specialOfferItems) if (item.productId != null) ids.add(item.productId!);
-    for (final item in coinPackItems) if (item.productId != null) ids.add(item.productId!);
+    for (final item in specialOfferItems) {
+      if (item.productId != null) ids.add(item.productId!);
+    }
+    for (final item in coinPackItems) {
+      if (item.productId != null) ids.add(item.productId!);
+    }
 
     try {
-      final response = await _iap.queryProductDetails(ids);
+      final response = await _iap!.queryProductDetails(ids);
       
       if (response.notFoundIDs.isNotEmpty) {
         debugPrint("[IAP Warning] IDs non trouvés dans le Store : ${response.notFoundIDs}");
@@ -101,8 +133,8 @@ class IapService {
             await _deliverProduct(purchaseDetails);
             
             // INDISPENSABLE : Marquer la transaction comme terminée pour ne pas être re-livré
-            if (purchaseDetails.pendingCompletePurchase) {
-              await _iap.completePurchase(purchaseDetails);
+            if (purchaseDetails.pendingCompletePurchase && _iap != null) {
+              await _iap!.completePurchase(purchaseDetails);
             }
           }
         }
@@ -163,13 +195,13 @@ class IapService {
 
   // Lancer un achat
   static Future<void> buy(ProductDetails product) async {
-    // Bypass Simulation (Dev seulement, si store cassé)
+    // Bypass Simulation (Dev seulement, si store cassé ou Web)
     if (!_isStoreAvailable && (kDebugMode || kIsWeb)) {
       _simulatePurchase(product.id);
       return;
     }
 
-    if (!_isStoreAvailable) {
+    if (!_isStoreAvailable || _iap == null) {
       onErrorOrSuccess?.call("Boutique indisponible", true);
       return;
     }
@@ -179,16 +211,16 @@ class IapService {
     
     if (product.id == noAdsProductId) {
       // Non-consommable (Unique)
-      await _iap.buyNonConsumable(purchaseParam: purchaseParam);
+      await _iap!.buyNonConsumable(purchaseParam: purchaseParam);
     } else {
       // Consommable (Répétable)
-      await _iap.buyConsumable(purchaseParam: purchaseParam, autoConsume: true);
+      await _iap!.buyConsumable(purchaseParam: purchaseParam, autoConsume: true);
     }
   }
 
   static Future<void> restorePurchases() async {
-    if (_isStoreAvailable) {
-      await _iap.restorePurchases();
+    if (_isStoreAvailable && _iap != null) {
+      await _iap!.restorePurchases();
     } else if (kDebugMode) {
        // Simulation de restauration en dev
        onErrorOrSuccess?.call("Restauration simulée (Dev)", false);

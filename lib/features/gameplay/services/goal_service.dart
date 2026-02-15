@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:word_train/features/gameplay/models/goal.dart';
-import 'package:word_train/features/gameplay/services/player_preferences.dart';
-import 'package:word_train/data/goal_data.dart';
+import 'package:word_riders/features/gameplay/models/goal.dart';
+import 'package:word_riders/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/data/goal_data.dart';
 
 class GoalService extends ChangeNotifier {
   static final GoalService _instance = GoalService._internal();

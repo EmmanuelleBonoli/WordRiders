@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:word_train/features/gameplay/services/player_preferences.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
 
 class CampaignBottomNavBar extends StatefulWidget {
   final int selectedIndex;

@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:word_train/features/gameplay/models/player_profile.dart';
-import 'package:word_train/secrets.dart';
+import 'package:word_riders/features/gameplay/models/player_profile.dart';
+import 'package:word_riders/secrets.dart';
 
 class PlayerPreferences {
-  static const _keyProfile = 'wordTrain_playerProfile';
+  static const _keyProfile = 'wordRiders_playerProfile';
   
   // Instance singleton du Profil pour éviter les rechargements constants
   static PlayerProfile? _cachedProfile;

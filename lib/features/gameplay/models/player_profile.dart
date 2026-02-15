@@ -1,4 +1,4 @@
-import 'package:word_train/features/gameplay/models/goal.dart';
+import 'package:word_riders/features/gameplay/models/goal.dart';
 
 class PlayerProfile {
   // Core

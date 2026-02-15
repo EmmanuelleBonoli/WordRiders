@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:word_train/features/ui/styles/app_theme.dart';
-import 'package:word_train/features/ui/widgets/common/coin_indicator.dart';
-import 'package:word_train/features/ui/widgets/common/life_indicator.dart';
-import 'package:word_train/features/ui/widgets/campaign/no_ads_button.dart';
-import 'package:word_train/features/ui/widgets/navigation/app_back_button.dart';
-import 'package:word_train/features/ui/widgets/settings/settings_button.dart';
-import 'package:word_train/features/ui/widgets/navigation/campaign_bottom_nav_bar.dart';
-import 'package:word_train/features/ui/widgets/common/leaf_background.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/coin_indicator.dart';
+import 'package:word_riders/features/ui/widgets/common/life_indicator.dart';
+import 'package:word_riders/features/ui/widgets/campaign/no_ads_button.dart';
+import 'package:word_riders/features/ui/widgets/navigation/app_back_button.dart';
+import 'package:word_riders/features/ui/widgets/settings/settings_button.dart';
+import 'package:word_riders/features/ui/widgets/navigation/campaign_bottom_nav_bar.dart';
+import 'package:word_riders/features/ui/widgets/common/leaf_background.dart';
 
 class MainScaffold extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
@@ -90,7 +90,7 @@ class MainScaffoldState extends State<MainScaffold> {
                               const SizedBox(width: 64),
                             
                             Image.asset(
-                             'assets/images/logo_title.png',
+                             'assets/images/logo_title_v3.png',
                               width: 150,
                               fit: BoxFit.contain,
                             ),
@@ -108,21 +108,23 @@ class MainScaffoldState extends State<MainScaffold> {
                           ),
                         ] else if (selectedIndex == 1) ...[
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              CoinIndicator(key: _coinIndicatorKey),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 18),
+                                  CoinIndicator(key: _coinIndicatorKey),
+                                  const SizedBox(height: 22),
+                                  LifeIndicator(key: _lifeIndicatorKey),
+                                ],
+                              ),
+                              const Spacer(),
                               NoAdsButton(
                                 onPurchased: () {
                                   _coinIndicatorKey.currentState?.reload();
                                 },
                               ),
-                            ],
-                          ),
-                          const SizedBox(width: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              LifeIndicator(key: _lifeIndicatorKey),
                             ],
                           ),
                         ],
