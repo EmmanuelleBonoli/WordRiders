@@ -10,9 +10,9 @@ import 'package:word_riders/features/ui/widgets/game/game_header_background.dart
 import 'package:word_riders/features/ui/widgets/game/input/game_input_area.dart';
 import 'package:word_riders/features/ui/widgets/game/game_race_area.dart';
 import 'package:word_riders/features/ui/widgets/game/overlays/game_end_overlay.dart';
-import 'package:word_riders/features/ui/widgets/game/overlays/game_pause_dialog.dart';
+import 'package:word_riders/features/ui/widgets/game/overlays/game_pause_overlay.dart';
 import 'package:word_riders/features/ui/widgets/game/overlays/no_lives_overlay.dart';
-import 'package:word_riders/features/ui/widgets/game/gameplay_timeline.dart';
+import 'package:word_riders/features/ui/widgets/game/game_timeline.dart';
 
 import 'package:word_riders/features/ui/widgets/game/overlays/training_config_overlay.dart';
 
@@ -67,7 +67,7 @@ class _GameScreenContent extends StatelessWidget {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (ctx) => GamePauseDialog(
+        builder: (ctx) => GamePauseOverlay(
           title: context.tr('game.pause_title'),
           isCampaign: controller.isCampaign,
           onResume: () {
@@ -157,7 +157,7 @@ class _GameScreenContent extends StatelessWidget {
                 ),
 
                 // Timeline
-                GameplayTimeline(
+                GameTimeline(
                   rabbitProgress: controller.rabbitProgress,
                   foxProgress: controller.foxProgress,
                   showFox: controller.isCampaign,

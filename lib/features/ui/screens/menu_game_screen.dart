@@ -2,11 +2,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../widgets/common/premium_menu_button.dart';
+import '../widgets/common/button/premium_menu_button.dart';
 import '../../gameplay/services/player_preferences.dart';
 import '../../gameplay/services/word_service.dart';
 
-import 'package:word_riders/features/ui/widgets/common/pulsing_widget.dart';
+import 'package:word_riders/features/ui/widgets/common/button/pulsing_widget.dart';
 
 class MenuGameScreen extends StatelessWidget {
   const MenuGameScreen({super.key});

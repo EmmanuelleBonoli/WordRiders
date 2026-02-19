@@ -4,9 +4,9 @@ import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/ui/widgets/common/coin_indicator.dart';
 import 'package:word_riders/features/ui/widgets/common/life_indicator.dart';
 import 'package:word_riders/features/ui/widgets/campaign/no_ads_button.dart';
-import 'package:word_riders/features/ui/widgets/navigation/app_back_button.dart';
+import 'package:word_riders/features/ui/widgets/common/navigation/app_back_button.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_button.dart';
-import 'package:word_riders/features/ui/widgets/navigation/campaign_bottom_nav_bar.dart';
+import 'package:word_riders/features/ui/widgets/common/navigation/campaign_bottom_nav_bar.dart';
 import 'package:word_riders/features/ui/widgets/common/leaf_background.dart';
 
 class MainScaffold extends StatefulWidget {

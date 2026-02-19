@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/gameplay/services/ad_service.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
-import 'package:word_riders/features/ui/widgets/game/overlays/ad_loading_dialog.dart';
+import 'package:word_riders/features/ui/widgets/game/overlays/ad_loading_overlay.dart';
 import 'package:word_riders/features/ui/widgets/game/overlays/no_lives_overlay.dart';
 import 'package:word_riders/features/ui/widgets/common/coin_indicator.dart';
 import 'package:word_riders/features/ui/widgets/common/life_indicator.dart';
-import 'package:word_riders/features/ui/widgets/common/bouncing_scale_button.dart';
-import 'package:word_riders/features/ui/widgets/common/premium_round_button.dart';
-import 'package:word_riders/features/ui/widgets/animations/resource_transfer_animation.dart';
+import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/widgets/common/button/premium_round_button.dart';
+import 'package:word_riders/features/ui/animations/resource_transfer_animation.dart';
 
 class GameEndOverlay extends StatefulWidget {
   final bool isWon;
@@ -115,7 +115,7 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
 
   Future<void> _handleWatchAdRevive() async {
     if (!mounted) return;
-    await AdLoadingDialog.show(context, isRewarded: true);
+    await AdLoadingOverlay.show(context, isRewarded: true);
     if (mounted) {
       widget.onRevive?.call();
     }
@@ -381,7 +381,7 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
                  size: 88,
                  onTap: () async {
                     if (!context.mounted) return;
-                    await AdLoadingDialog.show(context, isRewarded: true);
+                    await AdLoadingOverlay.show(context, isRewarded: true);
                     
                     await PlayerPreferences.addCoins(60); 
                     _coinIndicatorKey.currentState?.reload();
@@ -468,7 +468,7 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
                             final shouldShowAd = await AdService.shouldShowAdForStage(currentStage);
                             
                             if (shouldShowAd && context.mounted) {
-                              await AdLoadingDialog.show(context);
+                              await AdLoadingOverlay.show(context);
                               await AdService.markAdShownForStage(currentStage);
                             }
                             widget.onContinue?.call();

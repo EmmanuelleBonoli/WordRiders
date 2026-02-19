@@ -1,6 +1,6 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:word_riders/features/ui/widgets/game/player_component.dart';
+import 'package:word_riders/features/ui/widgets/game/game_player.dart';
 
 // FlameGame utilisé pour prévisualiser le player sur l'écran de progression
 class CampaignPreviewGame extends FlameGame {
