@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../styles/app_theme.dart';
-import 'shiny_corner_effect.dart';
-
-import 'package:word_riders/features/ui/widgets/common/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/button/shiny_corner_effect.dart';
+import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
 
 class PremiumRoundButton extends StatelessWidget {
   final IconData icon;

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
-import 'package:word_riders/features/ui/widgets/common/bouncing_scale_button.dart';
-import 'package:word_riders/features/ui/widgets/common/premium_round_button.dart';
-import 'package:word_riders/features/ui/widgets/game/overlays/ad_loading_dialog.dart';
+import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/widgets/common/button/premium_round_button.dart';
+import 'package:word_riders/features/ui/widgets/game/overlays/ad_loading_overlay.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:word_riders/features/ui/widgets/common/life_indicator.dart';
@@ -74,7 +74,7 @@ class _NoLivesOverlayState extends State<NoLivesOverlay> with SingleTickerProvid
   Future<void> _watchAd() async {
     _isManualReplenish = true;
     // Afficher le loader de pub
-    await AdLoadingDialog.show(context, isRewarded: true);
+    await AdLoadingOverlay.show(context, isRewarded: true);
     
     if (mounted) {
       final current = await PlayerPreferences.getLives();

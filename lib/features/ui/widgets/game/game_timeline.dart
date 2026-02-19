@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
 
-class GameplayTimeline extends StatelessWidget {
+class GameTimeline extends StatelessWidget {
   final double rabbitProgress;
   final double foxProgress;
   final bool showFox;
 
-  const GameplayTimeline({
+  const GameTimeline({
     super.key, 
     required this.rabbitProgress,
     required this.foxProgress,

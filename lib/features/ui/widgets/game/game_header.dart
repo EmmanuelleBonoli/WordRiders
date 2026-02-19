@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_button.dart';
-import 'package:word_riders/features/ui/widgets/navigation/app_back_button.dart';
+import 'package:word_riders/features/ui/widgets/common/navigation/app_back_button.dart';
 
 class GameHeader extends StatelessWidget {
   final VoidCallback onBack;

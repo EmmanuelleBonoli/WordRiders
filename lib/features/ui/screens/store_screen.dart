@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
-import 'package:word_riders/features/ui/widgets/common/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
 import 'package:word_riders/features/ui/widgets/store/store_product_card.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/gameplay/services/iap_service.dart';
-import 'package:word_riders/features/ui/widgets/animations/resource_transfer_animation.dart';
+import 'package:word_riders/features/ui/animations/resource_transfer_animation.dart';
 import 'package:word_riders/features/ui/screens/main_scaffold.dart';
 import 'package:word_riders/data/store_data.dart';
 

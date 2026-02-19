@@ -1,8 +1,8 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
-import 'player_component.dart';
-import 'rival_component.dart';
+import 'game_player.dart';
+import 'game_rival.dart';
 
 class GameRaceArea extends StatefulWidget {
   final bool isCampaign;
