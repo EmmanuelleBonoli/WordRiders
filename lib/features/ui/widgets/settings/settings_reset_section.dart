@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
-import 'package:word_riders/features/ui/widgets/common/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
 
 class SettingsResetSection extends StatelessWidget {
   final int currentStage;

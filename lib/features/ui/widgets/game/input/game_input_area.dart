@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:word_riders/features/ui/styles/app_theme.dart';
-import 'package:word_riders/features/ui/widgets/common/premium_round_button.dart';
+import 'package:word_riders/features/ui/widgets/common/button/premium_round_button.dart';
 import 'package:word_riders/features/ui/widgets/game/input/game_input_cartridge.dart';
 import 'package:word_riders/features/ui/widgets/game/input/game_letter_grid.dart';
 

@@ -1,18 +1,18 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
-import 'package:word_riders/features/ui/widgets/common/bouncing_scale_button.dart';
-import 'package:word_riders/features/ui/widgets/common/premium_round_button.dart';
+import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/widgets/common/button/premium_round_button.dart';
 import 'package:word_riders/features/ui/widgets/common/life_indicator.dart';
 
-class GamePauseDialog extends StatefulWidget {
+class GamePauseOverlay extends StatefulWidget {
   final String title;
   final VoidCallback onResume;
   final VoidCallback onRestart;
   final VoidCallback onQuit;
   final bool isCampaign;
 
-  const GamePauseDialog({
+  const GamePauseOverlay({
     super.key,
     required this.title,
     required this.onResume,
@@ -22,10 +22,10 @@ class GamePauseDialog extends StatefulWidget {
   });
 
   @override
-  State<GamePauseDialog> createState() => _GamePauseDialogState();
+  State<GamePauseOverlay> createState() => _GamePauseOverlayState();
 }
 
-class _GamePauseDialogState extends State<GamePauseDialog> with SingleTickerProviderStateMixin {
+class _GamePauseOverlayState extends State<GamePauseOverlay> with SingleTickerProviderStateMixin {
   late AnimationController _animController;
   late Animation<double> _scaleAnim;
 

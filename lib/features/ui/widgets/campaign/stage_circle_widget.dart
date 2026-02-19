@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
-import '../common/shiny_corner_effect.dart';
+import '../common/button/shiny_corner_effect.dart';
 
 class StageCircle extends StatelessWidget {
   final int number;

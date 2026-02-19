@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:go_router/go_router.dart';
-import 'package:word_riders/features/ui/widgets/navigation/app_back_button.dart';
+import 'package:word_riders/features/ui/widgets/common/navigation/app_back_button.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_about_section.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_audio_section.dart';

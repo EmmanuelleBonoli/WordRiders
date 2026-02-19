@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
-import 'package:word_riders/features/ui/widgets/common/premium_round_button.dart';
+import 'package:word_riders/features/ui/widgets/common/button/premium_round_button.dart';
 
 class AppBackButton extends StatelessWidget {
   final VoidCallback? onPressed;

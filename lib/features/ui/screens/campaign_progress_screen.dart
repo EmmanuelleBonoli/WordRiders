@@ -7,7 +7,7 @@ import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/ui/widgets/campaign/stage_circle_widget.dart';
 import 'package:word_riders/features/ui/widgets/game/overlays/no_lives_overlay.dart';
-import 'package:word_riders/features/ui/widgets/common/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
 
 class CampaignProgressScreen extends StatefulWidget {
   const CampaignProgressScreen({super.key});
