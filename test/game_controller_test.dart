@@ -1,0 +1,84 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:word_riders/features/gameplay/controllers/game_controller.dart';
+
+void main() {
+  setUp(() {
+    // Initialise les SharedPreferences virtuellement pour les tests
+    SharedPreferences.setMockInitialValues({});
+  });
+
+  group('GameController - Basic State Management', () {
+    test('L\'état initial doit être Loading avant l\'initialisation', () {
+      final controller = GameController(isCampaign: true, locale: 'fr');
+      // Immédiatement après construction, il est en loading
+      expect(controller.isLoading, isTrue);
+      expect(controller.status, equals(GameStatus.loading));
+    });
+
+    test('onLetterTap ajoute bien une lettre au currentInput si le statut est "playing"', () async {
+      final controller = GameController(isCampaign: true, locale: 'fr');
+      
+      // On attend que l'initialisation (avec son catch d'erreur) se termine pour être en mode "playing"
+      await Future.delayed(const Duration(milliseconds: 100));
+      
+      expect(controller.status, equals(GameStatus.playing));
+      expect(controller.currentInput, isEmpty);
+
+      controller.onLetterTap('A');
+      controller.onLetterTap('B');
+      
+      expect(controller.currentInput, equals('AB'));
+    });
+
+    test('onBackspace supprime la dernière lettre de currentInput', () async {
+      final controller = GameController(isCampaign: true, locale: 'fr');
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      controller.onLetterTap('C');
+      controller.onLetterTap('H');
+      controller.onLetterTap('A');
+      controller.onLetterTap('T');
+      expect(controller.currentInput, equals('CHAT'));
+
+      controller.onBackspace();
+      expect(controller.currentInput, equals('CHA'));
+    });
+
+    test('clearInput efface tout le mot en cours', () async {
+      final controller = GameController(isCampaign: true, locale: 'fr');
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      controller.onLetterTap('C');
+      controller.onLetterTap('H');
+      controller.onLetterTap('A');
+      controller.onLetterTap('T');
+      
+      controller.clearInput();
+      expect(controller.currentInput, isEmpty);
+    });
+
+    test('pauseGame gèle la partie et resumeGame la reprend', () async {
+      final controller = GameController(isCampaign: true, locale: 'fr');
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      expect(controller.isPaused, isFalse);
+
+      controller.pauseGame();
+      expect(controller.isPaused, isTrue);
+      expect(controller.status, equals(GameStatus.paused));
+
+      // Les interactions sont bloquées quand le jeu est en pause
+      controller.onLetterTap('X');
+      expect(controller.currentInput, isEmpty); 
+
+      controller.resumeGame();
+      expect(controller.isPaused, isFalse);
+      expect(controller.status, equals(GameStatus.playing));
+      
+      // Les interactions reprennent
+      controller.onLetterTap('X');
+      expect(controller.currentInput, equals('X'));
+    });
+  });
+}
