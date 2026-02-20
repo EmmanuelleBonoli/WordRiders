@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:word_riders/data/audio_data.dart';
+import 'package:word_riders/features/gameplay/services/audio_service.dart';
+
 import '../widgets/intro_loading/loading_messages_widget.dart';
 
 class LoadingStartScreen extends StatefulWidget {
@@ -16,11 +19,25 @@ class _LoadingStartScreenState extends State<LoadingStartScreen> {
   @override
   void initState() {
     super.initState();
-    
-    // Durée de l'écran de chargement avant d'aller au menu
-    Timer(const Duration(seconds: 4), () {
-      if (mounted) context.go('/menu');
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    // 1. Préchargement technique des sons
+    final initFuture = AudioService().preloadAll().then((_) {
+        // Lancement immédiat de la musique dès le préchargement terminé
+        AudioService().playMusic(AudioData.musicBackground);
+    }).catchError((e) {
+        debugPrint("Erreur de chargement audio: $e");
     });
+    
+    // 2. Temporisation minimale visuelle (4 secondes)
+    final minDelayFuture = Future.delayed(const Duration(seconds: 4));
+
+    // 3. Attendre que le préchargement ET la temporisation soient terminés avant d'aller au menu
+    await Future.wait([initFuture, minDelayFuture]);
+    
+    if (mounted) context.go('/menu');
   }
 
   @override

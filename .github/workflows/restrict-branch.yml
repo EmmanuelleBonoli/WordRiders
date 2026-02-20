@@ -1,0 +1,30 @@
+name: PR Rules
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - main
+
+jobs:
+  restrict-to-staging:
+    if: github.base_ref == 'staging' # Run this job only for PRs targeting 'staging'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check source branch
+        run: |
+          if [ "${{ github.head_ref }}" != "development" ]; then
+            echo "Seule la branche 'development' est autorisée à faire une PR vers 'staging'."
+            exit 1
+          fi
+
+  restrict-to-main:
+    if: github.base_ref == 'main' # Run this job only for PRs targeting 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check source branch
+        run: |
+          if [ "${{ github.head_ref }}" != "staging" ]; then
+             echo "Seule la branche 'staging' est autorisée à faire une PR vers 'main'."
+             exit 1
+          fi
