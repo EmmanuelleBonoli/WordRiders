@@ -7,7 +7,6 @@ class AppTheme {
   
   // Marrons & Bois
   static const Color _brownDark = Color(0xFF3E2723);    // Chocolat (Emplacements, Texte sombre)
-  static const Color _brownMedium = Color(0xFF5D4037);  // Marron foncé (Ombres, Texte des tuiles)
   static const Color _brownMain = Color(0xFF8D6E63);    // Bois moyen (Plateaux, Bordures)
   static const Color _headerWood = Color(0xFFCF9E64);   // Bois clair (En-tête)
   
@@ -25,15 +24,11 @@ class AppTheme {
   
   // Rouges & Oranges
   static const Color _redMain = Color(0xFFD32F2F);      // Erreur, Danger
-  static const Color _redDark = Color(0xFFBF360C);      // Ombre profonde
-  static const Color _redShadow = Color(0xFF870000);    // Ombre sombre
   static const Color _redSurface = Color(0xFFFFEBEE);   // Fond rouge clair
   static const Color _orangeBurnt = Color(0xFFD84315);  // Bouton Mélanger
-  static const Color _orangeSalmon = Color(0xFFFFAB91); // Reflet Mélanger
 
   // Verts
   static const Color _greenMain = Color(0xFF2E7D32);    // Succès, No Ads Actif
-  static const Color _greenLight = Color(0xFF81C784);   // Reflet Succès
   
   // Neutres
   static const Color _beigeMain = Color(0xFFD7CCC8);
@@ -61,12 +56,8 @@ class AppTheme {
   
   // Boutons d'action
   static const Color btnValidate = _yellowGold;
-  static const Color btnValidateShadow = _redDark;
   static const Color btnValidateHighlight = _yellowPale;
 
-  static const Color btnShuffle = _orangeBurnt;
-  static const Color btnShuffleShadow = _redShadow;
-  static const Color btnShuffleHighlight = _orangeSalmon;
 
   // Bouton Doré Standard (Nouveau Standard)
   static const Color goldButtonFace = _goldFace;
@@ -75,35 +66,22 @@ class AppTheme {
 
   // Bouton/Indicateur Vert Standard
   static const Color green = _greenMain; 
-  static const Color success = _greenMain; 
-  static const Color greenMain = _greenMain;
-  static const Color greenLight = _greenLight;
-  static const Color greenButtonShadow = _greenMain; 
-  static const Color greenButtonHighlight = _greenLight;
 
   static const Color red = _redMain;
   static const Color orange = _orangeBurnt;
-  static const Color orangeSalmon = _orangeSalmon;
   static const Color orangeBurnt = _orangeBurnt;
   static const Color surfaceLightRed = _redSurface;
   static const Color redBad = Color(0xFFC0392B);
-  static const Color coinBorderLight = Color(0xFFFFE082);
 
   // Tuiles & Plateau
   static const Color tileFace = _cream;
   static const Color tileShadow = _amberMain;
-  static const Color tileText = _brownMedium;
-  static const Color woodBoard = _brownMain;
-  static const Color woodSlot = _brownDark;
   static const Color headerWood = _headerWood;
   
   // Panneaux de niveau
   static const Color levelSignFace = _creamLight;
-  static const Color levelSignBorder = _brownMain;
 
   // Highlights & Ombres spécifiques (Bois)
-  static const Color woodBoardHighlight = Color(0xFFA1887F);
-  static const Color woodBoardShadow = _brownMedium;
 
   // Neutres (Beige)
   static const Color neutralBeige = _beigeMain;
@@ -116,8 +94,6 @@ class AppTheme {
   static const Color coinRimBottom = _coinRimBottom;
   static const Color coinFaceTop = _coinFaceTop;
   static const Color coinFaceBottom = _coinFaceBottom;
-  static const Color coinIconFill = _coinRimTop;
-  static const Color coinIconOutline = _coinRimBottom;
   static const Color inputCartridgeFill = Color(0xFFD19B5B);
 
   // Button Gradients
@@ -186,39 +162,6 @@ class AppTheme {
       bodyMedium: TextStyle(
         fontSize: 14,
         color: textDark,
-      ),
-    ),
-
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: brown,
-        foregroundColor: Colors.white,
-        elevation: 4, 
-        shadowColor: darkBrown.withValues(alpha: 0.4),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24), 
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        textStyle: TextStyle(
-          fontFamily: fontFamily,
-          fontSize: 18, 
-          fontWeight: FontWeight.w900, 
-        ),
-      ),
-    ),
-    
-    iconTheme: const IconThemeData(
-      color: brown,
-      size: 28,
-    ),
-    
-    cardTheme: CardThemeData(
-      color: Colors.white.withValues(alpha: 0.9),
-      elevation: 4,
-      shadowColor: Colors.black.withValues(alpha: 0.1),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: brown, width: 2),
       ),
     ),
   );
