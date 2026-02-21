@@ -8,6 +8,7 @@ import 'package:word_riders/features/gameplay/services/iap_service.dart';
 import 'package:word_riders/features/gameplay/services/goal_service.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:flutter/services.dart';
+import 'dart:ui' as ui;
 
 void main() async {
   // Nécessaire pour l'initialisation des bindings Flutter
@@ -16,15 +17,27 @@ void main() async {
   await IapService.initialize();
   await GoalService().init();
 
-  // Initialisation du service de mots et chargement du dictionnaire par défaut
-  final wordService = WordService();
-  await wordService.loadDictionary('fr'); 
+  // Initialisation du service de mots
+  final wordService = WordService(); 
 
   // Charger la langue du joueur
   final savedLocaleCode = await PlayerPreferences.getLocale();
   Locale? startLocale;
   if (savedLocaleCode != null) {
     startLocale = Locale(savedLocaleCode);
+  } else {
+    // Pour un nouveau joueur, on détecte la langue du système
+    final deviceLanguage = ui.PlatformDispatcher.instance.locale.languageCode;
+    const supportedLocales = ['en', 'fr', 'es', 'it', 'de'];
+    
+    if (supportedLocales.contains(deviceLanguage)) {
+      startLocale = Locale(deviceLanguage);
+    } else {
+      startLocale = const Locale('en');
+    }
+    
+    // On l'enregistre dans les préférences pour figer le choix initial
+    await PlayerPreferences.setLocale(startLocale.languageCode);
   }
 
   // Forcer l'orientation en mode portrait
@@ -35,9 +48,15 @@ void main() async {
   // Lancement de l'application
   runApp(
     EasyLocalization(
-      supportedLocales: const [Locale('en'), Locale('fr')],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('fr'),
+        Locale('es'),
+        Locale('it'),
+        Locale('de')
+      ],
       path: 'assets/translations',
-      fallbackLocale: const Locale('fr'),
+      fallbackLocale: const Locale('en'),
       startLocale: startLocale,
       saveLocale: false, // Utilise PlayerPreferences à la place
       child: Provider<WordService>.value(

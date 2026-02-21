@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:word_riders/features/gameplay/controllers/game_controller.dart';
+import 'package:word_riders/features/gameplay/services/word_service.dart';
 
 void main() {
   setUp(() {
@@ -10,14 +11,14 @@ void main() {
 
   group('GameController - Basic State Management', () {
     test('L\'état initial doit être Loading avant l\'initialisation', () {
-      final controller = GameController(isCampaign: true, locale: 'fr');
+      final controller = GameController(isCampaign: true, locale: 'fr', wordService: WordService());
       // Immédiatement après construction, il est en loading
       expect(controller.isLoading, isTrue);
       expect(controller.status, equals(GameStatus.loading));
     });
 
     test('onLetterTap ajoute bien une lettre au currentInput si le statut est "playing"', () async {
-      final controller = GameController(isCampaign: true, locale: 'fr');
+      final controller = GameController(isCampaign: true, locale: 'fr', wordService: WordService());
       
       // On attend que l'initialisation (avec son catch d'erreur) se termine pour être en mode "playing"
       await Future.delayed(const Duration(milliseconds: 100));
@@ -32,7 +33,7 @@ void main() {
     });
 
     test('onBackspace supprime la dernière lettre de currentInput', () async {
-      final controller = GameController(isCampaign: true, locale: 'fr');
+      final controller = GameController(isCampaign: true, locale: 'fr', wordService: WordService());
       await Future.delayed(const Duration(milliseconds: 100));
 
       controller.onLetterTap('C');
@@ -46,7 +47,7 @@ void main() {
     });
 
     test('clearInput efface tout le mot en cours', () async {
-      final controller = GameController(isCampaign: true, locale: 'fr');
+      final controller = GameController(isCampaign: true, locale: 'fr', wordService: WordService());
       await Future.delayed(const Duration(milliseconds: 100));
 
       controller.onLetterTap('C');
@@ -59,7 +60,7 @@ void main() {
     });
 
     test('pauseGame gèle la partie et resumeGame la reprend', () async {
-      final controller = GameController(isCampaign: true, locale: 'fr');
+      final controller = GameController(isCampaign: true, locale: 'fr', wordService: WordService());
       await Future.delayed(const Duration(milliseconds: 100));
 
       expect(controller.isPaused, isFalse);

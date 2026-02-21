@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/features/gameplay/services/word_service.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_container.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_section_title.dart';
@@ -58,7 +60,9 @@ class SettingsLanguageSection extends StatelessWidget {
               await PlayerPreferences.resetCampaign();
               await PlayerPreferences.setLocale(newLocale.languageCode);
               if (context.mounted) {
+                 final wordService = context.read<WordService>();
                  await context.setLocale(newLocale);
+                 await wordService.loadDictionary(newLocale.languageCode);
                  onSettingsChanged(); 
               }
             },
@@ -116,6 +120,18 @@ class SettingsLanguageSection extends StatelessWidget {
                     value: Locale('fr'),
                     child: Text('FRANÇAIS'),
                   ),
+                  const DropdownMenuItem(
+                    value: Locale('es'),
+                    child: Text('ESPAÑOL'),
+                  ),
+                  const DropdownMenuItem(
+                    value: Locale('it'),
+                    child: Text('ITALIANO'),
+                  ),
+                  const DropdownMenuItem(
+                    value: Locale('de'),
+                    child: Text('DEUTSCH'),
+                  ),
                 ],
                 onChanged: (newLocale) async {
                   if (newLocale != null && newLocale != context.locale) {
@@ -124,7 +140,9 @@ class SettingsLanguageSection extends StatelessWidget {
                     } else {
                       await PlayerPreferences.setLocale(newLocale.languageCode);
                       if (context.mounted) {
+                        final wordService = context.read<WordService>();
                         await context.setLocale(newLocale);
+                        await wordService.loadDictionary(newLocale.languageCode);
                       }
                     }
                   }

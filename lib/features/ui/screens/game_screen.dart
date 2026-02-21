@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'package:word_riders/features/gameplay/controllers/game_controller.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/features/gameplay/services/word_service.dart';
 import 'package:word_riders/features/ui/widgets/game/game_header.dart';
 import 'package:word_riders/features/ui/widgets/game/game_header_background.dart';
 import 'package:word_riders/features/ui/widgets/game/input/game_input_area.dart';
@@ -24,9 +25,11 @@ class GameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => GameController(
+      key: ValueKey(context.locale.languageCode),
+      create: (ctx) => GameController(
         isCampaign: isCampaign,
         locale: context.locale.languageCode,
+        wordService: ctx.read<WordService>(),
       ),
       child: const _GameScreenContent(),
     );
@@ -58,6 +61,11 @@ class _GameScreenContent extends StatelessWidget {
     void onSettingsTap() async {
       controller.pauseGame();
       await context.push('/settings');
+      
+      // Si on change de langue dans les réglages, cet écran est détruit (nouvelle ValueKey).
+      // On s'assure donc que le contexte est toujours monté avant d'utiliser le controller.
+      if (!context.mounted) return;
+      
       controller.resumeGame();
     }
 

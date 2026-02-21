@@ -1,0 +1,120 @@
+{
+    "loading": {
+        "messages": {
+            "0": "Caricamento magia...",
+            "1": "Affilando spade...",
+            "2": "Evocando eroi..."
+        },
+        "title": "Caricamento..."
+    },
+    "menu": {
+        "campaign": "Campagna",
+        "training": "Allenamento",
+        "coins": "Monete",
+        "settings": "Impostazioni"
+    },
+    "training": {
+        "choose_difficulty": "Scegli la difficoltà:",
+        "easy": "Facile",
+        "medium": "Medio",
+        "hard": "Difficile"
+    },
+    "settings": {
+        "title": "Impostazioni",
+        "language": "Lingua",
+        "audio": "Audio",
+        "enableMusic": "Attiva musica",
+        "enableSounds": "Attiva suoni",
+        "resetCampaign": "Ripristina campagna",
+        "resetCampaignConfirmTitle": "Ripristina campagna?",
+        "resetCampaignConfirmMessage": "Questo cancellerà tutti i tuoi progressi e inizierà una nuova campagna. Sei sicuro?",
+        "resetCampaignConfirm": "Ripristina",
+        "resetCampaignSuccess": "Campagna ripristinata con successo!",
+        "cancel": "Annulla",
+        "confirm": "Conferma",
+        "changeLanguageConfirmTitle": "Cambia lingua?",
+        "changeLanguageConfirmMessage": "Cambiando lingua il progresso della campagna verrà ripristinato. Continuare?",
+        "aboutTitle": "Informazioni",
+        "version": "Versione",
+        "contact": "Contatti",
+        "privacyPolicy": "Informativa sulla privacy",
+        "termsOfService": "Termini di servizio",
+        "copyright": "© 2026 Major Manu Productions\nTutti i diritti riservati",
+        "restorePurchases": "Ripristina acquisti",
+        "restoreStarted": "Ripristino acquisti...",
+        "emailError": "Impossibile aprire l'app di posta elettronica",
+        "linkError": "Impossibile aprire il link"
+    },
+    "campaign": {
+        "noLives": "Non hai più vite!",
+        "noLivesMessage": "Aspetta che le tue vite si ricarichino o usa le tue monete.",
+        "getLives": "Ricarica le tue vite",
+        "watchAd": "Guarda un annuncio (+1 vita)",
+        "buyLives": "Compra 5 vite (700 monete)",
+        "notEnoughCoins": "Monete non sufficienti!",
+        "noAds": "Senza annunci",
+        "noAdsConfirmTitle": "Acquista Senza Annunci?",
+        "noAdsConfirmMessageRealMoney": "Non vedere mai più annunci! Costo: $4.99",
+        "noAdsPurchase": "Acquista",
+        "noAdsPurchased": "Nessun annuncio attivato! Goditi il gioco senza interruzioni.",
+        "adBeforeStage": "Annuncio prima del livello {stage}",
+        "goals": {
+            "headers": {
+                "daily": "OBIETTIVI GIORNALIERI",
+                "career": "PROGRESSI"
+            },
+            "common": {
+                "claim": "RISCATTA",
+                "claimed": "RISCATTATO"
+            },
+            "daily": {
+                "win_3levels": "Vinci 3 Livelli",
+                "words_30": "Trova 30 Parole",
+                "watch_ad": "Guarda un Annuncio"
+            },
+            "career": {
+                "reach_lvl10": "Apprendista Lettore",
+                "reach_lvl10_desc": "Raggiungi il Livello 10",
+                "words_100": "Collezionista di Parole",
+                "words_100_desc": "Trova 100 Parole",
+                "target_label": "Obiettivo:"
+            }
+        },
+        "store": {
+            "coin_packs": "PACCHETTI DI MONETE",
+            "essentials": "ESSENZIALI",
+            "no_ads_title": "PACCHETTO SENZA ANNUNCI",
+            "no_ads_desc": "Rimuovi gli annunci per sempre + 500 Monete!",
+            "best_badge": "MIGLIORE OFFERTA!",
+            "refill_lives": "Ricarica Vite",
+            "unlimited_lives": "Vite Illimitate",
+            "error_transaction": "Transazione fallita",
+            "success_no_ads": "Annunci rimossi per sempre!",
+            "success_coins": "+{amount} Monete!",
+            "unavailable": "Negozio non disponibile",
+            "restore_simulated": "Ripristino simulato (Dev)",
+            "already_unlimited": "Hai già vite illimitate!",
+            "already_full": "Le tue vite sono già piene!"
+        }
+    },
+    "game": {
+        "pause_title": "PAUSA",
+        "continue": "RIPRENDI",
+        "replay": "RIGIOCA",
+        "quit": "ESCI",
+        "quit_game": "Esci dal gioco",
+        "victory": "Ben fatto!",
+        "defeat": "Continuare?",
+        "level": "Livello",
+        "level_finished": "Livello Completato!",
+        "training_won": "Il coniglio è salvo!",
+        "fox_won": "La volpe ti ha preso...",
+        "feedback_invalid": "Parola sconosciuta!",
+        "feedback_too_short": "Troppo corta!",
+        "feedback_already_used": "Già trovata!",
+        "compose_words_title": "Componi Parole!",
+        "compose_words_subtitle": "Trova parole per correre più veloce.",
+        "continue_adventure": "Continua l'avventura",
+        "watch_ad_double": "X2 (Annuncio)"
+    }
+}
