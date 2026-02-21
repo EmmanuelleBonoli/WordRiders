@@ -24,11 +24,11 @@ class _StoreScreenState extends State<StoreScreen> {
   void initState() {
     super.initState();
     // Écoute les retours de l'IAP Service pour afficher des feedbacks
-    IapService.onErrorOrSuccess = (message, isError) {
+    IapService.onErrorOrSuccess = (messageKey, isError, {namedArgs}) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(message),
+          content: Text(context.tr(messageKey, namedArgs: namedArgs)),
           backgroundColor: isError ? AppTheme.red : AppTheme.green,
         ),
       );
@@ -64,7 +64,7 @@ class _StoreScreenState extends State<StoreScreen> {
            // Fallback si le produit n'est pas chargé (ex: offline ou web)
            // On pourrait tenter IapService.buy() avec un faux produit ou afficher une erreur
            ScaffoldMessenger.of(context).showSnackBar(
-             const SnackBar(content: Text("Produit indisponible (Store non connecté)")),
+             SnackBar(content: Text(context.tr('campaign.store.unavailable'))),
            );
          }
        };
@@ -198,7 +198,7 @@ class _StoreScreenState extends State<StoreScreen> {
     if (!context.mounted) return;
 
     if (isUnlimited) {
-       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Vous avez déjà des vies illimitées !")));
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('campaign.store.already_unlimited'))));
        return;
     }
     
@@ -206,7 +206,7 @@ class _StoreScreenState extends State<StoreScreen> {
     if (!context.mounted) return;
 
     if (currentLives >= 5) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Vos vies sont déjà pleines !")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('campaign.store.already_full'))));
       return;
     }
 
@@ -215,7 +215,7 @@ class _StoreScreenState extends State<StoreScreen> {
     if (!context.mounted) return;
 
     if (currentCoins < cost) {
-       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Pas assez de pièces !")));
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('campaign.notEnoughCoins'))));
        return;
     }
 
@@ -244,7 +244,7 @@ class _StoreScreenState extends State<StoreScreen> {
     if (!context.mounted) return;
     
     if (currentCoins < cost) {
-       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Pas assez de pièces !")));
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('campaign.notEnoughCoins'))));
        return;
     }
 

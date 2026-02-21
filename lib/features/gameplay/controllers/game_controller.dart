@@ -10,6 +10,7 @@ enum GameStatus { loading, waitingForConfig, playing, paused, won, lost }
 class GameController extends ChangeNotifier {
   final bool isCampaign;
   final String locale;
+  final WordService wordService;
 
   GameStatus _status = GameStatus.loading;
   String _targetWord = "";
@@ -19,6 +20,8 @@ class GameController extends ChangeNotifier {
 
   Timer? _gameTimer;
   final Set<String> _sessionWords = {}; // Mots trouvés dans la partie en cours
+
+  bool _isDisposed = false;
 
   double _rabbitProgress = 0.0;
   double _foxProgress = 0.0;
@@ -39,11 +42,13 @@ class GameController extends ChangeNotifier {
   String? _feedbackMessage;
   String? get feedbackMessage => _feedbackMessage;
 
-  GameController({required this.isCampaign, required this.locale}) {
+  GameController({
+    required this.isCampaign, 
+    required this.locale, 
+    required this.wordService
+  }) {
     _initializeGame();
   }
-  
-  final _wordService = WordService();
 
   Future<void> _initializeGame() async {
     _status = GameStatus.loading;
@@ -52,8 +57,8 @@ class GameController extends ChangeNotifier {
     try {
       debugPrint("GameController: Loading dictionary & word for locale: $locale");
       
-      // 1. On s'assure que le dictionnaire est chargé
-      await _wordService.loadDictionary(locale);
+      // 1. On s'assure que le dictionnaire est chargé pour ce locale (normalement déjà fait par main ou settings)
+      await wordService.loadDictionary(locale);
 
       if (!isCampaign && _trainingLength == null) {
         _status = GameStatus.waitingForConfig;
@@ -72,7 +77,7 @@ class GameController extends ChangeNotifier {
            debugPrint("GameController: Restored existing word for stage $currentStage: $_targetWord");
          } else {
            // Génération d'un nouveau mot adapté à la difficulté
-           _targetWord = await _wordService.getNextCampaignWord(locale, stage: currentStage);
+           _targetWord = await wordService.getNextCampaignWord(locale, stage: currentStage);
            // IMPORTANT : On sauvegarde ce mot pour ce stage pour qu'il ne change pas si on quitte/revient
            await PlayerPreferences.setWordForStage(currentStage, _targetWord);
            debugPrint("GameController: Generated and saved new word for stage $currentStage: $_targetWord");
@@ -91,7 +96,7 @@ class GameController extends ChangeNotifier {
       } else {
         // En mode Entraînement
         int len = _trainingLength ?? 6;
-        _targetWord = await _wordService.getNextCampaignWord(locale, stage: 1, forceLength: len); 
+        _targetWord = await wordService.getNextCampaignWord(locale, stage: 1, forceLength: len); 
       }
       
       // Mélange des lettres
@@ -197,7 +202,7 @@ class GameController extends ChangeNotifier {
     }
 
     // 3. Mot existe dans le dico ?
-    if (_wordService.isValid(word)) {
+    if (wordService.isValid(word)) {
       _sessionWords.add(word);
       GoalService().incrementWordsFound(1); // Fire and forget
       
@@ -331,8 +336,15 @@ class GameController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _isDisposed = true;
     _gameTimer?.cancel();
     _feedbackTimer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (_isDisposed) return;
+    super.notifyListeners();
   }
 }

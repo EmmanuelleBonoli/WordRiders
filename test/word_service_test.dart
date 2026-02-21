@@ -23,6 +23,19 @@ void main() {
       // On teste qu'un mot complètement faux est refusé
       final isInvalid = service.isValid('ZZXZXZX');
       expect(isInvalid, isFalse);
+
+      // On teste les autres langues
+      await service.loadDictionary('es');
+      expect(service.isValid('HOLA'), isTrue);
+
+      await service.loadDictionary('it');
+      expect(service.isValid('CIAO'), isTrue);
+
+      await service.loadDictionary('de');
+      expect(service.isValid('HALLO'), isTrue);
+      
+      await service.loadDictionary('en');
+      expect(service.isValid('HELLO'), isTrue);
     });
 
     test('getNextCampaignWord renvoie bien un mot de la taille demandée', () async {

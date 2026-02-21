@@ -87,7 +87,14 @@
       "no_ads_desc": "Supprime les pubs + 500 Pièces !",
       "best_badge": "TOP ACHAT!",
       "refill_lives": "Recharge Vies",
-      "unlimited_lives": "Vies Illimitées"
+      "unlimited_lives": "Vies Illimitées",
+      "error_transaction": "Échec de la transaction",
+      "success_no_ads": "Publicités supprimées à vie !",
+      "success_coins": "+{amount} Pièces !",
+      "unavailable": "Boutique indisponible",
+      "restore_simulated": "Restauration simulée (Dev)",
+      "already_unlimited": "Vous avez déjà des vies illimitées !",
+      "already_full": "Vos vies sont déjà pleines !"
     }
   },
   "game": {

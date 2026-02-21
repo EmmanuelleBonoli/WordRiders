@@ -1,0 +1,120 @@
+{
+    "loading": {
+        "messages": {
+            "0": "Cargando magia...",
+            "1": "Afilando espadas...",
+            "2": "Invocando héroes..."
+        },
+        "title": "Cargando..."
+    },
+    "menu": {
+        "campaign": "Campaña",
+        "training": "Entrenamiento",
+        "coins": "Monedas",
+        "settings": "Ajustes"
+    },
+    "training": {
+        "choose_difficulty": "Elige la dificultad:",
+        "easy": "Fácil",
+        "medium": "Medio",
+        "hard": "Difícil"
+    },
+    "settings": {
+        "title": "Ajustes",
+        "language": "Idioma",
+        "audio": "Audio",
+        "enableMusic": "Activar música",
+        "enableSounds": "Activar sonidos",
+        "resetCampaign": "Reiniciar campaña",
+        "resetCampaignConfirmTitle": "¿Reiniciar campaña?",
+        "resetCampaignConfirmMessage": "Esto borrará todo tu progreso y comenzará una nueva campaña. ¿Estás seguro?",
+        "resetCampaignConfirm": "Reiniciar",
+        "resetCampaignSuccess": "¡Campaña reiniciada con éxito!",
+        "cancel": "Cancelar",
+        "confirm": "Confirmar",
+        "changeLanguageConfirmTitle": "¿Cambiar idioma?",
+        "changeLanguageConfirmMessage": "Cambiar el idioma reiniciará el progreso de tu campaña. ¿Continuar?",
+        "aboutTitle": "Acerca de",
+        "version": "Versión",
+        "contact": "Contacto",
+        "privacyPolicy": "Política de Privacidad",
+        "termsOfService": "Términos de Servicio",
+        "copyright": "© 2026 Major Manu Productions\nTodos los derechos reservados",
+        "restorePurchases": "Restaurar compras",
+        "restoreStarted": "Restaurando compras...",
+        "emailError": "No se puede abrir la aplicación de correo electrónico",
+        "linkError": "No se puede abrir el enlace"
+    },
+    "campaign": {
+        "noLives": "¡No quedan vidas!",
+        "noLivesMessage": "Espera a que tus vidas se recarguen o usa tus monedas.",
+        "getLives": "Recarga tus vidas",
+        "watchAd": "Ver un anuncio (+1 vida)",
+        "buyLives": "Comprar 5 vidas (700 monedas)",
+        "notEnoughCoins": "¡No hay suficientes monedas!",
+        "noAds": "Sin anuncios",
+        "noAdsConfirmTitle": "¿Comprar Sin Anuncios?",
+        "noAdsConfirmMessageRealMoney": "¡No vuelvas a ver anuncios! Costo: $4.99",
+        "noAdsPurchase": "Comprar",
+        "noAdsPurchased": "¡Sin anuncios activado! Disfruta del juego sin interrupciones.",
+        "adBeforeStage": "Anuncio antes del nivel {stage}",
+        "goals": {
+            "headers": {
+                "daily": "OBJETIVOS DIARIOS",
+                "career": "PROGRESO"
+            },
+            "common": {
+                "claim": "RECLAMAR",
+                "claimed": "RECLAMADO"
+            },
+            "daily": {
+                "win_3levels": "Gana 3 Niveles",
+                "words_30": "Encuentra 30 Palabras",
+                "watch_ad": "Ver un Anuncio"
+            },
+            "career": {
+                "reach_lvl10": "Lector Aprendiz",
+                "reach_lvl10_desc": "Llega al Nivel 10",
+                "words_100": "Coleccionista de Palabras",
+                "words_100_desc": "Encuentra 100 Palabras",
+                "target_label": "Objetivo:"
+            }
+        },
+        "store": {
+            "coin_packs": "PAQUETES DE MONEDAS",
+            "essentials": "ESENCIALES",
+            "no_ads_title": "PAQUETE SIN ANUNCIOS",
+            "no_ads_desc": "¡Elimina los anuncios para siempre + 500 Monedas!",
+            "best_badge": "¡MEJOR OFERTA!",
+            "refill_lives": "Recargar Vidas",
+            "unlimited_lives": "Vidas Ilimitadas",
+            "error_transaction": "Transacción fallida",
+            "success_no_ads": "¡Anuncios eliminados para siempre!",
+            "success_coins": "¡+{amount} Monedas!",
+            "unavailable": "Tienda no disponible",
+            "restore_simulated": "Restauración simulada (Dev)",
+            "already_unlimited": "¡Ya tienes vidas ilimitadas!",
+            "already_full": "¡Tus vidas ya están llenas!"
+        }
+    },
+    "game": {
+        "pause_title": "PAUSA",
+        "continue": "CONTINUAR",
+        "replay": "REPETIR",
+        "quit": "SALIR",
+        "quit_game": "Salir del juego",
+        "victory": "¡Bien hecho!",
+        "defeat": "¿Continuar?",
+        "level": "Nivel",
+        "level_finished": "¡Nivel Completado!",
+        "training_won": "¡El conejo está a salvo!",
+        "fox_won": "El zorro te atrapó...",
+        "feedback_invalid": "¡Palabra desconocida!",
+        "feedback_too_short": "¡Demasiado corta!",
+        "feedback_already_used": "¡Ya encontrada!",
+        "compose_words_title": "¡Compón palabras!",
+        "compose_words_subtitle": "Encuentra palabras para correr más rápido.",
+        "continue_adventure": "Continuar aventura",
+        "watch_ad_double": "X2 (Anuncio)"
+    }
+}

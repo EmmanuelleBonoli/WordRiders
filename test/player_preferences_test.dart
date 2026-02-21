@@ -70,5 +70,16 @@ void main() {
       await PlayerPreferences.setSfxEnabled(false);
       expect(await PlayerPreferences.isSfxEnabled(), isFalse);
     });
+
+    test('Les paramètres des langues sont correctement mis à jour', () async {
+      final initialLocale = await PlayerPreferences.getLocale();
+      expect(initialLocale, isNull);
+
+      await PlayerPreferences.setLocale('es');
+      expect(await PlayerPreferences.getLocale(), equals('es'));
+
+      await PlayerPreferences.setLocale('de');
+      expect(await PlayerPreferences.getLocale(), equals('de'));
+    });
   });
 }
