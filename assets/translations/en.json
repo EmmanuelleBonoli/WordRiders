@@ -40,6 +40,8 @@
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "copyright": "© 2026 Major Manu Productions\nAll rights reserved",
+    "restorePurchases": "Restore Purchases",
+    "restoreStarted": "Restoring purchases...",
     "emailError": "Unable to open email app",
     "linkError": "Unable to open link"
   },
@@ -85,7 +87,14 @@
       "no_ads_desc": "Remove ads forever + 500 Coins!",
       "best_badge": "BEST DEAL!",
       "refill_lives": "Refill Lives",
-      "unlimited_lives": "Unlimited Lives"
+      "unlimited_lives": "Unlimited Lives",
+      "error_transaction": "Transaction failed",
+      "success_no_ads": "Ads removed permanently!",
+      "success_coins": "+{amount} Coins!",
+      "unavailable": "Store unavailable",
+      "restore_simulated": "Restore simulated (Dev)",
+      "already_unlimited": "You already have unlimited lives!",
+      "already_full": "Your lives are already full!"
     }
   },
   "game": {

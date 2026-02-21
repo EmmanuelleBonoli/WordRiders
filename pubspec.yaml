@@ -74,10 +74,8 @@ flutter:
     - assets/images/indicators/
     - assets/images/rewards/
     - assets/sounds/
-    - assets/words/fr.txt
-    - assets/words/en.txt
-    - assets/translations/fr.json
-    - assets/translations/en.json
+    - assets/words/
+    - assets/translations/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -25,7 +25,7 @@ class IapService {
   static StreamSubscription<List<PurchaseDetails>>? _subscription;
   
   // Callback UI
-  static Function(String message, bool isError)? onErrorOrSuccess;
+  static Function(String messageKey, bool isError, {Map<String, String>? namedArgs})? onErrorOrSuccess;
 
   // Initialisation du service complet
   static Future<void> initialize() async {
@@ -80,8 +80,8 @@ class IapService {
       // --- MODE DÉVELOPPEMENT / DÉGRADÉ ---
       debugPrint("[IAP] Store indisponible.");
       
-      // En mode Debug ou Web, on active le mode simulation pour pouvoir travailler
-      if (kDebugMode || kIsWeb) {
+      // En mode Debug, on active le mode simulation pour pouvoir travailler
+      if (kDebugMode) {
         debugPrint("[IAP] Activation du mode SIMULATION (Bypass Dev).");
         _loadMockProducts();
       }
@@ -122,7 +122,7 @@ class IapService {
       } else {
         if (purchaseDetails.status == PurchaseStatus.error) {
           debugPrint("[IAP] Échec de l'achat : ${purchaseDetails.error}");
-          onErrorOrSuccess?.call("Échec de la transaction", true);
+          onErrorOrSuccess?.call("campaign.store.error_transaction", true);
         } else if (purchaseDetails.status == PurchaseStatus.purchased || 
                    purchaseDetails.status == PurchaseStatus.restored) {
           
@@ -154,16 +154,19 @@ class IapService {
     } catch (_) {}
 
     if (matchedItem != null) {
-      // Cas 1 : No Ads
       if (matchedItem.id == 'no_ads' || id == noAdsProductId) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool(_keyNoAds, true);
-        onErrorOrSuccess?.call("Publicités supprimées à vie !", false);
+        onErrorOrSuccess?.call("campaign.store.success_no_ads", false);
       } 
       // Cas 2 : Pièces
       else if (matchedItem.rewardValue > 0) {
         await PlayerPreferences.addCoins(matchedItem.rewardValue);
-        onErrorOrSuccess?.call("+${matchedItem.rewardValue} Pièces !", false);
+        onErrorOrSuccess?.call(
+          "campaign.store.success_coins", 
+          false, 
+          namedArgs: {'amount': matchedItem.rewardValue.toString()}
+        );
       }
       
       // Notifier tout le monde du succès (No Ads ou Pièces)
@@ -195,14 +198,14 @@ class IapService {
 
   // Lancer un achat
   static Future<void> buy(ProductDetails product) async {
-    // Bypass Simulation (Dev seulement, si store cassé ou Web)
-    if (!_isStoreAvailable && (kDebugMode || kIsWeb)) {
+    // Bypass Simulation (Dev seulement, si store cassé)
+    if (!_isStoreAvailable && kDebugMode) {
       _simulatePurchase(product.id);
       return;
     }
 
     if (!_isStoreAvailable || _iap == null) {
-      onErrorOrSuccess?.call("Boutique indisponible", true);
+      onErrorOrSuccess?.call("campaign.store.unavailable", true);
       return;
     }
 
@@ -223,7 +226,7 @@ class IapService {
       await _iap!.restorePurchases();
     } else if (kDebugMode) {
        // Simulation de restauration en dev
-       onErrorOrSuccess?.call("Restauration simulée (Dev)", false);
+       onErrorOrSuccess?.call("campaign.store.restore_simulated", false);
     }
   }
 

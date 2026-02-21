@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../widgets/common/button/premium_menu_button.dart';
 import '../../gameplay/services/player_preferences.dart';
 import '../../gameplay/services/word_service.dart';
+import 'package:provider/provider.dart';
 
 import 'package:word_riders/features/ui/widgets/common/button/pulsing_widget.dart';
 
@@ -92,15 +93,15 @@ class MenuGameScreen extends StatelessWidget {
   }
 
   Future<void> _handleCampaignTap(BuildContext context) async {
-    // Capturer la locale immédiatement avant toute opération async
+    // Capturer la locale et le service immédiatement avant toute opération async
     final locale = context.locale.languageCode;
+    final service = context.read<WordService>();
     
     final initialized = await PlayerPreferences.isCampaignInitialized();
     
     if (!initialized) {
       // Auto-initialiser la campagne silencieusement
       try {
-        final service = WordService();
         final words = [await service.getNextCampaignWord(locale, stage: 1)];
         
         await PlayerPreferences.resetCampaign();

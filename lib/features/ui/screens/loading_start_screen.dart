@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import 'package:word_riders/data/audio_data.dart';
 import 'package:word_riders/features/gameplay/services/audio_service.dart';
+import 'package:word_riders/features/gameplay/services/word_service.dart';
 
 import '../widgets/intro_loading/loading_messages_widget.dart';
 
@@ -16,26 +19,38 @@ class LoadingStartScreen extends StatefulWidget {
 }
 
 class _LoadingStartScreenState extends State<LoadingStartScreen> {
+  bool _initialized = false;
+
   @override
-  void initState() {
-    super.initState();
-    _initializeApp();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      _initialized = true;
+      _initializeApp();
+    }
   }
 
   Future<void> _initializeApp() async {
+    final languageCode = context.locale.languageCode;
+
     // 1. Préchargement technique des sons
-    final initFuture = AudioService().preloadAll().then((_) {
+    final initAudioFuture = AudioService().preloadAll().then((_) {
         // Lancement immédiat de la musique dès le préchargement terminé
         AudioService().playMusic(AudioData.musicBackground);
     }).catchError((e) {
         debugPrint("Erreur de chargement audio: $e");
     });
     
-    // 2. Temporisation minimale visuelle (4 secondes)
+    // 2. Chargement du dictionnaire spécifique à la locale
+    final initDictFuture = context.read<WordService>().loadDictionary(languageCode).catchError((e) {
+        debugPrint("Erreur de chargement dictionnaire: $e");
+    });
+    
+    // 3. Temporisation minimale visuelle (4 secondes)
     final minDelayFuture = Future.delayed(const Duration(seconds: 4));
 
-    // 3. Attendre que le préchargement ET la temporisation soient terminés avant d'aller au menu
-    await Future.wait([initFuture, minDelayFuture]);
+    // 4. Attendre que tous les prérequis soient terminés avant d'aller au menu
+    await Future.wait([initAudioFuture, initDictFuture, minDelayFuture]);
     
     if (mounted) context.go('/menu');
   }
