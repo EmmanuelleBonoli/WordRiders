@@ -14,6 +14,7 @@ import 'package:word_riders/features/ui/widgets/game/overlays/game_end_overlay.d
 import 'package:word_riders/features/ui/widgets/game/overlays/game_pause_overlay.dart';
 import 'package:word_riders/features/ui/widgets/game/overlays/no_lives_overlay.dart';
 import 'package:word_riders/features/ui/widgets/game/game_timeline.dart';
+import 'package:word_riders/features/ui/widgets/game/game_bonus_panel.dart';
 
 import 'package:word_riders/features/ui/widgets/game/overlays/training_config_overlay.dart';
 
@@ -190,6 +191,13 @@ class _GameScreenContent extends StatelessWidget {
                     onLetterTap: controller.onLetterTap,
                   ),
                 ),
+
+                // Panneau des bonus (si en campagne)
+                if (controller.isCampaign)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: GameBonusPanel(controller: controller),
+                  ),
               ],
             ),
           ),

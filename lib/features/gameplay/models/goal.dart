@@ -10,6 +10,7 @@ enum GoalCategory {
   wordsLength6,
   wordsLength7,
   wordsLength8Plus,
+  bonusesUsed,
 }
 
 class Goal {

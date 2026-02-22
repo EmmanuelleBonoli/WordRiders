@@ -99,7 +99,13 @@
         "words_len7": "Seven Wonders",
         "words_len7_desc": "Find 30 7-letter words",
         "words_len8plus": "Infinity and Beyond",
-        "words_len8plus_desc": "Find 20 8+-letter words"
+        "words_len8plus_desc": "Find 20 8+-letter words",
+        "bonuses_5": "Magic User",
+        "bonuses_5_desc": "Use 5 bonuses",
+        "bonuses_20": "Master of Magic",
+        "bonuses_20_desc": "Use 20 bonuses",
+        "bonuses_50": "Supreme Magician",
+        "bonuses_50_desc": "Use 50 bonuses"
       }
     },
     "store": {

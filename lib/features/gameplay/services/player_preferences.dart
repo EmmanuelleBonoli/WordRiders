@@ -340,4 +340,44 @@ class PlayerPreferences {
       profile.locale = locale;
       await saveProfile(profile);
   }
+
+  // --- Bonus ---
+  static Future<int> getBonusExtraLetterCount() async => (await getProfile()).bonusExtraLetterCount;
+  static Future<void> useBonusExtraLetter() async {
+    final profile = await getProfile();
+    if (profile.bonusExtraLetterCount > 0) {
+      profile.bonusExtraLetterCount--;
+      await saveProfile(profile);
+    }
+  }
+
+  static Future<int> getBonusDoubleDistanceCount() async => (await getProfile()).bonusDoubleDistanceCount;
+  static Future<void> useBonusDoubleDistance() async {
+    final profile = await getProfile();
+    if (profile.bonusDoubleDistanceCount > 0) {
+      profile.bonusDoubleDistanceCount--;
+      await saveProfile(profile);
+    }
+  }
+
+  static Future<int> getBonusFreezeRivalCount() async => (await getProfile()).bonusFreezeRivalCount;
+  static Future<void> useBonusFreezeRival() async {
+    final profile = await getProfile();
+    if (profile.bonusFreezeRivalCount > 0) {
+      profile.bonusFreezeRivalCount--;
+      await saveProfile(profile);
+    }
+  }
+
+  static Future<void> addBonusItems({
+    int extraLetter = 0,
+    int doubleDistance = 0,
+    int freezeRival = 0,
+  }) async {
+    final profile = await getProfile();
+    profile.bonusExtraLetterCount += extraLetter;
+    profile.bonusDoubleDistanceCount += doubleDistance;
+    profile.bonusFreezeRivalCount += freezeRival;
+    await saveProfile(profile);
+  }
 }
