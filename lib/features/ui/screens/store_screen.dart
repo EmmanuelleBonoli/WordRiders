@@ -6,7 +6,7 @@ import 'package:word_riders/features/ui/widgets/store/store_product_card.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/gameplay/services/iap_service.dart';
 import 'package:word_riders/features/ui/animations/resource_transfer_animation.dart';
-import 'package:word_riders/features/ui/screens/main_scaffold.dart';
+import 'package:word_riders/features/ui/widgets/common/main_layout.dart';
 import 'package:word_riders/data/store_data.dart';
 
 class StoreScreen extends StatefulWidget {
@@ -232,7 +232,7 @@ class _StoreScreenState extends State<StoreScreen> {
        );
        
        // Mettre à jour l'UI
-       context.findAncestorStateOfType<MainScaffoldState>()?.reloadIndicators();
+       context.findAncestorStateOfType<MainLayoutState>()?.reloadIndicators();
     }
   }
 
@@ -260,7 +260,7 @@ class _StoreScreenState extends State<StoreScreen> {
          assetPath: 'assets/images/indicators/heart.png',
        );
        // Mettre à jour l'UI
-       context.findAncestorStateOfType<MainScaffoldState>()?.reloadIndicators();
+       context.findAncestorStateOfType<MainLayoutState>()?.reloadIndicators();
     }
   }
 

@@ -261,8 +261,11 @@ class PlayerPreferences {
       await saveProfile(profile);
   }
 
-  static Future<String?> getWordForStage(int stage) async {
+  static Future<String?> getWordForStage(int stage, String currentLocale) async {
       final profile = await getProfile();
+      if (profile.campaignLocale != currentLocale) {
+          return null;
+      }
       final index = stage - 1;
       if (index >= 0 && index < profile.campaignWords.length) {
           return profile.campaignWords[index];
@@ -270,8 +273,12 @@ class PlayerPreferences {
       return null;
   }
 
-  static Future<void> setWordForStage(int stage, String word) async {
+  static Future<void> setWordForStage(int stage, String word, String currentLocale) async {
       final profile = await getProfile();
+      if (profile.campaignLocale != currentLocale) {
+          profile.campaignWords.clear();
+          profile.campaignLocale = currentLocale;
+      }
       final index = stage - 1;
       while (profile.campaignWords.length <= index) {
           profile.campaignWords.add("");
@@ -302,6 +309,7 @@ class PlayerPreferences {
     profile.usedWords.clear();
     profile.activeWord = null;
     profile.campaignWords.clear();
+    profile.campaignLocale = null;
     await saveProfile(profile);
   }
   static Future<int> getLastAdStage() async => (await getProfile()).lastAdStage;

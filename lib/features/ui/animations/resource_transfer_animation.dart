@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:word_riders/features/ui/screens/main_scaffold.dart';
+import 'package:word_riders/features/ui/widgets/common/main_layout.dart';
 
 class ResourceTransferAnimation extends StatefulWidget {
   final Offset startPosition;
@@ -67,7 +67,7 @@ class ResourceTransferAnimation extends StatefulWidget {
 
     // C. Fallback: MainScaffold (Comportement standard)
     if (!endFound) {
-      final mainState = context.findAncestorStateOfType<MainScaffoldState>();
+      final mainState = context.findAncestorStateOfType<MainLayoutState>();
       // Fallback par défaut
       endX = MediaQuery.of(context).size.width - 60;
       endY = 60;

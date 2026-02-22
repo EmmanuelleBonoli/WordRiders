@@ -21,6 +21,7 @@ class PlayerProfile {
   List<String> usedWords;
   String? activeWord;
   List<String> campaignWords;
+  String? campaignLocale;
   
   // Tracking
   int lastAdStage;
@@ -43,6 +44,7 @@ class PlayerProfile {
     List<String>? usedWords,
     this.activeWord,
     List<String>? campaignWords,
+    this.campaignLocale,
     this.lastAdStage = 0,
     this.unlimitedLivesUntil,
     this.locale,
@@ -80,6 +82,7 @@ class PlayerProfile {
       campaignWords: (json['campaignWords'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      campaignLocale: json['campaignLocale'] as String?,
       lastAdStage: json['lastAdStage'] as int? ?? 0,
        unlimitedLivesUntil: json['unlimitedLivesUntil'] == null
           ? null
@@ -102,6 +105,7 @@ class PlayerProfile {
         'usedWords': usedWords,
         'activeWord': activeWord,
         'campaignWords': campaignWords,
+        'campaignLocale': campaignLocale,
         'lastAdStage': lastAdStage,
         'unlimitedLivesUntil': unlimitedLivesUntil?.toIso8601String(),
         'locale': locale,

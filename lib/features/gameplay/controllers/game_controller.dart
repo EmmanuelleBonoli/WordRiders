@@ -70,7 +70,7 @@ class GameController extends ChangeNotifier {
          // En mode campagne, on récupère un mot du niveau (juste pour avoir les lettres)
          int currentStage = await PlayerPreferences.getCurrentStage();
          _currentStageId = currentStage;
-         String? stageWord = await PlayerPreferences.getWordForStage(currentStage);
+         String? stageWord = await PlayerPreferences.getWordForStage(currentStage, locale);
          
          if (stageWord != null && stageWord.isNotEmpty) {
            _targetWord = stageWord;
@@ -79,7 +79,7 @@ class GameController extends ChangeNotifier {
            // Génération d'un nouveau mot adapté à la difficulté
            _targetWord = await wordService.getNextCampaignWord(locale, stage: currentStage);
            // IMPORTANT : On sauvegarde ce mot pour ce stage pour qu'il ne change pas si on quitte/revient
-           await PlayerPreferences.setWordForStage(currentStage, _targetWord);
+           await PlayerPreferences.setWordForStage(currentStage, _targetWord, locale);
            debugPrint("GameController: Generated and saved new word for stage $currentStage: $_targetWord");
          }
 
