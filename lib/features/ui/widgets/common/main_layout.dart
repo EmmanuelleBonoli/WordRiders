@@ -9,16 +9,16 @@ import 'package:word_riders/features/ui/widgets/settings/settings_button.dart';
 import 'package:word_riders/features/ui/widgets/common/navigation/campaign_bottom_nav_bar.dart';
 import 'package:word_riders/features/ui/widgets/common/leaf_background.dart';
 
-class MainScaffold extends StatefulWidget {
+class MainLayout extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
 
-  const MainScaffold({super.key, required this.navigationShell});
+  const MainLayout({super.key, required this.navigationShell});
 
   @override
-  State<MainScaffold> createState() => MainScaffoldState();
+  State<MainLayout> createState() => MainLayoutState();
 }
 
-class MainScaffoldState extends State<MainScaffold> {
+class MainLayoutState extends State<MainLayout> {
   final GlobalKey<LifeIndicatorState> _lifeIndicatorKey = GlobalKey<LifeIndicatorState>();
   final GlobalKey<CoinIndicatorState> _coinIndicatorKey = GlobalKey<CoinIndicatorState>();
   

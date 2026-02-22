@@ -36,7 +36,7 @@ class _LoadingStartScreenState extends State<LoadingStartScreen> {
     // 1. Préchargement technique des sons
     final initAudioFuture = AudioService().preloadAll().then((_) {
         // Lancement immédiat de la musique dès le préchargement terminé
-        AudioService().playMusic(AudioData.musicBackground);
+        AudioService().playMusic(AudioData.musicGame);
     }).catchError((e) {
         debugPrint("Erreur de chargement audio: $e");
     });

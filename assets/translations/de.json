@@ -1,9 +1,10 @@
 {
     "loading": {
         "messages": {
-            "0": "Magie laden...",
-            "1": "Schwerter schärfen...",
-            "2": "Helden beschwören..."
+            "0": "Buchstaben vorbereiten...",
+            "1": "Reifen aufpumpen...",
+            "2": "Kette schmieren...",
+            "3": "Auf dem Weg zur Startlinie..."
         },
         "title": "Lädt..."
     },
@@ -99,7 +100,13 @@
                 "words_len7": "Sieben Weltwunder",
                 "words_len7_desc": "Finde 30 7-Buchstaben-Wörter",
                 "words_len8plus": "Bis zur Unendlichkeit",
-                "words_len8plus_desc": "Finde 20 Wörter mit 8+ Buchstaben"
+                "words_len8plus_desc": "Finde 20 Wörter mit 8+ Buchstaben",
+                "bonuses_5": "Magienutzer",
+                "bonuses_5_desc": "Nutze 5 Boni",
+                "bonuses_20": "Meister der Magie",
+                "bonuses_20_desc": "Nutze 20 Boni",
+                "bonuses_50": "Oberster Magier",
+                "bonuses_50_desc": "Nutze 50 Boni"
             }
         },
         "store": {

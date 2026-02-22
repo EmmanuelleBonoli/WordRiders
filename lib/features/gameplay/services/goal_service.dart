@@ -125,6 +125,10 @@ class GoalService extends ChangeNotifier {
     await updateProgress(GoalCategory.adsWatched, 1);
   }
 
+  Future<void> incrementBonusesUsed(int count) async {
+    await updateProgress(GoalCategory.bonusesUsed, count);
+  }
+
   // --- Récupération des récompenses ---
   Future<bool> claim(String goalId) async {
     final profile = await PlayerPreferences.getProfile();

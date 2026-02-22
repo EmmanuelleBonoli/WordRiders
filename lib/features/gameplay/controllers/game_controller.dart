@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/gameplay/services/word_service.dart';
 import 'package:word_riders/features/gameplay/services/goal_service.dart';
+import 'package:word_riders/data/audio_data.dart';
+import 'package:word_riders/features/gameplay/services/audio_service.dart';
 
 enum GameStatus { loading, waitingForConfig, playing, paused, won, lost }
 
@@ -20,6 +22,15 @@ class GameController extends ChangeNotifier {
 
   Timer? _gameTimer;
   final Set<String> _sessionWords = {}; // Mots trouvés dans la partie en cours
+
+  // Bonus
+  int _bonusExtraLetterCount = 0;
+  int _bonusDoubleDistanceCount = 0;
+  int _bonusFreezeRivalCount = 0;
+  
+  bool _extraLetterUsed = false;
+  bool _isNextWordDistanceDoubled = false;
+  int _remainingFreezeDeciseconds = 0; // en centièmes de seconde (100ms)
 
   bool _isDisposed = false;
 
@@ -39,6 +50,15 @@ class GameController extends ChangeNotifier {
   double get rabbitProgress => _rabbitProgress;
   double get foxProgress => _foxProgress;
 
+  // Accès aux bonus
+  int get bonusExtraLetterCount => _bonusExtraLetterCount;
+  int get bonusDoubleDistanceCount => _bonusDoubleDistanceCount;
+  int get bonusFreezeRivalCount => _bonusFreezeRivalCount;
+  bool get extraLetterUsed => _extraLetterUsed;
+  bool get isNextWordDistanceDoubled => _isNextWordDistanceDoubled;
+  bool get isRivalFrozen => _remainingFreezeDeciseconds > 0;
+  int get frozenRivalSeconds => (_remainingFreezeDeciseconds / 10).ceil();
+
   String? _feedbackMessage;
   String? get feedbackMessage => _feedbackMessage;
 
@@ -57,6 +77,13 @@ class GameController extends ChangeNotifier {
     try {
       debugPrint("GameController: Loading dictionary & word for locale: $locale");
       
+      // Chargement des bonus si en campagne
+      if (isCampaign) {
+          _bonusExtraLetterCount = await PlayerPreferences.getBonusExtraLetterCount();
+          _bonusDoubleDistanceCount = await PlayerPreferences.getBonusDoubleDistanceCount();
+          _bonusFreezeRivalCount = await PlayerPreferences.getBonusFreezeRivalCount();
+      }
+
       // 1. On s'assure que le dictionnaire est chargé pour ce locale (normalement déjà fait par main ou settings)
       await wordService.loadDictionary(locale);
 
@@ -70,7 +97,7 @@ class GameController extends ChangeNotifier {
          // En mode campagne, on récupère un mot du niveau (juste pour avoir les lettres)
          int currentStage = await PlayerPreferences.getCurrentStage();
          _currentStageId = currentStage;
-         String? stageWord = await PlayerPreferences.getWordForStage(currentStage);
+         String? stageWord = await PlayerPreferences.getWordForStage(currentStage, locale);
          
          if (stageWord != null && stageWord.isNotEmpty) {
            _targetWord = stageWord;
@@ -79,7 +106,7 @@ class GameController extends ChangeNotifier {
            // Génération d'un nouveau mot adapté à la difficulté
            _targetWord = await wordService.getNextCampaignWord(locale, stage: currentStage);
            // IMPORTANT : On sauvegarde ce mot pour ce stage pour qu'il ne change pas si on quitte/revient
-           await PlayerPreferences.setWordForStage(currentStage, _targetWord);
+           await PlayerPreferences.setWordForStage(currentStage, _targetWord, locale);
            debugPrint("GameController: Generated and saved new word for stage $currentStage: $_targetWord");
          }
 
@@ -109,6 +136,9 @@ class GameController extends ChangeNotifier {
       _foxProgress = 0.0;
       _currentInput = "";
       _sessionWords.clear();
+      _extraLetterUsed = false;
+      _isNextWordDistanceDoubled = false;
+      _remainingFreezeDeciseconds = 0;
       _status = GameStatus.playing;
       
       _startGameLoop();
@@ -138,6 +168,13 @@ class GameController extends ChangeNotifier {
     _gameTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       if (_status != GameStatus.playing) {
         // En pause on ne fait rien, mais on ne coupe pas le timer pour autant
+        return;
+      }
+
+      // Gérer le gel du renard
+      if (_remainingFreezeDeciseconds > 0) {
+        _remainingFreezeDeciseconds--;
+        notifyListeners();
         return;
       }
 
@@ -189,6 +226,7 @@ class GameController extends ChangeNotifier {
 
     // 1. Longueur min du mot proposé
     if (word.length < 3) {
+      AudioService().playSfx(AudioData.sfxWordInvalid);
       showFeedback(tr('game.feedback_too_short'));
       clearInput();
       return false;
@@ -196,6 +234,7 @@ class GameController extends ChangeNotifier {
 
     // 2. Mot déjà trouvé ?
     if (_sessionWords.contains(word)) {
+      AudioService().playSfx(AudioData.sfxWordInvalid);
       showFeedback(tr('game.feedback_already_used'));
       clearInput();
       return false;
@@ -203,6 +242,7 @@ class GameController extends ChangeNotifier {
 
     // 3. Mot existe dans le dico ?
     if (wordService.isValid(word)) {
+      AudioService().playSfx(AudioData.sfxWordValid);
       _sessionWords.add(word);
       GoalService().incrementWordsFound(1, wordLength: word.length);
       
@@ -224,6 +264,12 @@ class GameController extends ChangeNotifier {
          }
       }
 
+      // BONUS DOUBLE DISTANCE
+      if (_isNextWordDistanceDoubled) {
+        advance *= 2.0;
+        _isNextWordDistanceDoubled = false; // Consommé
+      }
+
       _rabbitProgress += advance;
 
       if (_rabbitProgress >= 1.0) {
@@ -236,9 +282,52 @@ class GameController extends ChangeNotifier {
     }
     
     // Mot invalide/inconnu
+    AudioService().playSfx(AudioData.sfxWordInvalid);
     showFeedback(tr('game.feedback_invalid'));
     clearInput();
     return false;
+  }
+
+  // --- ACTIONS DES BONUS ---
+  Future<void> useBonusExtraLetter() async {
+    if (_status != GameStatus.playing || !isCampaign) return;
+    if (_extraLetterUsed || _bonusExtraLetterCount <= 0) return;
+    
+    await PlayerPreferences.useBonusExtraLetter();
+    _bonusExtraLetterCount--;
+    _extraLetterUsed = true;
+    GoalService().incrementBonusesUsed(1);
+    
+    // Ajout d'une voyelle aléatoire
+    final vowels = ['A', 'E', 'I', 'O', 'U', 'Y'];
+    vowels.shuffle();
+    _shuffledLetters.add(vowels.first);
+    
+    notifyListeners();
+  }
+
+  Future<void> useBonusDoubleDistance() async {
+    if (_status != GameStatus.playing || !isCampaign) return;
+    if (_isNextWordDistanceDoubled || _bonusDoubleDistanceCount <= 0) return;
+    
+    await PlayerPreferences.useBonusDoubleDistance();
+    _bonusDoubleDistanceCount--;
+    _isNextWordDistanceDoubled = true;
+    GoalService().incrementBonusesUsed(1);
+    
+    notifyListeners();
+  }
+
+  Future<void> useBonusFreezeRival() async {
+    if (_status != GameStatus.playing || !isCampaign) return;
+    if (_bonusFreezeRivalCount <= 0) return;
+    
+    await PlayerPreferences.useBonusFreezeRival();
+    _bonusFreezeRivalCount--;
+    _remainingFreezeDeciseconds += 80;  // 8 secondes
+    GoalService().incrementBonusesUsed(1);
+    
+    notifyListeners();
   }
 
   void clearInput() {
@@ -247,6 +336,7 @@ class GameController extends ChangeNotifier {
   }
 
   Future<void> _handleWin() async {
+    AudioService().playSfx(AudioData.sfxWin);
     _status = GameStatus.won;
     _gameTimer?.cancel();
 
@@ -310,6 +400,7 @@ class GameController extends ChangeNotifier {
   }
 
   Future<void> _handleLoss() async {
+    AudioService().playSfx(AudioData.sfxLose);
     _status = GameStatus.lost;
     _gameTimer?.cancel();
     

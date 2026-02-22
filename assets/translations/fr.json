@@ -1,9 +1,10 @@
 {
   "loading": {
     "messages": {
-      "0": "Chargement de la magie...",
-      "1": "Affûtage des épées...",
-      "2": "Invocation des héros..."
+      "0": "Préparation des lettres...",
+      "1": "Gonflage des pneus...",
+      "2": "Graissage de la chaîne...",
+      "3": "En route vers la ligne de départ..."
     },
     "title": "Chargement..."
   },
@@ -99,7 +100,13 @@
         "words_len7": "Sept Merveilles",
         "words_len7_desc": "Trouver 30 mots de 7 lettres",
         "words_len8plus": "Vers l'Infini",
-        "words_len8plus_desc": "Trouver 20 mots de 8 lettres ou plus"
+        "words_len8plus_desc": "Trouver 20 mots de 8 lettres ou plus",
+        "bonuses_5": "Utilisateur de Magie",
+        "bonuses_5_desc": "Utiliser 5 bonus",
+        "bonuses_20": "Maître de la Magie",
+        "bonuses_20_desc": "Utiliser 20 bonus",
+        "bonuses_50": "Magicien Suprême",
+        "bonuses_50_desc": "Utiliser 50 bonus"
       }
     },
     "store": {

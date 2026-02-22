@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
-import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
-import 'package:word_riders/features/ui/widgets/store/store_product_card.dart';
+
+import 'package:word_riders/features/ui/widgets/store/store_item_card.dart';
+import 'package:word_riders/features/ui/widgets/store/store_section_header.dart';
+import 'package:word_riders/features/ui/widgets/store/store_special_offer_card.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/gameplay/services/iap_service.dart';
 import 'package:word_riders/features/ui/animations/resource_transfer_animation.dart';
-import 'package:word_riders/features/ui/screens/main_scaffold.dart';
+import 'package:word_riders/features/ui/widgets/common/main_layout.dart';
 import 'package:word_riders/data/store_data.dart';
 
 class StoreScreen extends StatefulWidget {
@@ -19,6 +21,8 @@ class StoreScreen extends StatefulWidget {
 class _StoreScreenState extends State<StoreScreen> {
   final GlobalKey _refillLivesKey = GlobalKey();
   final GlobalKey _unlimitedLivesKey = GlobalKey();
+  final GlobalKey _bonusPack1Key = GlobalKey();
+  final GlobalKey _bonusPackUnlimitedKey = GlobalKey();
 
   @override
   void initState() {
@@ -46,13 +50,16 @@ class _StoreScreenState extends State<StoreScreen> {
   GlobalKey? _getKeyForId(String id) {
     if (id == 'refill_lives') return _refillLivesKey;
     if (id == 'unlimited_lives') return _unlimitedLivesKey;
+    if (id == 'bonus_pack_1') return _bonusPack1Key;
+    if (id == 'bonus_pack_unlimited') return _bonusPackUnlimitedKey;
     return null;
   }
   
   VoidCallback? _getOnTapForItem(StoreItemData item) {
-    // 1. Achats virtuels (Vies)
-    if (item.id == 'refill_lives') return () => _buyRefillLives(context);
-    if (item.id == 'unlimited_lives') return () => _buyUnlimitedLives(context);
+    if (item.id == 'refill_lives') return () => _buyRefillLives(context, item);
+    if (item.id == 'unlimited_lives') return () => _buyUnlimitedLives(context, item);
+    if (item.id == 'bonus_pack_1') return () => _buyBonusPack1(context, item);
+    if (item.id == 'bonus_pack_unlimited') return () => _buyBonusPackUnlimited(context, item);
     
     // 2. Achats Réels (IAP)
     if (item.productId != null) {
@@ -72,126 +79,9 @@ class _StoreScreenState extends State<StoreScreen> {
     return null;
   }
 
-  Widget _buildProductCard(StoreItemData item) {
-    // 1. Déterminer la couleur
-    Color cardColor;
-    bool isGold = false;
-    
-    switch (item.colorType) {
-      case StoreItemColorType.blue:
-        cardColor = Colors.blue;
-        break;
-      case StoreItemColorType.purple:
-        cardColor = Colors.purpleAccent;
-        break;
-      case StoreItemColorType.gold:
-      case StoreItemColorType.goldDark:
-        cardColor = AppTheme.coinRimTop;
-        isGold = true;
-        break;
-    }
 
-    // 2. Déterminer l'icône/visuel
-    Widget visualContent;
-    
-    switch (item.visualType) {
-      case StoreVisualType.unlimited:
-        visualContent = SizedBox(
-          width: 60,
-          height: 60,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-               Positioned(
-                child: Image(
-                  image: AssetImage(item.assetPath),
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.contain,
-                ),
-              ),
-              const Positioned(
-                bottom: 0,
-                right: 0,
-                child: Icon(Icons.all_inclusive, color: Colors.white, size: 24),
-              ),
-            ],
-          ),
-        );
-        break;
-        
-      case StoreVisualType.stackedCoins:
-        visualContent = SizedBox(
-          width: 95, 
-          height: 95,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-               Positioned(
-                 left: 25, top: 0,
-                 child: Image(image: AssetImage(item.assetPath), width: 45),
-               ),
-               Positioned(
-                 left: 0, top: 35,
-                 child: Image(image: AssetImage(item.assetPath), width: 45),
-               ),
-               Positioned(
-                 left: 50, top: 35,
-                 child: Image(image: AssetImage(item.assetPath), width: 45),
-               ),
-            ],
-          ),
-        );
-        break;
-        
-      case StoreVisualType.chest:
-        visualContent = Image(
-          image: AssetImage(item.assetPath),
-          width: 120, 
-          height: 120,
-          fit: BoxFit.contain,
-        );
-        break;
-
-      default:
-        visualContent = item.assetPath.isNotEmpty 
-          ? Image(
-              image: AssetImage(item.assetPath),
-              width: item.colorType == StoreItemColorType.gold ? 42 : 50, 
-              height: item.colorType == StoreItemColorType.gold ? 42 : 50,
-              fit: BoxFit.contain,
-            )
-          : const SizedBox(); 
-        break;
-    }
-
-    // 3. Résolution du prix réel (IAP)
-    String displayPrice = item.price;
-    if (item.productId != null) {
-      final product = IapService.getProductById(item.productId!);
-      if (product != null) {
-        displayPrice = product.price; // Prix formaté localisé par le store (ex: "4,99 €")
-      }
-    }
-
-    return StoreProductCard(
-      key: _getKeyForId(item.id) ?? ValueKey(item.id),
-      title: item.titleKey.isNotEmpty ? context.tr(item.titleKey) : "",
-      amount: item.amount,
-      customIcon: visualContent,
-      price: displayPrice,
-      color: cardColor,
-      isGold: isGold,
-      isPopular: item.isPopular,
-      isCurrencyPrice: item.isCurrencyPrice,
-      badgeText: item.badgeTextKey != null ? context.tr(item.badgeTextKey!) : null,
-      height: item.height,
-      onTap: _getOnTapForItem(item),
-    );
-  }
-
-  Future<void> _buyRefillLives(BuildContext context) async {
-    final int cost = 900;
+  Future<void> _buyRefillLives(BuildContext context, StoreItemData item) async {
+    final int cost = int.tryParse(item.price) ?? 900;
     
     // 1. Vérifier si déjà full (sauf si illimité)
     final isUnlimited = await PlayerPreferences.isUnlimitedLivesActive();
@@ -232,12 +122,12 @@ class _StoreScreenState extends State<StoreScreen> {
        );
        
        // Mettre à jour l'UI
-       context.findAncestorStateOfType<MainScaffoldState>()?.reloadIndicators();
+       context.findAncestorStateOfType<MainLayoutState>()?.reloadIndicators();
     }
   }
 
-  Future<void> _buyUnlimitedLives(BuildContext context) async {
-    final int cost = 1500;
+  Future<void> _buyUnlimitedLives(BuildContext context, StoreItemData item) async {
+    final int cost = int.tryParse(item.price) ?? 1500;
     
     // 1. Vérifier les fonds
     final currentCoins = await PlayerPreferences.getCoins();
@@ -260,7 +150,56 @@ class _StoreScreenState extends State<StoreScreen> {
          assetPath: 'assets/images/indicators/heart.png',
        );
        // Mettre à jour l'UI
-       context.findAncestorStateOfType<MainScaffoldState>()?.reloadIndicators();
+       context.findAncestorStateOfType<MainLayoutState>()?.reloadIndicators();
+    }
+  }
+
+  Future<void> _buyBonusPack1(BuildContext context, StoreItemData item) async {
+    final int cost = int.tryParse(item.price) ?? 800;
+    
+    final currentCoins = await PlayerPreferences.getCoins();
+    if (!context.mounted) return;
+    
+    if (currentCoins < cost) {
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('campaign.notEnoughCoins'))));
+       return;
+    }
+
+    await PlayerPreferences.spendCoins(cost);
+    await PlayerPreferences.addBonusItems(extraLetter: 3, doubleDistance: 3, freezeRival: 3);
+
+    if (context.mounted) {
+       ResourceTransferAnimation.start(
+         context, 
+         startKey: _bonusPack1Key, 
+         assetPath: 'assets/images/indicators/coin.png',
+       );
+       context.findAncestorStateOfType<MainLayoutState>()?.reloadIndicators();
+    }
+  }
+
+  Future<void> _buyBonusPackUnlimited(BuildContext context, StoreItemData item) async {
+    final int cost = int.tryParse(item.price) ?? 2500;
+    
+    final currentCoins = await PlayerPreferences.getCoins();
+    if (!context.mounted) return;
+    
+    if (currentCoins < cost) {
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('campaign.notEnoughCoins'))));
+       return;
+    }
+
+    await PlayerPreferences.spendCoins(cost);
+    await PlayerPreferences.addBonusItems(extraLetter: 3, doubleDistance: 3, freezeRival: 3);
+    await PlayerPreferences.addUnlimitedLivesTime(const Duration(minutes: 60)); // 1h
+
+    if (context.mounted) {
+       ResourceTransferAnimation.start(
+         context, 
+         startKey: _bonusPackUnlimitedKey, 
+         assetPath: 'assets/images/indicators/heart.png',
+       );
+       context.findAncestorStateOfType<MainLayoutState>()?.reloadIndicators();
     }
   }
 
@@ -295,7 +234,11 @@ class _StoreScreenState extends State<StoreScreen> {
                    ...specialOfferItems.map((item) => 
                       Padding(
                         padding: const EdgeInsets.only(bottom: 30),
-                        child: _buildSpecialOfferCard(context, item, imagePath),
+                        child: StoreSpecialOfferCard(
+                          item: item, 
+                          imagePath: imagePath,
+                          onTap: _getOnTapForItem(item),
+                        ),
                       )
                    ),
                 ],
@@ -303,27 +246,36 @@ class _StoreScreenState extends State<StoreScreen> {
             },
           ),
 
-   // --- CONSOMMABLES ---
-           _buildSectionHeader(context.tr('campaign.store.essentials')),
+           StoreSectionHeader(title: context.tr('campaign.store.essentials')),
            const SizedBox(height: 12),
-           Row(
-             children: consumableItems.asMap().entries.map((entry) {
-                final index = entry.key;
-                final item = entry.value;
-                final widget = Expanded(child: _buildProductCard(item));
-                
-                if (index < consumableItems.length - 1) {
-                  return [widget, const SizedBox(width: 16)];
-                }
-                return [widget];
-             }).expand((x) => x).toList(),
+           LayoutBuilder(
+             builder: (context, constraints) {
+               // On calcule la largeur pour placer 2 items par ligne en conservant un espace de 16
+               final crossAxisCount = constraints.maxWidth > 600 ? 4 : 2;
+               final spacing = 16.0;
+               final itemWidth = (constraints.maxWidth - (spacing * (crossAxisCount - 1))) / crossAxisCount;
+               
+               return Wrap(
+                 spacing: spacing,
+                 runSpacing: spacing,
+                 children: consumableItems.map((item) {
+                   return SizedBox(
+                     width: itemWidth,
+                     child: StoreItemCard(
+                       key: _getKeyForId(item.id) ?? ValueKey(item.id),
+                       item: item,
+                       onTap: _getOnTapForItem(item),
+                     ),
+                   );
+                 }).toList(),
+               );
+             },
            ),
-
 
           const SizedBox(height: 30),
 
            // --- PACKS DE PIÈCES ---
-          _buildSectionHeader(context.tr('campaign.store.coin_packs')),
+          StoreSectionHeader(title: context.tr('campaign.store.coin_packs')),
           const SizedBox(height: 12),
           SizedBox(
             height: coinPackItems.isNotEmpty ? coinPackItems.first.height : 220,
@@ -332,130 +284,19 @@ class _StoreScreenState extends State<StoreScreen> {
               clipBehavior: Clip.none,
               itemCount: coinPackItems.length,
               separatorBuilder: (context, index) => const SizedBox(width: 16),
-              itemBuilder: (ctx, index) => _buildProductCard(coinPackItems[index]),
+              itemBuilder: (ctx, index) {
+                final item = coinPackItems[index];
+                return StoreItemCard(
+                  key: _getKeyForId(item.id) ?? ValueKey(item.id),
+                  item: item,
+                  onTap: _getOnTapForItem(item),
+                );
+              },
             ),
           ),  
         ],
       ),
     );
   }
-
-  Widget _buildSectionHeader(String title) {
-    return Row(
-      children: [
-        const Icon(Icons.stars, color: AppTheme.orangeBurnt, size: 28),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: const TextStyle(
-            fontFamily: 'Round',
-            fontSize: 20,
-            fontWeight: FontWeight.w900,
-            color: AppTheme.white,
-             shadows: [
-              Shadow(color: Colors.black, blurRadius: 4, offset: Offset(0, 2)),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSpecialOfferCard(BuildContext context, StoreItemData item, String imagePath) {
-    // Résolution du prix réel (IAP)
-    String displayPrice = item.price;
-    if (item.productId != null) {
-      final product = IapService.getProductById(item.productId!);
-      if (product != null) {
-        displayPrice = product.price;
-      }
-    }
-
-    return BouncingScaleButton(
-      onTap: _getOnTapForItem(item) ?? () {},
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppTheme.orangeBurnt, AppTheme.coinRimBottom],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppTheme.coinBorderDark, width: 3),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.4),
-              offset: const Offset(0, 6),
-              blurRadius: 8,
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            // Image / Icon
-         Image.asset(
-          imagePath,
-          height: 80,
-          fit: BoxFit.contain,
-        ),
-            const SizedBox(width: 16),
-            // Content
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    context.tr(item.titleKey),
-                    style: const TextStyle(
-                      fontFamily: 'Round',
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.white,
-                      shadows: [Shadow(color: Colors.black26, offset: Offset(1,1))],
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  if (item.descriptionKey != null)
-                    Text(
-                      context.tr(item.descriptionKey!),
-                      style: TextStyle(
-                        fontFamily: 'Round',
-                        fontSize: 12,
-                        color: AppTheme.white,
-                      ),
-                    ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: AppTheme.green,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white54, width: 2),
-                      boxShadow: const [
-                         BoxShadow(
-                           color: Colors.black26,
-                           offset: Offset(0, 2),
-                           blurRadius: 2,
-                         )
-                      ]
-                    ),
-                    child: Text(
-                      displayPrice,
-                      style: const TextStyle(
-                        fontFamily: 'Round',
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
+

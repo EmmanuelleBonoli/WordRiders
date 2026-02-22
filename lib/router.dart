@@ -5,7 +5,7 @@ import 'features/ui/screens/campaign_progress_screen.dart';
 import 'features/ui/screens/loading_start_screen.dart';
 import 'features/ui/screens/menu_game_screen.dart';
 import 'features/ui/screens/settings_screen.dart';
-import 'features/ui/screens/main_scaffold.dart';
+import 'features/ui/widgets/common/main_layout.dart';
 import 'features/ui/screens/store_screen.dart';
 import 'features/ui/screens/trophies_screen.dart';
 
@@ -16,7 +16,7 @@ final router = GoRouter(
     GoRoute(path: '/menu', builder: (context, state) => const MenuGameScreen()),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
-        return MainScaffold(navigationShell: navigationShell);
+        return MainLayout(navigationShell: navigationShell);
       },
       branches: [
         // Branche 0: Store

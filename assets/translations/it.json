@@ -1,9 +1,10 @@
 {
     "loading": {
         "messages": {
-            "0": "Caricamento magia...",
-            "1": "Affilando spade...",
-            "2": "Evocando eroi..."
+            "0": "Preparazione delle lettere...",
+            "1": "Gonfiaggio delle gomme...",
+            "2": "Lubrificazione della catena...",
+            "3": "Verso la linea di partenza..."
         },
         "title": "Caricamento..."
     },
@@ -99,7 +100,13 @@
                 "words_len7": "Sette Meraviglie",
                 "words_len7_desc": "Trova 30 parole di 7 lettere",
                 "words_len8plus": "Verso l'Infinito",
-                "words_len8plus_desc": "Trova 20 parole di 8+ lettere"
+                "words_len8plus_desc": "Trova 20 parole di 8+ lettere",
+                "bonuses_5": "Utente di Magia",
+                "bonuses_5_desc": "Usa 5 bonus",
+                "bonuses_20": "Maestro di Magia",
+                "bonuses_20_desc": "Usa 20 bonus",
+                "bonuses_50": "Mago Supremo",
+                "bonuses_50_desc": "Usa 50 bonus"
             }
         },
         "store": {

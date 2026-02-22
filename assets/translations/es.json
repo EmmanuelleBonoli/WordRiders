@@ -1,9 +1,10 @@
 {
     "loading": {
         "messages": {
-            "0": "Cargando magia...",
-            "1": "Afilando espadas...",
-            "2": "Invocando héroes..."
+            "0": "Preparando las letras...",
+            "1": "Inflando los neumáticos...",
+            "2": "Engrasando la cadena...",
+            "3": "A la línea de salida..."
         },
         "title": "Cargando..."
     },
@@ -99,7 +100,13 @@
                 "words_len7": "Siete Maravillas",
                 "words_len7_desc": "Encuentra 30 palabras de 7 letras",
                 "words_len8plus": "Al Infinito y Más Allá",
-                "words_len8plus_desc": "Encuentra 20 palabras de 8+ letras"
+                "words_len8plus_desc": "Encuentra 20 palabras de 8+ letras",
+                "bonuses_5": "Usuario de Magia",
+                "bonuses_5_desc": "Usa 5 bonificaciones",
+                "bonuses_20": "Maestro de la Magia",
+                "bonuses_20_desc": "Usa 20 bonificaciones",
+                "bonuses_50": "Mago Supremo",
+                "bonuses_50_desc": "Usa 50 bonificaciones"
             }
         },
         "store": {

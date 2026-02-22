@@ -5,7 +5,7 @@ import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/gameplay/models/goal.dart';
 import 'package:word_riders/features/gameplay/services/goal_service.dart';
 import 'package:word_riders/features/gameplay/services/animation_service.dart';
-import 'package:word_riders/features/ui/screens/main_scaffold.dart';
+import 'package:word_riders/features/ui/widgets/common/main_layout.dart';
 import 'package:word_riders/features/ui/widgets/careerGoals/daily_goal_card.dart';
 import 'package:word_riders/features/ui/widgets/careerGoals/career_goal_tile.dart';
 
@@ -148,8 +148,8 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
 
     // Logique d'animation  
     final RenderBox? buttonBox = buttonContext.findRenderObject() as RenderBox?;
-    final mainScaffoldState = context.findAncestorStateOfType<MainScaffoldState>();
-    final RenderBox? indicatorBox = mainScaffoldState?.coinIndicatorContext?.findRenderObject() as RenderBox?;
+    final mainLayoutState = context.findAncestorStateOfType<MainLayoutState>();
+    final RenderBox? indicatorBox = mainLayoutState?.coinIndicatorContext?.findRenderObject() as RenderBox?;
 
     if (buttonBox != null && indicatorBox != null) {
       final startPos = buttonBox.localToGlobal(buttonBox.size.center(Offset.zero));
@@ -163,7 +163,7 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
         onComplete: () async {
             if (mounted) {
                setState(() {}); // Reconstruire pour afficher l'état "Récupéré"
-               mainScaffoldState?.reloadIndicators();
+               mainLayoutState?.reloadIndicators();
             }
         },
       );
@@ -171,7 +171,7 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
         // Solution de repli sans animation
         if (mounted) {
              setState(() {});
-             mainScaffoldState?.reloadIndicators();
+             mainLayoutState?.reloadIndicators();
         }
     }
   }

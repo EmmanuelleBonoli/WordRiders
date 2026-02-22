@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:word_riders/features/ui/screens/main_scaffold.dart';
+import 'package:word_riders/features/ui/widgets/common/main_layout.dart';
+import 'package:word_riders/data/audio_data.dart';
+import 'package:word_riders/features/gameplay/services/audio_service.dart';
 
 class ResourceTransferAnimation extends StatefulWidget {
   final Offset startPosition;
@@ -23,7 +25,7 @@ class ResourceTransferAnimation extends StatefulWidget {
   // [startKey] est le widget d'où part l'animation.
   // [endKey] (optionnel) est un widget cible spécifique.
   // [endOffset] (optionnel) est une position cible spécifique si aucune clé de widget n'est disponible.
-  // Si ni [endKey] ni [endOffset] n'est fourni, il tente de trouver les cibles standard (Coin/Heart) dans [MainScaffold].
+  // Si ni [endKey] ni [endOffset] n'est fourni, il tente de trouver les cibles standard (Coin/Heart) dans [MainLayout].
   static void start(
     BuildContext context, {
     required GlobalKey startKey,
@@ -65,9 +67,9 @@ class ResourceTransferAnimation extends StatefulWidget {
        endFound = true;
     }
 
-    // C. Fallback: MainScaffold (Comportement standard)
+    // C. Fallback: MainLayout (Comportement standard)
     if (!endFound) {
-      final mainState = context.findAncestorStateOfType<MainScaffoldState>();
+      final mainState = context.findAncestorStateOfType<MainLayoutState>();
       // Fallback par défaut
       endX = MediaQuery.of(context).size.width - 60;
       endY = 60;
@@ -142,6 +144,9 @@ class _ResourceTransferAnimationState extends State<ResourceTransferAnimation> w
         Future.delayed(Duration(milliseconds: i * 50), () {
             if (mounted) {
                 _controllers[i].forward().then((_) {
+                    if (widget.assetPath.contains('coin')) {
+                        AudioService().playSfx(AudioData.sfxCoin);
+                    }
                     _completedAnimations++;
                     if (_completedAnimations == widget.itemCount) {
                         widget.onAnimationComplete();

@@ -261,8 +261,11 @@ class PlayerPreferences {
       await saveProfile(profile);
   }
 
-  static Future<String?> getWordForStage(int stage) async {
+  static Future<String?> getWordForStage(int stage, String currentLocale) async {
       final profile = await getProfile();
+      if (profile.campaignLocale != currentLocale) {
+          return null;
+      }
       final index = stage - 1;
       if (index >= 0 && index < profile.campaignWords.length) {
           return profile.campaignWords[index];
@@ -270,8 +273,12 @@ class PlayerPreferences {
       return null;
   }
 
-  static Future<void> setWordForStage(int stage, String word) async {
+  static Future<void> setWordForStage(int stage, String word, String currentLocale) async {
       final profile = await getProfile();
+      if (profile.campaignLocale != currentLocale) {
+          profile.campaignWords.clear();
+          profile.campaignLocale = currentLocale;
+      }
       final index = stage - 1;
       while (profile.campaignWords.length <= index) {
           profile.campaignWords.add("");
@@ -302,6 +309,7 @@ class PlayerPreferences {
     profile.usedWords.clear();
     profile.activeWord = null;
     profile.campaignWords.clear();
+    profile.campaignLocale = null;
     await saveProfile(profile);
   }
   static Future<int> getLastAdStage() async => (await getProfile()).lastAdStage;
@@ -331,5 +339,45 @@ class PlayerPreferences {
       final profile = await getProfile();
       profile.locale = locale;
       await saveProfile(profile);
+  }
+
+  // --- Bonus ---
+  static Future<int> getBonusExtraLetterCount() async => (await getProfile()).bonusExtraLetterCount;
+  static Future<void> useBonusExtraLetter() async {
+    final profile = await getProfile();
+    if (profile.bonusExtraLetterCount > 0) {
+      profile.bonusExtraLetterCount--;
+      await saveProfile(profile);
+    }
+  }
+
+  static Future<int> getBonusDoubleDistanceCount() async => (await getProfile()).bonusDoubleDistanceCount;
+  static Future<void> useBonusDoubleDistance() async {
+    final profile = await getProfile();
+    if (profile.bonusDoubleDistanceCount > 0) {
+      profile.bonusDoubleDistanceCount--;
+      await saveProfile(profile);
+    }
+  }
+
+  static Future<int> getBonusFreezeRivalCount() async => (await getProfile()).bonusFreezeRivalCount;
+  static Future<void> useBonusFreezeRival() async {
+    final profile = await getProfile();
+    if (profile.bonusFreezeRivalCount > 0) {
+      profile.bonusFreezeRivalCount--;
+      await saveProfile(profile);
+    }
+  }
+
+  static Future<void> addBonusItems({
+    int extraLetter = 0,
+    int doubleDistance = 0,
+    int freezeRival = 0,
+  }) async {
+    final profile = await getProfile();
+    profile.bonusExtraLetterCount += extraLetter;
+    profile.bonusDoubleDistanceCount += doubleDistance;
+    profile.bonusFreezeRivalCount += freezeRival;
+    await saveProfile(profile);
   }
 }
