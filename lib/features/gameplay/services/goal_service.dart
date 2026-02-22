@@ -111,8 +111,15 @@ class GoalService extends ChangeNotifier {
     await updateProgress(GoalCategory.levelsWon, count);
   }
 
-  Future<void> incrementWordsFound(int count) async {
+  Future<void> incrementWordsFound(int count, {int wordLength = 0}) async {
     await updateProgress(GoalCategory.wordsFound, count);
+    if (wordLength == 6) {
+      await updateProgress(GoalCategory.wordsLength6, count);
+    } else if (wordLength == 7) {
+      await updateProgress(GoalCategory.wordsLength7, count);
+    } else if (wordLength >= 8) {
+      await updateProgress(GoalCategory.wordsLength8Plus, count);
+    }
   }
   Future<void> incrementAdWatch() async {
     await updateProgress(GoalCategory.adsWatched, 1);

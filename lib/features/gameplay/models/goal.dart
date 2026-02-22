@@ -7,6 +7,9 @@ enum GoalCategory {
   streakDays,
   coinsEarned,
   adsWatched,
+  wordsLength6,
+  wordsLength7,
+  wordsLength8Plus,
 }
 
 class Goal {
