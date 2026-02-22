@@ -1,9 +1,10 @@
 {
   "loading": {
     "messages": {
-      "0": "Chargement de la magie...",
-      "1": "Affûtage des épées...",
-      "2": "Invocation des héros..."
+      "0": "Préparation des lettres...",
+      "1": "Gonflage des pneus...",
+      "2": "Graissage de la chaîne...",
+      "3": "En route vers la ligne de départ..."
     },
     "title": "Chargement..."
   },

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:word_riders/features/ui/widgets/common/main_layout.dart';
+import 'package:word_riders/data/audio_data.dart';
+import 'package:word_riders/features/gameplay/services/audio_service.dart';
 
 class ResourceTransferAnimation extends StatefulWidget {
   final Offset startPosition;
@@ -142,6 +144,9 @@ class _ResourceTransferAnimationState extends State<ResourceTransferAnimation> w
         Future.delayed(Duration(milliseconds: i * 50), () {
             if (mounted) {
                 _controllers[i].forward().then((_) {
+                    if (widget.assetPath.contains('coin')) {
+                        AudioService().playSfx(AudioData.sfxCoin);
+                    }
                     _completedAnimations++;
                     if (_completedAnimations == widget.itemCount) {
                         widget.onAnimationComplete();

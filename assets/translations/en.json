@@ -1,9 +1,10 @@
 {
   "loading": {
     "messages": {
-      "0": "Loading magic...",
-      "1": "Sharpening swords...",
-      "2": "Summoning heroes..."
+      "0": "Preparing the letters...",
+      "1": "Inflating the tires...",
+      "2": "Lubing the chain...",
+      "3": "Heading to the starting line..."
     },
     "title": "Loading..."
   },
