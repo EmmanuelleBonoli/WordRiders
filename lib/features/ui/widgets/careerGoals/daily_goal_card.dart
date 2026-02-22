@@ -25,6 +25,9 @@ class DailyGoalCard extends StatelessWidget {
        case GoalCategory.levelsWon: icon = Icons.stars; break;
        case GoalCategory.wordsFound: icon = Icons.menu_book; break;
        case GoalCategory.adsWatched: icon = Icons.movie_filter; break;
+       case GoalCategory.wordsLength6:
+       case GoalCategory.wordsLength7:
+       case GoalCategory.wordsLength8Plus: icon = Icons.text_format; break;
        default: icon = Icons.emoji_events;
      }
 
@@ -113,16 +116,18 @@ class DailyGoalCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.asset('assets/images/indicators/coin.png', width: 14, height: 14),
                     const SizedBox(width: 4),
                     Text(
                       "+${goal.reward}",
-                        style: const TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Round',
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: AppTheme.brown,
+                        height: 1.0,
                       ),
                     ),
                   ],

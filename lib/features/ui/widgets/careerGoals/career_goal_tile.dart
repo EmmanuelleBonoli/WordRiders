@@ -23,6 +23,10 @@ class CareerGoalTile extends StatelessWidget {
        case GoalCategory.levelsWon: icon = Icons.school; break;
        case GoalCategory.wordsFound: icon = Icons.emoji_events; break;
        case GoalCategory.streakDays: icon = Icons.whatshot; break;
+       case GoalCategory.adsWatched: icon = Icons.movie_filter; break;
+       case GoalCategory.wordsLength6:
+       case GoalCategory.wordsLength7:
+       case GoalCategory.wordsLength8Plus: icon = Icons.text_format; break;
        default: icon = Icons.star;
      }
 
@@ -55,14 +59,40 @@ class CareerGoalTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  context.tr(goal.titleKey),
-                  style: TextStyle(
-                    fontFamily: 'Round',
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textDark,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        context.tr(goal.titleKey),
+                        style: const TextStyle(
+                          fontFamily: 'Round',
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textDark,
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset('assets/images/indicators/coin.png', width: 16, height: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          "+${goal.reward}",
+                          style: const TextStyle(
+                            fontFamily: 'Round',
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.orangeBurnt,
+                            height: 1.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 4),
                 Text(
