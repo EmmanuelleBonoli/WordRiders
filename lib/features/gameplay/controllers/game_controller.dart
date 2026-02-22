@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/gameplay/services/word_service.dart';
 import 'package:word_riders/features/gameplay/services/goal_service.dart';
+import 'package:word_riders/data/audio_data.dart';
+import 'package:word_riders/features/gameplay/services/audio_service.dart';
 
 enum GameStatus { loading, waitingForConfig, playing, paused, won, lost }
 
@@ -224,6 +226,7 @@ class GameController extends ChangeNotifier {
 
     // 1. Longueur min du mot proposé
     if (word.length < 3) {
+      AudioService().playSfx(AudioData.sfxWordInvalid);
       showFeedback(tr('game.feedback_too_short'));
       clearInput();
       return false;
@@ -231,6 +234,7 @@ class GameController extends ChangeNotifier {
 
     // 2. Mot déjà trouvé ?
     if (_sessionWords.contains(word)) {
+      AudioService().playSfx(AudioData.sfxWordInvalid);
       showFeedback(tr('game.feedback_already_used'));
       clearInput();
       return false;
@@ -238,6 +242,7 @@ class GameController extends ChangeNotifier {
 
     // 3. Mot existe dans le dico ?
     if (wordService.isValid(word)) {
+      AudioService().playSfx(AudioData.sfxWordValid);
       _sessionWords.add(word);
       GoalService().incrementWordsFound(1, wordLength: word.length);
       
@@ -277,6 +282,7 @@ class GameController extends ChangeNotifier {
     }
     
     // Mot invalide/inconnu
+    AudioService().playSfx(AudioData.sfxWordInvalid);
     showFeedback(tr('game.feedback_invalid'));
     clearInput();
     return false;
@@ -330,6 +336,7 @@ class GameController extends ChangeNotifier {
   }
 
   Future<void> _handleWin() async {
+    AudioService().playSfx(AudioData.sfxWin);
     _status = GameStatus.won;
     _gameTimer?.cancel();
 
@@ -393,6 +400,7 @@ class GameController extends ChangeNotifier {
   }
 
   Future<void> _handleLoss() async {
+    AudioService().playSfx(AudioData.sfxLose);
     _status = GameStatus.lost;
     _gameTimer?.cancel();
     

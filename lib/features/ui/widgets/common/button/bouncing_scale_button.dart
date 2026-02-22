@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:word_riders/data/audio_data.dart';
+import 'package:word_riders/features/gameplay/services/audio_service.dart';
 class BouncingScaleButton extends StatefulWidget {
   final Widget child;
   final VoidCallback onTap;
@@ -39,6 +40,7 @@ class _BouncingScaleButtonState extends State<BouncingScaleButton> with SingleTi
   }
 
   void _onTapDown(TapDownDetails details) {
+    AudioService().playSfx(AudioData.sfxButtonPress);
     _controller.forward();
   }
 

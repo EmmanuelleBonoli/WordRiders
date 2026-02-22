@@ -1,9 +1,10 @@
 {
     "loading": {
         "messages": {
-            "0": "Magie laden...",
-            "1": "Schwerter schärfen...",
-            "2": "Helden beschwören..."
+            "0": "Buchstaben vorbereiten...",
+            "1": "Reifen aufpumpen...",
+            "2": "Kette schmieren...",
+            "3": "Auf dem Weg zur Startlinie..."
         },
         "title": "Lädt..."
     },

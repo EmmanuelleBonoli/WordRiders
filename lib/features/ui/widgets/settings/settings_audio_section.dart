@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/gameplay/services/audio_service.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_container.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_section_title.dart';
 
@@ -75,6 +76,7 @@ class SettingsAudioSection extends StatelessWidget {
                 onChanged: (val) async {
                   onMusicChanged(val);
                   await PlayerPreferences.setMusicEnabled(val);
+                  await AudioService().validateAudioSettings();
                 },
               ),
               Divider(height: 2, thickness: 2, color: AppTheme.brown.withValues(alpha: 0.2)),
