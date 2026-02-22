@@ -69,9 +69,9 @@ class _CampaignBottomNavBarState extends State<CampaignBottomNavBar> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _buildNavItem(0, Icons.store, selectedWidth, unselectedWidth),
-              _buildNavItem(1, Icons.videogame_asset, selectedWidth, unselectedWidth),
-              _buildNavItem(2, Icons.emoji_events, selectedWidth, unselectedWidth),
+              Flexible(child: _buildNavItem(0, Icons.store, selectedWidth, unselectedWidth)),
+              Flexible(child: _buildNavItem(1, Icons.videogame_asset, selectedWidth, unselectedWidth)),
+              Flexible(child: _buildNavItem(2, Icons.emoji_events, selectedWidth, unselectedWidth)),
             ],
           );
         },

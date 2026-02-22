@@ -204,7 +204,7 @@ class GameController extends ChangeNotifier {
     // 3. Mot existe dans le dico ?
     if (wordService.isValid(word)) {
       _sessionWords.add(word);
-      GoalService().incrementWordsFound(1); // Fire and forget
+      GoalService().incrementWordsFound(1, wordLength: word.length);
       
       // Faire avancer le lapin
       // Formule de progression : plus le mot est long, plus on avance ?
