@@ -21,6 +21,12 @@ class PlayerProfile {
   List<String> usedWords;
   String? activeWord;
   List<String> campaignWords;
+  String? campaignLocale;
+  
+  // Bonus
+  int bonusExtraLetterCount;
+  int bonusDoubleDistanceCount;
+  int bonusFreezeRivalCount;
   
   // Tracking
   int lastAdStage;
@@ -43,6 +49,10 @@ class PlayerProfile {
     List<String>? usedWords,
     this.activeWord,
     List<String>? campaignWords,
+    this.campaignLocale,
+    this.bonusExtraLetterCount = 3,
+    this.bonusDoubleDistanceCount = 3,
+    this.bonusFreezeRivalCount = 3,
     this.lastAdStage = 0,
     this.unlimitedLivesUntil,
     this.locale,
@@ -80,6 +90,10 @@ class PlayerProfile {
       campaignWords: (json['campaignWords'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      campaignLocale: json['campaignLocale'] as String?,
+      bonusExtraLetterCount: json['bonusExtraLetterCount'] as int? ?? 3,
+      bonusDoubleDistanceCount: json['bonusDoubleDistanceCount'] as int? ?? 3,
+      bonusFreezeRivalCount: json['bonusFreezeRivalCount'] as int? ?? 3,
       lastAdStage: json['lastAdStage'] as int? ?? 0,
        unlimitedLivesUntil: json['unlimitedLivesUntil'] == null
           ? null
@@ -102,6 +116,10 @@ class PlayerProfile {
         'usedWords': usedWords,
         'activeWord': activeWord,
         'campaignWords': campaignWords,
+        'campaignLocale': campaignLocale,
+        'bonusExtraLetterCount': bonusExtraLetterCount,
+        'bonusDoubleDistanceCount': bonusDoubleDistanceCount,
+        'bonusFreezeRivalCount': bonusFreezeRivalCount,
         'lastAdStage': lastAdStage,
         'unlimitedLivesUntil': unlimitedLivesUntil?.toIso8601String(),
         'locale': locale,

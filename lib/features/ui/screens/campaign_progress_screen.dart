@@ -1,7 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:word_riders/features/ui/screens/main_scaffold.dart';
+import 'package:word_riders/features/ui/widgets/common/main_layout.dart';
 import 'package:word_riders/features/ui/widgets/campaign/campaign_preview_game.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
@@ -222,7 +222,7 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
           content = BouncingScaleButton(
             showShadow: false,
              onTap: () async {
-              final mainScaffold = context.findAncestorStateOfType<MainScaffoldState>();
+              final mainScaffold = context.findAncestorStateOfType<MainLayoutState>();
               final lives = mainScaffold?.currentLives ?? 5;
               
               if (lives <= 0) {
@@ -231,7 +231,7 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
                   barrierDismissible: true,
                   builder: (ctx) => NoLivesOverlay(
                     onLivesReplenished: () {
-                      final mainScaffold = context.findAncestorStateOfType<MainScaffoldState>();
+                      final mainScaffold = context.findAncestorStateOfType<MainLayoutState>();
                       mainScaffold?.reloadIndicators();
                     },
                   ),

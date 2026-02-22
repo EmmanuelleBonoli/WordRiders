@@ -3,8 +3,8 @@ import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
 
 class StoreProductCard extends StatelessWidget {
+  final String description;
   final String title;
-  final String amount;
   final IconData? icon;
   final Widget? customIcon;
   final String price;
@@ -18,8 +18,8 @@ class StoreProductCard extends StatelessWidget {
 
   const StoreProductCard({
     super.key,
+    required this.description,
     required this.title,
-    required this.amount,
     this.icon,
     this.customIcon,
     required this.price,
@@ -86,7 +86,7 @@ class StoreProductCard extends StatelessWidget {
                 
                 // HEADER AMOUNT
                 Text(
-                  amount,
+                  title,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Round',
@@ -110,12 +110,12 @@ class StoreProductCard extends StatelessWidget {
                   ),
                 ),
                 
-                // TITLE (Optionnel)
-                if (title.isNotEmpty)
+                // DESCRIPTION (Optionnel)
+                if (description.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: Text(
-                      title,
+                      description,
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

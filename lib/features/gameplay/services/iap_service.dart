@@ -248,7 +248,7 @@ class IapService {
       if (item.productId == null) continue;
       _products.add(ProductDetails(
         id: item.productId!,
-        title: item.amount,
+        title: item.title,
         description: 'Simulation Dev',
         price: item.price,
         rawPrice: 0.99,
