@@ -27,7 +27,8 @@ class _LoadingMessagesWidgetState extends State<LoadingMessagesWidget> {
       context.tr('loading.messages.1'),
       context.tr('loading.messages.2'),
       context.tr('loading.messages.3'),
-    ];
+    ]..shuffle();
+    
     _timer ??= Timer.periodic(const Duration(seconds: 2), (timer) {
       if (mounted) {
         setState(() {

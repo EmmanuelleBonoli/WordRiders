@@ -205,6 +205,7 @@ class _GameScreenContent extends StatelessWidget {
           // 4. Overlays (Pause & Fin)
           if (controller.status == GameStatus.won || controller.status == GameStatus.lost)
             GameEndOverlay(
+              currentLevel: controller.currentStage,
               isWon: controller.status == GameStatus.won,
               isCampaign: controller.isCampaign,
               onQuit: () async {

@@ -129,23 +129,30 @@ class CareerGoalTile extends StatelessWidget {
               ],
             ),
           ),
-           if (goal.isClaimed)
-            const Icon(Icons.check_circle, color: AppTheme.green, size: 28)
-           else if (completed && !goal.isClaimed)
-            // Bouton Claim pour la carrière aussi!
-             GestureDetector(
-                onTap: onClaim,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: AppTheme.orangeBurnt,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: const [BoxShadow(color: Colors.black26, offset: Offset(0, 2), blurRadius: 4)]
-                  ),
-                  child: Text(context.tr('campaign.goals.common.claim'), 
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                ),
-             )
+          SizedBox(
+            width: 80,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: goal.isClaimed
+                  ? const Icon(Icons.check_circle, color: AppTheme.green, size: 28)
+                  : (completed && !goal.isClaimed)
+                      ? GestureDetector(
+                          onTap: onClaim,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                                color: AppTheme.orangeBurnt,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: const [BoxShadow(color: Colors.black26, offset: Offset(0, 2), blurRadius: 4)]),
+                            child: Text(
+                              context.tr('campaign.goals.common.claim'),
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+            ),
+          ),
         ],
       ),
     );

@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/gameplay/services/word_service.dart';
 import 'package:word_riders/features/gameplay/services/goal_service.dart';
 import 'package:word_riders/data/audio_data.dart';
 import 'package:word_riders/features/gameplay/services/audio_service.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 enum GameStatus { loading, waitingForConfig, playing, paused, won, lost }
 
-class GameController extends ChangeNotifier {
+class GameController extends ChangeNotifier with WidgetsBindingObserver {
   final bool isCampaign;
   final String locale;
   final WordService wordService;
@@ -67,7 +68,29 @@ class GameController extends ChangeNotifier {
     required this.locale, 
     required this.wordService
   }) {
+    WidgetsBinding.instance.addObserver(this);
     _initializeGame();
+  }
+
+  bool _wasPlayingBeforeBackground = false;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive || state == AppLifecycleState.hidden) {
+      // Si on joue activement et que le téléphone se met en veille ou quitte l'app
+      if (_status == GameStatus.playing) {
+        _wasPlayingBeforeBackground = true;
+        _status = GameStatus.paused; // Stop la progression du renard et du timer
+        notifyListeners();
+      }
+    } else if (state == AppLifecycleState.resumed) {
+      // Quand l'utilisateur revient sur le jeu
+      if (_wasPlayingBeforeBackground) {
+        _wasPlayingBeforeBackground = false;
+        _status = GameStatus.playing;
+        notifyListeners();
+      }
+    }
   }
 
   Future<void> _initializeGame() async {
@@ -160,10 +183,11 @@ class GameController extends ChangeNotifier {
 
   void _startGameLoop() {
     _gameTimer?.cancel();
+    WakelockPlus.enable();
     
     // ENTRAINEMENT : Pas de timer ni de renard
     if (!isCampaign) return;
-
+    
     // Rafraichissement toutes les 100ms
     _gameTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       if (_status != GameStatus.playing) {
@@ -195,6 +219,7 @@ class GameController extends ChangeNotifier {
     if (_status != GameStatus.playing) return;
 
     if (_currentInput.length < 20) { 
+      AudioService().playSfx(AudioData.sfxButtonPress);
       _currentInput += letter;
       notifyListeners();
     }
@@ -204,6 +229,7 @@ class GameController extends ChangeNotifier {
     if (_status != GameStatus.playing) return;
 
     if (_currentInput.isNotEmpty) {
+      AudioService().playSfx(AudioData.sfxButtonPress);
       _currentInput = _currentInput.substring(0, _currentInput.length - 1);
       notifyListeners();
     }
@@ -339,6 +365,7 @@ class GameController extends ChangeNotifier {
     AudioService().playSfx(AudioData.sfxWin);
     _status = GameStatus.won;
     _gameTimer?.cancel();
+    WakelockPlus.disable();
 
     if (isCampaign) {
       await GoalService().incrementLevelsWon(1);
@@ -353,6 +380,7 @@ class GameController extends ChangeNotifier {
   // Permet de quitter proprement en comptabilisant la défaite si nécessaire
   Future<void> quitGame() async {
     _gameTimer?.cancel();
+    WakelockPlus.disable();
     // Si on quitte une partie en cours en mode campagne, c'est une défaite (donc perte de vie)
     if (isCampaign && (_status == GameStatus.playing || _status == GameStatus.paused)) {
       await PlayerPreferences.loseLife();
@@ -375,6 +403,7 @@ class GameController extends ChangeNotifier {
   void pauseGame() {
     if (_status == GameStatus.playing) {
       _status = GameStatus.paused;
+      WakelockPlus.disable();
       notifyListeners();
     }
   }
@@ -382,6 +411,7 @@ class GameController extends ChangeNotifier {
   void resumeGame() {
     if (_status == GameStatus.paused) {
       _status = GameStatus.playing;
+      WakelockPlus.enable();
       notifyListeners();
     }
   }
@@ -403,6 +433,7 @@ class GameController extends ChangeNotifier {
     AudioService().playSfx(AudioData.sfxLose);
     _status = GameStatus.lost;
     _gameTimer?.cancel();
+    WakelockPlus.disable();
     
     notifyListeners();
   }
@@ -427,9 +458,11 @@ class GameController extends ChangeNotifier {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _isDisposed = true;
     _gameTimer?.cancel();
     _feedbackTimer?.cancel();
+    WakelockPlus.disable();
     super.dispose();
   }
 

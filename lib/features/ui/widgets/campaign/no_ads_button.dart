@@ -66,7 +66,7 @@ class _NoAdsButtonState extends State<NoAdsButton> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(context.tr('campaign.store.unavailable')),
-            backgroundColor: AppTheme.red,
+            backgroundColor: AppTheme.brown,
           ),
         );
       }

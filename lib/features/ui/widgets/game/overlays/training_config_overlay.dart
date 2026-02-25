@@ -34,23 +34,23 @@ class TrainingConfigOverlay extends StatelessWidget {
           
           Center(
             child: Container(
+              width: double.infinity,
               constraints: BoxConstraints(
-                maxWidth: 340,
                 maxHeight: MediaQuery.of(context).size.height - 48,
               ),
-              margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              margin: const EdgeInsets.symmetric(vertical: 24),
               child: Stack(
                 clipBehavior: Clip.none,
                 alignment: Alignment.topCenter,
                 children: [
                   // 1. The MAIN PANEL
                   Padding(
-                    padding: const EdgeInsets.all(30),
+                    padding: const EdgeInsets.symmetric(vertical: 30),
                     child: Container(
-                      padding: const EdgeInsets.all(1.5),
+                      padding: const EdgeInsets.symmetric(vertical: 1.5),
                     decoration: BoxDecoration(
                       color: AppTheme.coinBorderDark,
-                      borderRadius: BorderRadius.circular(32),
+                      borderRadius: BorderRadius.zero,
                        boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.5),
@@ -61,19 +61,19 @@ class TrainingConfigOverlay extends StatelessWidget {
                     ),
                     child: Container(
                       decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(30.5)),
+                        borderRadius: BorderRadius.zero,
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [AppTheme.coinRimTop, AppTheme.coinRimBottom],
                         ),
                       ),
-                      padding: const EdgeInsets.all(4.0),
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
                       child: Container(
                         padding: const EdgeInsets.fromLTRB(24, 50, 24, 32),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: AppTheme.levelSignFace,
-                          borderRadius: BorderRadius.circular(26.5),
+                          borderRadius: BorderRadius.zero,
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -109,7 +109,7 @@ class TrainingConfigOverlay extends StatelessWidget {
 
                   // 3. Close Button
                   Positioned(
-                    top: 14,
+                    top: 4,
                     right: 16,
                     child: BouncingScaleButton(
                       onTap: onBack,
