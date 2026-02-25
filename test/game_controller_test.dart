@@ -45,8 +45,10 @@ void main() {
     test('onLetterTap ajoute bien une lettre au currentInput si le statut est "playing"', () async {
       final controller = GameController(isCampaign: true, locale: 'fr', wordService: WordService());
       
-      // On attend que l'initialisation (avec son catch d'erreur) se termine pour être en mode "playing"
-      await Future.delayed(const Duration(milliseconds: 100));
+      // Attendre que l'initialisation asynchrone (dictionnaire) soit terminée
+      while (controller.isLoading) {
+        await Future.delayed(const Duration(milliseconds: 10));
+      }
       
       expect(controller.status, equals(GameStatus.playing));
       expect(controller.currentInput, isEmpty);
@@ -59,7 +61,9 @@ void main() {
 
     test('onBackspace supprime la dernière lettre de currentInput', () async {
       final controller = GameController(isCampaign: true, locale: 'fr', wordService: WordService());
-      await Future.delayed(const Duration(milliseconds: 100));
+      while (controller.isLoading) {
+        await Future.delayed(const Duration(milliseconds: 10));
+      }
 
       controller.onLetterTap('C');
       controller.onLetterTap('H');
@@ -73,7 +77,9 @@ void main() {
 
     test('clearInput efface tout le mot en cours', () async {
       final controller = GameController(isCampaign: true, locale: 'fr', wordService: WordService());
-      await Future.delayed(const Duration(milliseconds: 100));
+      while (controller.isLoading) {
+        await Future.delayed(const Duration(milliseconds: 10));
+      }
 
       controller.onLetterTap('C');
       controller.onLetterTap('H');
@@ -86,7 +92,9 @@ void main() {
 
     test('pauseGame gèle la partie et resumeGame la reprend', () async {
       final controller = GameController(isCampaign: true, locale: 'fr', wordService: WordService());
-      await Future.delayed(const Duration(milliseconds: 100));
+      while (controller.isLoading) {
+        await Future.delayed(const Duration(milliseconds: 10));
+      }
 
       expect(controller.isPaused, isFalse);
 
