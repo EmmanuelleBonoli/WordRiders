@@ -50,21 +50,13 @@ class GameLetterGrid extends StatelessWidget {
            
            final letter = shuffledLetters[index];
            
-           // Alternance des anneaux sur la 2ème rangée si le nombre de colonnes est pair (ex: 8 lettres) 
-           bool hasRing = index % 2 == 0;
-           if (!isTop && cols % 2 == 0) {
-             hasRing = !hasRing;
-           }
-           
            return Positioned(
              left: center + xOffset - (letterSize / 2),
              top: yBase + yCurve, 
              child: BouncingScaleButton(
                onTap: () => onLetterTap(letter),
                showShadow: false,
-               child: hasRing 
-                  ? _buildRingLetter(letter, letterSize)
-                  : _buildPlainLetter(letter, letterSize),
+               child: _buildRingLetter(letter, letterSize),
              ),
            );
         }),
@@ -123,19 +115,4 @@ class GameLetterGrid extends StatelessWidget {
     );
   }
 
-  Widget _buildPlainLetter(String letter, double size) {
-     return Container(
-       width: size, height: size,
-       alignment: Alignment.center,
-       child: Text(
-         letter,
-         style: TextStyle(
-           fontFamily: AppTheme.fontFamily,
-           fontSize: size * 0.65, 
-           fontWeight: FontWeight.w900,
-           color: AppTheme.coinBorderDark,
-         ),
-       ),
-     );
-  }
 }

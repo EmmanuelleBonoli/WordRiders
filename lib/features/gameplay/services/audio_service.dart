@@ -1,30 +1,80 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/widgets.dart';
 import 'package:word_riders/data/audio_data.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 
-class AudioService {
+class AudioService with WidgetsBindingObserver {
   // Singleton pour un accès global
   static final AudioService _instance = AudioService._internal();
   factory AudioService() => _instance;
+  
   AudioService._internal() {
-    // Configurer la musique pour qu'elle tourne en boucle
-    _musicPlayer.setReleaseMode(ReleaseMode.loop);
+    AudioPlayer.global.setAudioContext(AudioContext(
+      android: const AudioContextAndroid(
+        audioFocus: AndroidAudioFocus.none,
+        isSpeakerphoneOn: false,
+        stayAwake: false,
+        contentType: AndroidContentType.sonification,
+        usageType: AndroidUsageType.game,
+      ),
+      iOS: AudioContextIOS(
+        options: const {AVAudioSessionOptions.mixWithOthers},
+      ),
+    ));
+    
+    WidgetsBinding.instance.addObserver(this);
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive || state == AppLifecycleState.hidden) {
+      // Pause globale de l'audio quand l'app passe en arrière-plan
+      if (_musicPlayer.state == PlayerState.playing) {
+        _musicPlayer.pause();
+      }
+    } else if (state == AppLifecycleState.resumed) {
+      // Relance de la musique quand l'app revient au premier plan
+      if (_isMusicEnabled && _currentMusic != null) {
+        _musicPlayer.resume();
+      }
+    }
+  }
   final AudioPlayer _musicPlayer = AudioPlayer();
   
-  // Garder en mémoire la musique actuelle pour éviter de la relancer inutilement
+  // Utiliser un pool de lecteurs SFX persistant pour éliminer totalement la latence
+  // de la création systématique d'objets côté natif.
+  static const int _poolSize = 5;
+  final List<AudioPlayer> _sfxPlayers = List.generate(
+    _poolSize, 
+    (_) => AudioPlayer()..setReleaseMode(ReleaseMode.stop)
+  );
+  int _sfxIndex = 0;
+
+  // Cache synchrone des paramètres pour ne plus faire de vérification async 
+  bool _isMusicEnabled = true;
+  bool _isSfxEnabled = true;
   String? _currentMusic;
 
   // Précharge tous les sons en mémoire, lancé au démarrage du jeu
   Future<void> preloadAll() async {
-    await AudioCache.instance.loadAll(AudioData.allAudio);
+    // 1. Initialiser le cache des préférences
+    _isMusicEnabled = await PlayerPreferences.isMusicEnabled();
+    _isSfxEnabled = await PlayerPreferences.isSfxEnabled();
+
+    // 2. Configurer le player musical
+    await _musicPlayer.setReleaseMode(ReleaseMode.loop);
+
+    // 3. Charger le cache d'actifs audio en mémoire
+    try {
+      await AudioCache.instance.loadAll(AudioData.allAudio);
+    } catch (e) {
+      debugPrint("AudioServices: Échec du chargement dans l'AudioCache -> $e");
+    }
   }
 
   // Lance ou change la musique de fond
   Future<void> playMusic(String musicAssetPath) async {
-    final isEnabled = await PlayerPreferences.isMusicEnabled();
-    if (!isEnabled) {
+    if (!_isMusicEnabled) {
       await stopMusic();
       return;
     }
@@ -34,6 +84,7 @@ class AudioService {
     }
 
     _currentMusic = musicAssetPath;
+    await _musicPlayer.stop();
     await _musicPlayer.play(AssetSource(musicAssetPath));
   }
 
@@ -48,30 +99,32 @@ class AudioService {
 
   // Reprend la musique
   Future<void> resumeMusic() async {
-    final isEnabled = await PlayerPreferences.isMusicEnabled();
-    if (isEnabled && _currentMusic != null) {
+    if (_isMusicEnabled && _currentMusic != null) {
       await _musicPlayer.resume();
     }
   }
 
-  // Joue un effet sonore unique (peut se superposer)
-  Future<void> playSfx(String sfxAssetPath) async {
-    final isEnabled = await PlayerPreferences.isSfxEnabled();
-    if (!isEnabled) return;
+  void playSfx(String sfxAssetPath) {
+    if (!_isSfxEnabled) return;
 
-    // Créer un lecteur temporaire pour les sons qui se superposent (frappe rapide au clavier par ex)
-    final player = AudioPlayer();
-    await player.play(AssetSource(sfxAssetPath));
-    // Détruire le lecteur automatiquement une fois le son terminé pour libérer la mémoire
-    player.onPlayerComplete.listen((_) {
-      player.dispose();
-    });
+    final player = _sfxPlayers[_sfxIndex];
+    if (player.state == PlayerState.playing) {
+      // Si ce lecteur joue encore, on le coupe juste avant pour en relancer un
+      player.stop().then((_) => player.play(AssetSource(sfxAssetPath)));
+    } else {
+      player.play(AssetSource(sfxAssetPath));
+    }
+    
+    // Rotation circulaire dans le pool de lecteurs
+    _sfxIndex = (_sfxIndex + 1) % _poolSize;
   }
 
   // Met à jour l'état. À appeler quand l'utilisateur change les réglages audio
   Future<void> validateAudioSettings() async {
-    final isEnabled = await PlayerPreferences.isMusicEnabled();
-    if (!isEnabled) {
+    _isMusicEnabled = await PlayerPreferences.isMusicEnabled();
+    _isSfxEnabled = await PlayerPreferences.isSfxEnabled();
+    
+    if (!_isMusicEnabled) {
       await stopMusic();
     } else if (_currentMusic != null) {
       await playMusic(_currentMusic!);
@@ -80,6 +133,10 @@ class AudioService {
 
   // Libération globale des ressources
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _musicPlayer.dispose();
+    for (var player in _sfxPlayers) {
+      player.dispose();
+    }
   }
 }

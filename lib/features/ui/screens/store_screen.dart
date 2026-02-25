@@ -24,6 +24,8 @@ class _StoreScreenState extends State<StoreScreen> {
   final GlobalKey _bonusPack1Key = GlobalKey();
   final GlobalKey _bonusPackUnlimitedKey = GlobalKey();
 
+  final ScrollController _coinPacksScrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +46,7 @@ class _StoreScreenState extends State<StoreScreen> {
   @override
   void dispose() {
     IapService.onErrorOrSuccess = null;
+    _coinPacksScrollController.dispose();
     super.dispose();
   }
 
@@ -166,7 +169,7 @@ class _StoreScreenState extends State<StoreScreen> {
     }
 
     await PlayerPreferences.spendCoins(cost);
-    await PlayerPreferences.addBonusItems(extraLetter: 3, doubleDistance: 3, freezeRival: 3);
+    await PlayerPreferences.addBonusItems(extraLetter: 1, doubleDistance: 1, freezeRival: 1);
 
     if (context.mounted) {
        ResourceTransferAnimation.start(
@@ -190,7 +193,7 @@ class _StoreScreenState extends State<StoreScreen> {
     }
 
     await PlayerPreferences.spendCoins(cost);
-    await PlayerPreferences.addBonusItems(extraLetter: 3, doubleDistance: 3, freezeRival: 3);
+    await PlayerPreferences.addBonusItems(extraLetter: 1, doubleDistance: 1, freezeRival: 1);
     await PlayerPreferences.addUnlimitedLivesTime(const Duration(minutes: 60)); // 1h
 
     if (context.mounted) {
@@ -278,20 +281,26 @@ class _StoreScreenState extends State<StoreScreen> {
           StoreSectionHeader(title: context.tr('campaign.store.coin_packs')),
           const SizedBox(height: 12),
           SizedBox(
-            height: coinPackItems.isNotEmpty ? coinPackItems.first.height : 220,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              clipBehavior: Clip.none,
-              itemCount: coinPackItems.length,
-              separatorBuilder: (context, index) => const SizedBox(width: 16),
-              itemBuilder: (ctx, index) {
-                final item = coinPackItems[index];
-                return StoreItemCard(
-                  key: _getKeyForId(item.id) ?? ValueKey(item.id),
-                  item: item,
-                  onTap: _getOnTapForItem(item),
-                );
-              },
+            height: (coinPackItems.isNotEmpty ? coinPackItems.first.height : 220) + 24,
+            child: Scrollbar(
+              controller: _coinPacksScrollController,
+              thumbVisibility: true,
+              child: ListView.separated(
+                controller: _coinPacksScrollController,
+                padding: const EdgeInsets.only(bottom: 24),
+                scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
+                itemCount: coinPackItems.length,
+                separatorBuilder: (context, index) => const SizedBox(width: 16),
+                itemBuilder: (ctx, index) {
+                  final item = coinPackItems[index];
+                  return StoreItemCard(
+                    key: _getKeyForId(item.id) ?? ValueKey(item.id),
+                    item: item,
+                    onTap: _getOnTapForItem(item),
+                  );
+                },
+              ),
             ),
           ),  
         ],

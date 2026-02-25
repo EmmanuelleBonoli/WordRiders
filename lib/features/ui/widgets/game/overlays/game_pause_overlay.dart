@@ -4,6 +4,7 @@ import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
 import 'package:word_riders/features/ui/widgets/common/button/premium_round_button.dart';
 import 'package:word_riders/features/ui/widgets/common/life_indicator.dart';
+import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 
 class GamePauseOverlay extends StatefulWidget {
   final String title;
@@ -28,6 +29,7 @@ class GamePauseOverlay extends StatefulWidget {
 class _GamePauseOverlayState extends State<GamePauseOverlay> with SingleTickerProviderStateMixin {
   late AnimationController _animController;
   late Animation<double> _scaleAnim;
+  bool _isUnlimitedLives = false;
 
   @override
   void initState() {
@@ -38,6 +40,16 @@ class _GamePauseOverlayState extends State<GamePauseOverlay> with SingleTickerPr
     );
     _scaleAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOutBack);
     _animController.forward();
+    _checkUnlimitedLives();
+  }
+
+  Future<void> _checkUnlimitedLives() async {
+    final isUnlimited = await PlayerPreferences.isUnlimitedLivesActive();
+    if (mounted) {
+      setState(() {
+        _isUnlimitedLives = isUnlimited;
+      });
+    }
   }
 
   @override
@@ -75,21 +87,20 @@ class _GamePauseOverlayState extends State<GamePauseOverlay> with SingleTickerPr
           child: Center(
             child: ScaleTransition(
               scale: _scaleAnim,
-              child: Container(
-                width: 320,
-                margin: const EdgeInsets.symmetric(horizontal: 24),
+              child: SizedBox(
+                width: double.infinity,
                 child: Stack(
                   clipBehavior: Clip.none,
                   alignment: Alignment.topCenter,
                   children: [
                     // MAIN BOARD
                     Padding(
-                      padding: const EdgeInsets.all(30),
+                      padding: const EdgeInsets.symmetric(vertical: 30),
                       child: Container(
-                        padding: const EdgeInsets.all(1.5),
+                        padding: const EdgeInsets.symmetric(vertical: 1.5),
                         decoration: BoxDecoration(
                           color: AppTheme.coinBorderDark,
-                          borderRadius: BorderRadius.circular(32),
+                          borderRadius: BorderRadius.zero,
                            boxShadow: [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.5),
@@ -100,19 +111,19 @@ class _GamePauseOverlayState extends State<GamePauseOverlay> with SingleTickerPr
                         ),
                         child: Container(
                           decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(30.5)),
+                            borderRadius: BorderRadius.zero,
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: [AppTheme.coinRimTop, AppTheme.coinRimBottom],
                             ),
                           ),
-                          padding: const EdgeInsets.all(4.0),
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Container(
                             padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: AppTheme.levelSignFace,
-                              borderRadius: BorderRadius.circular(26.5),
+                              borderRadius: BorderRadius.zero,
                             ),
                             child: SingleChildScrollView(
                               child: Column(
@@ -195,7 +206,7 @@ class _GamePauseOverlayState extends State<GamePauseOverlay> with SingleTickerPr
                                              faceGradient: const [AppTheme.btnRedTop, AppTheme.btnRedBottom],
                                              iconGradient: const [AppTheme.white, AppTheme.white],
                                            ),
-                                           if (widget.isCampaign)
+                                           if (widget.isCampaign && !_isUnlimitedLives)
                                              Positioned(
                                                bottom: -18,
                                                child: Container(
@@ -249,7 +260,7 @@ class _GamePauseOverlayState extends State<GamePauseOverlay> with SingleTickerPr
                                          faceGradient: const [AppTheme.btnGreenTop, AppTheme.btnGreenBottom],
                                          iconGradient: const [AppTheme.white, AppTheme.white],
                                        ),
-                                         if (widget.isCampaign)
+                                         if (widget.isCampaign && !_isUnlimitedLives)
                                              Positioned(
                                                bottom: -18,
                                                child: Container(

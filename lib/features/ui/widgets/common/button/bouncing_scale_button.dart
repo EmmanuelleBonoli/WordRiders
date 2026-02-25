@@ -40,11 +40,11 @@ class _BouncingScaleButtonState extends State<BouncingScaleButton> with SingleTi
   }
 
   void _onTapDown(TapDownDetails details) {
-    AudioService().playSfx(AudioData.sfxButtonPress);
     _controller.forward();
   }
 
   void _onTapUp(TapUpDetails details) {
+    AudioService().playSfx(AudioData.sfxButtonPress);
     _controller.reverse();
     widget.onTap();
   }

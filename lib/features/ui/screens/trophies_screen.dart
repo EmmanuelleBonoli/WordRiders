@@ -17,6 +17,8 @@ class TrophiesScreen extends StatefulWidget {
 }
 
 class _TrophiesScreenState extends State<TrophiesScreen> {
+  final ScrollController _dailyGoalsScrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -26,6 +28,7 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
   @override
   void dispose() {
     GoalService().removeListener(_refresh);
+    _dailyGoalsScrollController.dispose();
     super.dispose();
   }
 
@@ -45,20 +48,25 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
           _buildSectionHeader(context.tr('campaign.goals.headers.daily')),
           const SizedBox(height: 12),
           SizedBox(
-            height: 155,
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-              scrollDirection: Axis.horizontal,
-              clipBehavior: Clip.none,
-              itemCount: GoalService().dailyGoals.length,
-              separatorBuilder: (ctx, index) => const SizedBox(width: 16),
-              itemBuilder: (ctx, index) {
-                final goal = GoalService().dailyGoals[index];
-                return DailyGoalCard(
-                  goal: goal,
-                  onClaim: (context) => _handleClaim(context, goal),
-                );
-              },
+            height: 175,
+            child: Scrollbar(
+              controller: _dailyGoalsScrollController,
+              thumbVisibility: true,
+              child: ListView.separated(
+                controller: _dailyGoalsScrollController,
+                padding: const EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 24),
+                scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
+                itemCount: GoalService().dailyGoals.length,
+                separatorBuilder: (ctx, index) => const SizedBox(width: 16),
+                itemBuilder: (ctx, index) {
+                  final goal = GoalService().dailyGoals[index];
+                  return DailyGoalCard(
+                    goal: goal,
+                    onClaim: (context) => _handleClaim(context, goal),
+                  );
+                },
+              ),
             ),
           ),
 
