@@ -143,10 +143,10 @@ class _ResourceTransferAnimationState extends State<ResourceTransferAnimation> w
     for (int i = 0; i < widget.itemCount; i++) {
         Future.delayed(Duration(milliseconds: i * 50), () {
             if (mounted) {
+                if (widget.assetPath.contains('coin')) {
+                    AudioService().playSfx(AudioData.sfxCoin);
+                }
                 _controllers[i].forward().then((_) {
-                    if (widget.assetPath.contains('coin')) {
-                        AudioService().playSfx(AudioData.sfxCoin);
-                    }
                     _completedAnimations++;
                     if (_completedAnimations == widget.itemCount) {
                         widget.onAnimationComplete();

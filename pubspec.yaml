@@ -41,6 +41,7 @@ dependencies:
   url_launcher: ^6.3.2
   in_app_purchase: ^3.2.0
   audioplayers: ^6.5.1
+  wakelock_plus: ^1.4.0
 
 dev_dependencies:
   flutter_test:

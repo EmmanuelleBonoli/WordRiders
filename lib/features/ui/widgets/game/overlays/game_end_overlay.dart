@@ -13,6 +13,7 @@ import 'package:word_riders/features/ui/widgets/common/button/premium_round_butt
 import 'package:word_riders/features/ui/animations/resource_transfer_animation.dart';
 
 class GameEndOverlay extends StatefulWidget {
+  final int currentLevel;
   final bool isWon;
   final bool isCampaign;
   final VoidCallback onQuit;
@@ -22,6 +23,7 @@ class GameEndOverlay extends StatefulWidget {
 
   const GameEndOverlay({
     super.key,
+    required this.currentLevel,
     required this.isWon,
     required this.isCampaign,
     required this.onQuit,
@@ -42,8 +44,6 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
   final GlobalKey<CoinIndicatorState> _coinIndicatorKey = GlobalKey<CoinIndicatorState>();
   final GlobalKey _watchAdButtonKey = GlobalKey();
   final GlobalKey _continueButtonKey = GlobalKey();
-  
-  int _currentLevel = 1;
 
   @override
   void initState() {
@@ -54,20 +54,6 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
     );
     _scaleAnim = CurvedAnimation(parent: _animController, curve: Curves.elasticOut);
     _animController.forward();
-    _loadLevel();
-  }
-
-  Future<void> _loadLevel() async {
-    if (widget.isCampaign) {
-      final lvl = await PlayerPreferences.getCurrentStage();
-       // Si on a gagné, le niveau a DEJA été incrémenté dans le controller avant l'affichage de l'overlay
-       // Donc pour afficher "Niveau X terminé", il faut prendre niveau actuel - 1
-      if (mounted) {
-        setState(() {
-          _currentLevel = widget.isWon ? (lvl - 1) : lvl;
-        });
-      }
-    }
   }
 
   @override
@@ -169,23 +155,22 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
             child: ScaleTransition(
               scale: _scaleAnim,
               child: Container(
+                width: double.infinity,
                 constraints: BoxConstraints(
-                  maxWidth: 340,
                   maxHeight: MediaQuery.of(context).size.height - 100,
                 ),
-                margin: const EdgeInsets.symmetric(horizontal: 24),
                 child: Stack(
                   clipBehavior: Clip.none,
                   alignment: Alignment.topCenter,
                   children: [
                     // BOARD
                     Padding(
-                      padding: const EdgeInsets.all(30),
+                      padding: const EdgeInsets.symmetric(vertical: 30),
                       child: Container(
-                        padding: const EdgeInsets.all(1.5),
+                        padding: const EdgeInsets.symmetric(vertical: 1.5),
                         decoration: BoxDecoration(
                           color: AppTheme.coinBorderDark,
-                          borderRadius: BorderRadius.circular(32),
+                          borderRadius: BorderRadius.zero,
                            boxShadow: [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.5),
@@ -196,19 +181,19 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
                         ),
                         child: Container(
                           decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(30.5)),
+                            borderRadius: BorderRadius.zero,
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: [AppTheme.coinRimTop, AppTheme.coinRimBottom],
                             ),
                           ),
-                          padding: const EdgeInsets.all(4.0),
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Container(
                             padding: const EdgeInsets.fromLTRB(24, 40, 24, 32),
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: AppTheme.levelSignFace,
-                              borderRadius: BorderRadius.circular(26.5),
+                              borderRadius: BorderRadius.zero,
                             ),
                             child: SingleChildScrollView(
                               child: Column(
@@ -351,7 +336,7 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
             borderRadius: BorderRadius.circular(11.5),
           ),
           child: Text(
-            "${context.tr('game.level')} $_currentLevel",
+            "${context.tr('game.level')} ${widget.currentLevel}",
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               color: AppTheme.coinBorderDark,
               fontWeight: FontWeight.w900,
