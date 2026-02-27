@@ -81,6 +81,7 @@ class GameController extends ChangeNotifier with WidgetsBindingObserver {
       if (_status == GameStatus.playing) {
         _wasPlayingBeforeBackground = true;
         _status = GameStatus.paused; // Stop la progression du renard et du timer
+        _gameTimer?.cancel();
         notifyListeners();
       }
     } else if (state == AppLifecycleState.resumed) {
@@ -89,6 +90,7 @@ class GameController extends ChangeNotifier with WidgetsBindingObserver {
         _wasPlayingBeforeBackground = false;
         _status = GameStatus.playing;
         notifyListeners();
+        _startGameLoop();
       }
     }
   }
@@ -403,6 +405,7 @@ class GameController extends ChangeNotifier with WidgetsBindingObserver {
   void pauseGame() {
     if (_status == GameStatus.playing) {
       _status = GameStatus.paused;
+      _gameTimer?.cancel();
       WakelockPlus.disable();
       notifyListeners();
     }
@@ -413,6 +416,7 @@ class GameController extends ChangeNotifier with WidgetsBindingObserver {
       _status = GameStatus.playing;
       WakelockPlus.enable();
       notifyListeners();
+      _startGameLoop();
     }
   }
 
