@@ -5,6 +5,7 @@ import 'package:word_riders/features/gameplay/services/ad_service.dart';
 import 'package:word_riders/features/gameplay/services/iap_service.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/widgets/common/app_snackbar.dart';
 
 class NoAdsButton extends StatefulWidget {
   final VoidCallback? onPurchased;
@@ -32,11 +33,9 @@ class _NoAdsButtonState extends State<NoAdsButton> {
           setState(() => _hasNoAds = true);
           widget.onPurchased?.call();
           
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(context.tr('campaign.noAdsPurchased')),
-              backgroundColor: AppTheme.green,
-            ),
+          AppSnackBar.show(
+            context,
+            message: context.tr('campaign.noAdsPurchased'),
           );
         }
       }
@@ -63,11 +62,10 @@ class _NoAdsButtonState extends State<NoAdsButton> {
     
     if (product == null) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.tr('campaign.store.unavailable')),
-            backgroundColor: AppTheme.brown,
-          ),
+        AppSnackBar.show(
+          context,
+          message: context.tr('campaign.store.unavailable'),
+          isError: true,
         );
       }
       return;

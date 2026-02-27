@@ -10,6 +10,7 @@ import 'package:word_riders/features/gameplay/services/iap_service.dart';
 import 'package:word_riders/features/ui/animations/resource_transfer_animation.dart';
 import 'package:word_riders/features/ui/widgets/common/main_layout.dart';
 import 'package:word_riders/data/store_data.dart';
+import 'package:word_riders/features/ui/widgets/common/app_snackbar.dart';
 
 class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});
@@ -32,11 +33,10 @@ class _StoreScreenState extends State<StoreScreen> {
     // Écoute les retours de l'IAP Service pour afficher des feedbacks
     IapService.onErrorOrSuccess = (messageKey, isError, {namedArgs}) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.tr(messageKey, namedArgs: namedArgs)),
-          backgroundColor: isError ? AppTheme.red : AppTheme.green,
-        ),
+      AppSnackBar.show(
+        context,
+        message: context.tr(messageKey, namedArgs: namedArgs),
+        isError: isError,
       );
       // Recharger l'UI pour mettre à jour les crédits/vies
       setState(() {});
@@ -73,8 +73,10 @@ class _StoreScreenState extends State<StoreScreen> {
          } else {
            // Fallback si le produit n'est pas chargé (ex: offline ou web)
            // On pourrait tenter IapService.buy() avec un faux produit ou afficher une erreur
-           ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(content: Text(context.tr('campaign.store.unavailable'))),
+           AppSnackBar.show(
+             context,
+             message: context.tr('campaign.store.unavailable'),
+             isError: true,
            );
          }
        };
@@ -91,7 +93,7 @@ class _StoreScreenState extends State<StoreScreen> {
     if (!context.mounted) return;
 
     if (isUnlimited) {
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('campaign.store.already_unlimited'))));
+       AppSnackBar.show(context, message: context.tr('campaign.store.already_unlimited'), isError: true);
        return;
     }
     
@@ -99,7 +101,7 @@ class _StoreScreenState extends State<StoreScreen> {
     if (!context.mounted) return;
 
     if (currentLives >= 5) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('campaign.store.already_full'))));
+      AppSnackBar.show(context, message: context.tr('campaign.store.already_full'), isError: true);
       return;
     }
 
@@ -108,7 +110,7 @@ class _StoreScreenState extends State<StoreScreen> {
     if (!context.mounted) return;
 
     if (currentCoins < cost) {
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('campaign.notEnoughCoins'))));
+       AppSnackBar.show(context, message: context.tr('campaign.notEnoughCoins'), isError: true);
        return;
     }
 
@@ -137,7 +139,7 @@ class _StoreScreenState extends State<StoreScreen> {
     if (!context.mounted) return;
     
     if (currentCoins < cost) {
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('campaign.notEnoughCoins'))));
+       AppSnackBar.show(context, message: context.tr('campaign.notEnoughCoins'), isError: true);
        return;
     }
 
@@ -164,7 +166,7 @@ class _StoreScreenState extends State<StoreScreen> {
     if (!context.mounted) return;
     
     if (currentCoins < cost) {
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('campaign.notEnoughCoins'))));
+       AppSnackBar.show(context, message: context.tr('campaign.notEnoughCoins'), isError: true);
        return;
     }
 
@@ -188,7 +190,7 @@ class _StoreScreenState extends State<StoreScreen> {
     if (!context.mounted) return;
     
     if (currentCoins < cost) {
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('campaign.notEnoughCoins'))));
+       AppSnackBar.show(context, message: context.tr('campaign.notEnoughCoins'), isError: true);
        return;
     }
 
