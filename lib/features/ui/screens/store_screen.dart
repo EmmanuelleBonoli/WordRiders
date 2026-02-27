@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:word_riders/features/ui/styles/app_theme.dart';
 
 import 'package:word_riders/features/ui/widgets/store/store_item_card.dart';
 import 'package:word_riders/features/ui/widgets/store/store_section_header.dart';
