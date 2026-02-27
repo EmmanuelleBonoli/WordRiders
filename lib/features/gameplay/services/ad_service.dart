@@ -1,6 +1,7 @@
 import 'package:word_riders/features/gameplay/services/iap_service.dart';
 import 'package:word_riders/features/gameplay/services/goal_service.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/features/gameplay/services/audio_service.dart';
 
 // Service pour gérer les publicités et le statut "No Ads"
 class AdService {
@@ -28,13 +29,17 @@ class AdService {
 
   // Simule le visionnage d'une publicité (2 secondes)
   static Future<void> simulateAdWatch() async {
+    await AudioService().pauseMusic();
     await Future.delayed(const Duration(seconds: 2));
+    await AudioService().resumeMusic();
   }
 
   // Simule une publicité récompensée (Reward)
   static Future<void> simulateRewardedAdWatch() async {
+    await AudioService().pauseMusic();
     await Future.delayed(const Duration(seconds: 2));
     await GoalService().incrementAdWatch();
+    await AudioService().resumeMusic();
   }
 
   // Réinitialise le tracker de pubs (pour reset campagne)

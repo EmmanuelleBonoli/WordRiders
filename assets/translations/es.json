@@ -15,7 +15,7 @@
         "settings": "Ajustes"
     },
     "training": {
-        "choose_difficulty": "Elige la dificultad:",
+        "difficulty": "Dificultad :",
         "easy": "Fácil",
         "medium": "Medio",
         "hard": "Difícil"

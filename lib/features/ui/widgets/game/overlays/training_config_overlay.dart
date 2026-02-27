@@ -78,16 +78,7 @@ class TrainingConfigOverlay extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                             context.tr('training.choose_difficulty'),
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: AppTheme.coinBorderDark,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                            const SizedBox(height: 24),
+
                             
                             _buildPremiumOption(context.tr('training.easy'), 6),
                             const SizedBox(height: 12),
@@ -176,7 +167,7 @@ class TrainingConfigOverlay extends StatelessWidget {
             borderRadius: BorderRadius.circular(11.5),
           ),
           child: Text(
-            context.tr('menu.training').toUpperCase(),
+            context.tr('training.difficulty'),
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               color: AppTheme.coinBorderDark,
               fontWeight: FontWeight.w900,

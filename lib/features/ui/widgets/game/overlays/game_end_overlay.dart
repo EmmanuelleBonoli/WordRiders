@@ -11,6 +11,7 @@ import 'package:word_riders/features/ui/widgets/common/life_indicator.dart';
 import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
 import 'package:word_riders/features/ui/widgets/common/button/premium_round_button.dart';
 import 'package:word_riders/features/ui/animations/resource_transfer_animation.dart';
+import 'package:word_riders/features/ui/widgets/common/app_snackbar.dart';
 
 class GameEndOverlay extends StatefulWidget {
   final int currentLevel;
@@ -89,12 +90,11 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
       widget.onRevive?.call();
     } else {
       if (mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.tr('campaign.notEnoughCoins')),
-            backgroundColor: AppTheme.red,
-          ),
-        );
+         AppSnackBar.show(
+           context,
+           message: context.tr('campaign.notEnoughCoins'),
+           isError: true,
+         );
       }
     }
   }
@@ -190,7 +190,7 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Container(
-                            padding: const EdgeInsets.fromLTRB(24, 40, 24, 32),
+                            padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
                             decoration: const BoxDecoration(
                               color: AppTheme.levelSignFace,
                               borderRadius: BorderRadius.zero,
@@ -204,8 +204,8 @@ class _GameEndOverlayState extends State<GameEndOverlay> with SingleTickerProvid
   
                                   // IMAGE
                                   SizedBox(
-                                    width: 120,
-                                    height: 120,
+                                    width: 105,
+                                    height: 105,
                                     child: Image.asset(imageAsset, fit: BoxFit.contain),
                                   ),
   
