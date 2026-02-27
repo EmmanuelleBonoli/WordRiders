@@ -38,6 +38,7 @@ class CareerGoalTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 50,
@@ -95,13 +96,47 @@ class CareerGoalTile extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: TextStyle(
-                    fontFamily: 'Round',
-                    fontSize: 12,
-                    color: AppTheme.brown.withValues(alpha: 0.8),
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: 'Round',
+                          fontSize: 12,
+                          color: AppTheme.brown.withValues(alpha: 0.8),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 90,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: goal.isClaimed
+                            ? const Icon(Icons.check_circle, color: AppTheme.green, size: 28)
+                            : (completed && !goal.isClaimed)
+                                ? GestureDetector(
+                                    onTap: onClaim,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                      decoration: BoxDecoration(
+                                          color: AppTheme.orangeBurnt,
+                                          borderRadius: BorderRadius.circular(12),
+                                          boxShadow: const [BoxShadow(color: Colors.black26, offset: Offset(0, 2), blurRadius: 4)]),
+                                      child: Text(
+                                        context.tr('campaign.goals.common.claim'),
+                                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
+                                      ),
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -127,30 +162,6 @@ class CareerGoalTile extends StatelessWidget {
                   ],
                 ),
               ],
-            ),
-          ),
-          SizedBox(
-            width: 80,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: goal.isClaimed
-                  ? const Icon(Icons.check_circle, color: AppTheme.green, size: 28)
-                  : (completed && !goal.isClaimed)
-                      ? GestureDetector(
-                          onTap: onClaim,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            decoration: BoxDecoration(
-                                color: AppTheme.orangeBurnt,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: const [BoxShadow(color: Colors.black26, offset: Offset(0, 2), blurRadius: 4)]),
-                            child: Text(
-                              context.tr('campaign.goals.common.claim'),
-                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        )
-                      : const SizedBox.shrink(),
             ),
           ),
         ],

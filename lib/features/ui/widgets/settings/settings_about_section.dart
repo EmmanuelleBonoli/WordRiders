@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_container.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_section_title.dart';
+import 'package:word_riders/features/ui/widgets/common/app_snackbar.dart';
 
 class SettingsAboutSection extends StatelessWidget {
   final String appVersion;
@@ -24,11 +25,10 @@ class SettingsAboutSection extends StatelessWidget {
       await launchUrl(emailUri);
     } else {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.tr('settings.emailError')),
-            backgroundColor: AppTheme.red,
-          ),
+        AppSnackBar.show(
+          context,
+          message: context.tr('settings.emailError'),
+          isError: true,
         );
       }
     }
@@ -41,11 +41,10 @@ class SettingsAboutSection extends StatelessWidget {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.tr('settings.linkError')),
-            backgroundColor: AppTheme.red,
-          ),
+        AppSnackBar.show(
+          context,
+          message: context.tr('settings.linkError'),
+          isError: true,
         );
       }
     }
@@ -58,11 +57,10 @@ class SettingsAboutSection extends StatelessWidget {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.tr('settings.linkError')),
-            backgroundColor: AppTheme.red,
-          ),
+        AppSnackBar.show(
+          context,
+          message: context.tr('settings.linkError'),
+          isError: true,
         );
       }
     }

@@ -9,6 +9,7 @@ import 'package:word_riders/features/ui/widgets/game/overlays/ad_loading_overlay
 import 'package:go_router/go_router.dart';
 import 'package:word_riders/features/ui/widgets/common/life_indicator.dart';
 import 'package:word_riders/features/ui/widgets/common/coin_indicator.dart';
+import 'package:word_riders/features/ui/widgets/common/app_snackbar.dart';
 
 class NoLivesOverlay extends StatefulWidget {
   final VoidCallback onLivesReplenished;
@@ -61,11 +62,10 @@ class _NoLivesOverlayState extends State<NoLivesOverlay> with SingleTickerProvid
     } else {
       _isManualReplenish = false;
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.tr('campaign.notEnoughCoins')),
-            backgroundColor: AppTheme.red,
-          ),
+        AppSnackBar.show(
+          context,
+          message: context.tr('campaign.notEnoughCoins'),
+          isError: true,
         );
       }
     }

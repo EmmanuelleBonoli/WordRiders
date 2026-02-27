@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/widgets/common/app_snackbar.dart';
 
 class SettingsResetSection extends StatelessWidget {
   final int currentStage;
@@ -57,13 +58,9 @@ class SettingsResetSection extends StatelessWidget {
               await PlayerPreferences.resetCampaign();
               if (context.mounted) {
                 onResetComplete();
-                
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(context.tr('settings.resetCampaignSuccess')),
-                    backgroundColor: AppTheme.green,
-                    duration: const Duration(seconds: 2),
-                  ),
+                AppSnackBar.show(
+                  context,
+                  message: context.tr('settings.resetCampaignSuccess'),
                 );
               }
             },

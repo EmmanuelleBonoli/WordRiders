@@ -82,9 +82,7 @@ class MainLayoutState extends State<MainLayout> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            if (selectedIndex == 2)
-                              CoinIndicator(key: _coinIndicatorKey)
-                            else if (selectedIndex == 1) 
+                            if (selectedIndex == 1) 
                               AppBackButton(onPressed: () => context.go('/menu')) 
                             else 
                               const SizedBox(width: 64),
@@ -125,6 +123,14 @@ class MainLayoutState extends State<MainLayout> {
                                   _coinIndicatorKey.currentState?.reload();
                                 },
                               ),
+                            ],
+                          ),
+                        ] else if (selectedIndex == 2) ...[
+                          const SizedBox(height: 30),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              CoinIndicator(key: _coinIndicatorKey),
                             ],
                           ),
                         ],

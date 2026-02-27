@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:word_riders/features/gameplay/services/iap_service.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
+import 'package:word_riders/features/ui/widgets/common/app_snackbar.dart';
 
 class SettingsRestoreSection extends StatefulWidget {
   const SettingsRestoreSection({super.key});
@@ -20,17 +21,17 @@ class _SettingsRestoreSectionState extends State<SettingsRestoreSection> {
     try {
       await IapService.restorePurchases();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.tr('settings.restoreStarted')),
-            backgroundColor: AppTheme.brown,
-          ),
+        AppSnackBar.show(
+          context,
+          message: context.tr('settings.restoreStarted'),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(content: Text("Error: $e"), backgroundColor: AppTheme.red),
+        AppSnackBar.show(
+          context,
+          message: "Error: $e",
+          isError: true,
         );
       }
     } finally {
