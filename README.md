@@ -30,7 +30,7 @@ Vous disposez de 5 vies, l'une d'elles se régénère toutes les 20 minutes en c
 - **Moteur de Jeu**: Flame 1.33.0
 - **Gestion d'État**: Provider 6.1.5
 - **Navigation**: GoRouter 17.0.1
-- **Localisation**: EasyLocalization (Anglais & Français)
+- **Localisation**: EasyLocalization (Anglais, Français, Espagnol, Allemand, Italien)
 - **Architecture**: Structure orientée fonctionnalités (Feature-first)
 - **Télémétrie & Crashs**: Firebase Analytics & Firebase Crashlytics
 - **CI/CD**: GitHub Actions
@@ -91,4 +91,4 @@ La CI exécute automatiquement :
 
 ## 🌐 Localisation
 
-L'application supporte l'Anglais (`en`) et le Français (`fr`). Les traductions se trouvent dans le dossier `assets/translations/`.
+L'application supporte l'Anglais (`en`), le Français (`fr`), l'Espagnol (`es`), l'Allemand (`de`) et l'Italien (`it`). Les traductions se trouvent dans le dossier `assets/translations/`.
