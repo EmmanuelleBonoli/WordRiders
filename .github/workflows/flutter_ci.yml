@@ -22,12 +22,7 @@ jobs:
           cache: true
 
       - name: Création du fichier secrets
-        run: |
-          cat <<EOF > lib/secrets.dart
-          class Secrets {
-            static const String profileSalt = 'dummy_salt_for_ci';
-          }
-          EOF
+        run: cp lib/secrets_sample.dart lib/secrets.dart
 
       - name: Installation des dépendances
         run: flutter pub get

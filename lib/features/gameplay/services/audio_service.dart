@@ -5,22 +5,39 @@ import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 
 class AudioService with WidgetsBindingObserver {
   // Singleton pour un accès global
-  static final AudioService _instance = AudioService._internal();
+  static AudioService _instance = AudioService._internal();
   factory AudioService() => _instance;
   
+  @visibleForTesting
+  static void setMockInstance(AudioService mock) {
+    _instance = mock;
+  }
+  
+  @visibleForTesting
+  AudioService.test();
+  
   AudioService._internal() {
-    AudioPlayer.global.setAudioContext(AudioContext(
-      android: const AudioContextAndroid(
-        audioFocus: AndroidAudioFocus.none,
-        isSpeakerphoneOn: false,
-        stayAwake: false,
-        contentType: AndroidContentType.sonification,
-        usageType: AndroidUsageType.game,
-      ),
-      iOS: AudioContextIOS(
-        options: const {AVAudioSessionOptions.mixWithOthers},
-      ),
-    ));
+    _musicPlayer = AudioPlayer();
+    _sfxPlayers = List.generate(
+      _poolSize, 
+      (_) => AudioPlayer()..setReleaseMode(ReleaseMode.stop)
+    );
+    try {
+      AudioPlayer.global.setAudioContext(AudioContext(
+        android: const AudioContextAndroid(
+          audioFocus: AndroidAudioFocus.none,
+          isSpeakerphoneOn: false,
+          stayAwake: false,
+          contentType: AndroidContentType.sonification,
+          usageType: AndroidUsageType.game,
+        ),
+        iOS: AudioContextIOS(
+          options: const {AVAudioSessionOptions.mixWithOthers},
+        ),
+      ));
+    } catch (e) {
+      // Ignoré lors des tests unitaires car le code natif n'est pas disponible.
+    }
     
     WidgetsBinding.instance.addObserver(this);
   }
@@ -39,15 +56,13 @@ class AudioService with WidgetsBindingObserver {
       }
     }
   }
-  final AudioPlayer _musicPlayer = AudioPlayer();
+  late final AudioPlayer _musicPlayer;
   
   // Utiliser un pool de lecteurs SFX persistant pour éliminer totalement la latence
   // de la création systématique d'objets côté natif.
   static const int _poolSize = 5;
-  final List<AudioPlayer> _sfxPlayers = List.generate(
-    _poolSize, 
-    (_) => AudioPlayer()..setReleaseMode(ReleaseMode.stop)
-  );
+  late final List<AudioPlayer> _sfxPlayers;
+  
   int _sfxIndex = 0;
 
   // Cache synchrone des paramètres pour ne plus faire de vérification async 
@@ -104,19 +119,23 @@ class AudioService with WidgetsBindingObserver {
     }
   }
 
-  void playSfx(String sfxAssetPath) {
+  Future<void> playSfx(String sfxAssetPath) async {
     if (!_isSfxEnabled) return;
 
     final player = _sfxPlayers[_sfxIndex];
-    if (player.state == PlayerState.playing) {
-      // Si ce lecteur joue encore, on le coupe juste avant pour en relancer un
-      player.stop().then((_) => player.play(AssetSource(sfxAssetPath)));
-    } else {
-      player.play(AssetSource(sfxAssetPath));
-    }
-    
     // Rotation circulaire dans le pool de lecteurs
     _sfxIndex = (_sfxIndex + 1) % _poolSize;
+    
+    try {
+      if (player.state == PlayerState.playing) {
+        // Si ce lecteur joue encore, on le coupe juste avant pour en relancer un
+        await player.stop();
+      }
+      await player.play(AssetSource(sfxAssetPath));
+    } catch (e) {
+      // Ignorer silencieusement les erreurs de lecture audio (ex: Spam de clics rapides sur Android)
+      debugPrint("AudioService: Échec de la lecture SFX ($sfxAssetPath) -> $e");
+    }
   }
 
   // Met à jour l'état. À appeler quand l'utilisateur change les réglages audio
