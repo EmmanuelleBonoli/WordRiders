@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:word_riders/data/audio_data.dart';
+import 'package:word_riders/features/gameplay/services/audio_service.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
 
 class AppSnackBar {
@@ -8,6 +10,8 @@ class AppSnackBar {
     bool isError = false,
   }) {
     Color bgColor = isError ? AppTheme.brown : AppTheme.green;
+
+    AudioService().playSfx(isError ? AudioData.sfxLose : AudioData.sfxWin);
 
     // Annule les snackbars en cours pour afficher la nouvelle immédiatement
     ScaffoldMessenger.of(context).clearSnackBars();

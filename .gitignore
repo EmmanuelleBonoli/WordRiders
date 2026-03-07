@@ -46,3 +46,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 lib/secrets.dart
+
+# Firebase (Fichiers contenant les clés API et identifiants bruts)
+firebase.json
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist

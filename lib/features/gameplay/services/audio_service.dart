@@ -104,19 +104,23 @@ class AudioService with WidgetsBindingObserver {
     }
   }
 
-  void playSfx(String sfxAssetPath) {
+  Future<void> playSfx(String sfxAssetPath) async {
     if (!_isSfxEnabled) return;
 
     final player = _sfxPlayers[_sfxIndex];
-    if (player.state == PlayerState.playing) {
-      // Si ce lecteur joue encore, on le coupe juste avant pour en relancer un
-      player.stop().then((_) => player.play(AssetSource(sfxAssetPath)));
-    } else {
-      player.play(AssetSource(sfxAssetPath));
-    }
-    
     // Rotation circulaire dans le pool de lecteurs
     _sfxIndex = (_sfxIndex + 1) % _poolSize;
+    
+    try {
+      if (player.state == PlayerState.playing) {
+        // Si ce lecteur joue encore, on le coupe juste avant pour en relancer un
+        await player.stop();
+      }
+      await player.play(AssetSource(sfxAssetPath));
+    } catch (e) {
+      // Ignorer silencieusement les erreurs de lecture audio (ex: Spam de clics rapides sur Android)
+      debugPrint("AudioService: Échec de la lecture SFX ($sfxAssetPath) -> $e");
+    }
   }
 
   // Met à jour l'état. À appeler quand l'utilisateur change les réglages audio

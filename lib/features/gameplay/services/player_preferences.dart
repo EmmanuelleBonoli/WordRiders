@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:word_riders/features/gameplay/models/player_profile.dart';
+import 'package:word_riders/features/gameplay/services/audio_service.dart';
 import 'package:word_riders/secrets.dart';
 
 class PlayerPreferences {
@@ -293,6 +294,7 @@ class PlayerPreferences {
       final profile = await getProfile();
       profile.musicEnabled = enabled;
       await saveProfile(profile);
+      await AudioService().validateAudioSettings();
   }
 
   static Future<bool> isSfxEnabled() async => (await getProfile()).sfxEnabled;
@@ -301,6 +303,7 @@ class PlayerPreferences {
       final profile = await getProfile();
       profile.sfxEnabled = enabled;
       await saveProfile(profile);
+      await AudioService().validateAudioSettings();
   }
 
   static Future<void> resetCampaign() async {
