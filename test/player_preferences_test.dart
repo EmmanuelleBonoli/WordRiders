@@ -1,11 +1,26 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
+import 'package:word_riders/features/gameplay/services/audio_service.dart';
+
+class MockAudioService extends AudioService {
+  MockAudioService() : super.test();
+
+  @override
+  Future<void> validateAudioSettings() async {
+    // Ne fait rien pendant ce test pour ne pas déclencher la Platform Channel audio
+  }
+}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized(); // Requis pour AudioService
+  
   setUp(() async {
     // Simule une base SharedPreferences vide avant chaque test
     SharedPreferences.setMockInitialValues({});
+    
+    // Injecte une version "Dummy" de l'AudioService
+    AudioService.setMockInstance(MockAudioService());
     
     // Pour forcer la réinitialisation du singleton/cache de PlayerPreferences
     // on utilise un reset 'manuel' complet

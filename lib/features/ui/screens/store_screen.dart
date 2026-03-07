@@ -183,7 +183,7 @@ class _StoreScreenState extends State<StoreScreen> {
   }
 
   Future<void> _buyBonusPackUnlimited(BuildContext context, StoreItemData item) async {
-    final int cost = int.tryParse(item.price) ?? 2500;
+    final int cost = int.tryParse(item.price) ?? 2000;
     
     final currentCoins = await PlayerPreferences.getCoins();
     if (!context.mounted) return;
@@ -195,7 +195,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
     await PlayerPreferences.spendCoins(cost);
     await PlayerPreferences.addBonusItems(extraLetter: 1, doubleDistance: 1, freezeRival: 1);
-    await PlayerPreferences.addUnlimitedLivesTime(const Duration(minutes: 60)); // 1h
+    await PlayerPreferences.addUnlimitedLivesTime(const Duration(minutes: 90)); // 1h30
 
     if (context.mounted) {
        ResourceTransferAnimation.start(

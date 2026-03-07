@@ -56,6 +56,7 @@ class _BouncingScaleButtonState extends State<BouncingScaleButton> with SingleTi
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
       onTapCancel: _onTapCancel,

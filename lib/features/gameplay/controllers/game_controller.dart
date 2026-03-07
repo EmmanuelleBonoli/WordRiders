@@ -277,7 +277,7 @@ class GameController extends ChangeNotifier with WidgetsBindingObserver {
       // Faire avancer le lapin
       // Formule de progression : plus le mot est long, plus on avance ?
       double advance = 0.15; // Un mot = 15% de la course
-      if (word.length >= 6) advance = 0.25;
+      if (word.length >= _targetWord.length) advance = 0.25;
 
       // DIFFICULTÉ : Si stage fini par 5 ou 0, la distance est doublée
       // Doubler la distance revient à diviser la progression par 2

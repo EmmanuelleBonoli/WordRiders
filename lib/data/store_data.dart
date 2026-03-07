@@ -98,7 +98,7 @@ final List<StoreItemData> consumableItems = [
     id: 'bonus_pack_unlimited',
     descriptionKey: '',
     title: "Bonus +",
-    price: "2500",
+    price: "2000",
     assetPath: '',
     colorType: StoreItemColorType.blue,
     visualType: StoreVisualType.bonusUnlimited,
