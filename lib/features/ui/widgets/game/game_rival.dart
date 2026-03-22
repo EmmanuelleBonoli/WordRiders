@@ -29,19 +29,21 @@ class Rival extends SpriteComponent {
     super.update(dt);
     if (isPlaying && isLoaded && frames.length > 1) {
       _timer += dt;
-      if (_timer > 0.1) {
+      if (_timer > 0.08) {
         _timer = 0;
         currentFrame = (currentFrame + 1) % frames.length;
         sprite = frames[currentFrame];
       }
     }
   }
-
   Future<void> _loadFrames() async {
-    // Pour l'instant, on n'a que fox1.png. On le charge une seule fois.
-    // todo: quand d'autres frames seront disponibles (fox2, fox3...), on les ajoutera ici.
     frames = [
       await Sprite.load('player/fox1.png'),
+      await Sprite.load('player/fox2.png'),
+      await Sprite.load('player/fox3.png'),
+      await Sprite.load('player/fox4.png'),
+      await Sprite.load('player/fox5.png'),
+      await Sprite.load('player/fox6.png'),
     ];
   }
 

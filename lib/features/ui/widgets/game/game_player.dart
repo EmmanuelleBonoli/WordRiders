@@ -28,7 +28,7 @@ class Player extends SpriteComponent {
     super.update(dt);
     if (isPlaying && isLoaded && frames.length > 1) {
       _timer += dt;
-      if (_timer > 0.1) { // ~10 FPS
+      if (_timer > 0.08) { 
         _timer = 0;
         currentFrame = (currentFrame + 1) % frames.length;
         sprite = frames[currentFrame];
@@ -48,6 +48,8 @@ class Player extends SpriteComponent {
       await Sprite.load('player/rabbit2.png'),
       await Sprite.load('player/rabbit3.png'),
       await Sprite.load('player/rabbit4.png'),
+      await Sprite.load('player/rabbit5.png'),
+      await Sprite.load('player/rabbit6.png'),
     ];
   }
 
