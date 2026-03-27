@@ -23,6 +23,12 @@ class _StoreScreenState extends State<StoreScreen> {
   final GlobalKey _unlimitedLivesKey = GlobalKey();
   final GlobalKey _bonusPack1Key = GlobalKey();
   final GlobalKey _bonusPackUnlimitedKey = GlobalKey();
+  final GlobalKey _coins100Key = GlobalKey();
+  final GlobalKey _coins500Key = GlobalKey();
+  final GlobalKey _coins2000Key = GlobalKey();
+
+  // Clé de la carte coin pack en cours d'achat IAP (pour déclencher l'animation au retour)
+  GlobalKey? _pendingCoinPackKey;
 
   final ScrollController _coinPacksScrollController = ScrollController();
 
@@ -37,7 +43,21 @@ class _StoreScreenState extends State<StoreScreen> {
         message: context.tr(messageKey, namedArgs: namedArgs),
         isError: isError,
       );
-      // Recharger l'UI pour mettre à jour les crédits/vies
+
+      // Déclencher l'animation de pièces si un pack de pièces vient d'être acheté
+      final pendingKey = _pendingCoinPackKey;
+      _pendingCoinPackKey = null;
+      if (!isError && pendingKey != null) {
+        ResourceTransferAnimation.start(
+          context,
+          startKey: pendingKey,
+          assetPath: 'assets/images/indicators/coin.png',
+          onComplete: () {
+            if (mounted) context.findAncestorStateOfType<MainLayoutState>()?.reloadIndicators();
+          },
+        );
+      }
+
       setState(() {});
     };
   }
@@ -54,6 +74,9 @@ class _StoreScreenState extends State<StoreScreen> {
     if (id == 'unlimited_lives') return _unlimitedLivesKey;
     if (id == 'bonus_pack_1') return _bonusPack1Key;
     if (id == 'bonus_pack_unlimited') return _bonusPackUnlimitedKey;
+    if (id == 'coins_100') return _coins100Key;
+    if (id == 'coins_500') return _coins500Key;
+    if (id == 'coins_2000') return _coins2000Key;
     return null;
   }
   
@@ -66,12 +89,14 @@ class _StoreScreenState extends State<StoreScreen> {
     // 2. Achats Réels (IAP)
     if (item.productId != null) {
        return () async {
+         // Mémoriser la clé de la carte pour déclencher l'animation après succès IAP
+         _pendingCoinPackKey = _getKeyForId(item.id);
+
          final product = IapService.getProductById(item.productId!);
          if (product != null) {
            await IapService.buy(product);
          } else {
-           // Fallback si le produit n'est pas chargé (ex: offline ou web)
-           // On pourrait tenter IapService.buy() avec un faux produit ou afficher une erreur
+           _pendingCoinPackKey = null;
            AppSnackBar.show(
              context,
              message: context.tr('campaign.store.unavailable'),
