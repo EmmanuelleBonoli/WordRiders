@@ -131,7 +131,15 @@
         "step1_title": "Forma parole per avanzare!",
         "step2_title": "Batti il tuo avversario!",
         "next": "AVANTI",
-        "start": "ANDIAMO!"
+        "start": "ANDIAMO!",
+        "list_title": "Tutorial",
+        "game_tutorial": "Tutorial del gioco",
+        "bonus_extra_letter_name": "Lettera extra",
+        "bonus_extra_letter_desc": "Aggiunge una lettera alle tessere disponibili!",
+        "bonus_double_distance_name": "Distanza × 2",
+        "bonus_double_distance_desc": "La tua prossima parola ti fa avanzare il doppio!",
+        "bonus_freeze_rival_name": "Congela il rivale",
+        "bonus_freeze_rival_desc": "Congela il tuo rivale per 8 secondi — prendi il comando!"
     },
     "game": {
         "pause_title": "PAUSA",
