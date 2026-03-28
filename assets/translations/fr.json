@@ -131,7 +131,15 @@
     "step1_title": "Forme des mots pour avancer !",
     "step2_title": "Bats ton adversaire !",
     "next": "SUIVANT",
-    "start": "C'EST PARTI !"
+    "start": "C'EST PARTI !",
+    "list_title": "Tutoriels",
+    "game_tutorial": "Tutoriel du jeu",
+    "bonus_extra_letter_name": "Lettre supplémentaire",
+    "bonus_extra_letter_desc": "Ajoute une lettre à tes tuiles disponibles !",
+    "bonus_double_distance_name": "Distance × 2",
+    "bonus_double_distance_desc": "Ton prochain mot te fait avancer deux fois plus loin !",
+    "bonus_freeze_rival_name": "Geler l'adversaire",
+    "bonus_freeze_rival_desc": "Gèle ton adversaire pendant 8 secondes — prends l'avantage !"
   },
   "game": {
     "pause_title": "PAUSE",

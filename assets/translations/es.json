@@ -131,7 +131,15 @@
         "step1_title": "¡Forma palabras para avanzar!",
         "step2_title": "¡Vence a tu rival!",
         "next": "SIGUIENTE",
-        "start": "¡VAMOS!"
+        "start": "¡VAMOS!",
+        "list_title": "Tutoriales",
+        "game_tutorial": "Tutorial del juego",
+        "bonus_extra_letter_name": "Letra extra",
+        "bonus_extra_letter_desc": "¡Añade una letra a tus fichas disponibles!",
+        "bonus_double_distance_name": "Distancia × 2",
+        "bonus_double_distance_desc": "¡Tu siguiente palabra te hace avanzar el doble!",
+        "bonus_freeze_rival_name": "Congelar rival",
+        "bonus_freeze_rival_desc": "¡Congela a tu rival durante 8 segundos y toma la delantera!"
     },
     "game": {
         "pause_title": "PAUSA",

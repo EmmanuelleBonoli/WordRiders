@@ -131,7 +131,15 @@
         "step1_title": "Bilde Wörter zum Vorankommen!",
         "step2_title": "Besiege deinen Rivalen!",
         "next": "WEITER",
-        "start": "LOS GEHT'S!"
+        "start": "LOS GEHT'S!",
+        "list_title": "Tutorials",
+        "game_tutorial": "Spiel-Tutorial",
+        "bonus_extra_letter_name": "Extrabuchstabe",
+        "bonus_extra_letter_desc": "Fügt deinen verfügbaren Kacheln einen Buchstaben hinzu!",
+        "bonus_double_distance_name": "Doppelte Distanz",
+        "bonus_double_distance_desc": "Dein nächstes Wort bringt dich doppelt so weit voran!",
+        "bonus_freeze_rival_name": "Rivalen einfrieren",
+        "bonus_freeze_rival_desc": "Friert deinen Rivalen für 8 Sekunden ein — übernimm die Führung!"
     },
     "game": {
         "pause_title": "PAUSIERT",
