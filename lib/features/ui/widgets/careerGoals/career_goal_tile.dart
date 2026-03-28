@@ -3,9 +3,9 @@ import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/gameplay/models/goal.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-class CareerGoalTile extends StatelessWidget {
+class CareerGoalTile extends StatefulWidget {
   final Goal goal;
-  final VoidCallback? onClaim;
+  final Function(GlobalKey)? onClaim;
 
   const CareerGoalTile({
     super.key,
@@ -14,7 +14,16 @@ class CareerGoalTile extends StatelessWidget {
   });
 
   @override
+  State<CareerGoalTile> createState() => _CareerGoalTileState();
+}
+
+class _CareerGoalTileState extends State<CareerGoalTile> {
+  final GlobalKey _claimButtonKey = GlobalKey();
+
+  @override
   Widget build(BuildContext context) {
+    final Goal goal = widget.goal;
+    final Function(GlobalKey)? onClaim = widget.onClaim;
     final bool completed = goal.isCompleted;
     final double progress = goal.progress;
     
@@ -120,8 +129,9 @@ class CareerGoalTile extends StatelessWidget {
                             ? const Icon(Icons.check_circle, color: AppTheme.green, size: 28)
                             : (completed && !goal.isClaimed)
                                 ? GestureDetector(
-                                    onTap: onClaim,
+                                    onTap: () => onClaim?.call(_claimButtonKey),
                                     child: Container(
+                                      key: _claimButtonKey,
                                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                       decoration: BoxDecoration(
                                           color: AppTheme.orangeBurnt,

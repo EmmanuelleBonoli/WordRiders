@@ -65,9 +65,11 @@ class AudioService with WidgetsBindingObserver {
   
   int _sfxIndex = 0;
 
-  // Cache synchrone des paramètres pour ne plus faire de vérification async 
+  // Cache synchrone des paramètres pour ne plus faire de vérification async
   bool _isMusicEnabled = true;
   bool _isSfxEnabled = true;
+  double _musicVolume = 0.8;
+  double _sfxVolume = 0.8;
   String? _currentMusic;
 
   // Précharge tous les sons en mémoire, lancé au démarrage du jeu
@@ -75,11 +77,19 @@ class AudioService with WidgetsBindingObserver {
     // 1. Initialiser le cache des préférences
     _isMusicEnabled = await PlayerPreferences.isMusicEnabled();
     _isSfxEnabled = await PlayerPreferences.isSfxEnabled();
+    _musicVolume = await PlayerPreferences.getMusicVolume();
+    _sfxVolume = await PlayerPreferences.getSfxVolume();
 
     // 2. Configurer le player musical
     await _musicPlayer.setReleaseMode(ReleaseMode.loop);
+    await _musicPlayer.setVolume(_musicVolume);
 
-    // 3. Charger le cache d'actifs audio en mémoire
+    // 3. Appliquer le volume sur tous les lecteurs SFX du pool
+    for (final player in _sfxPlayers) {
+      await player.setVolume(_sfxVolume);
+    }
+
+    // 4. Charger le cache d'actifs audio en mémoire
     try {
       await AudioCache.instance.loadAll(AudioData.allAudio);
     } catch (e) {
@@ -138,11 +148,32 @@ class AudioService with WidgetsBindingObserver {
     }
   }
 
+  // Met à jour le volume de la musique en temps réel
+  Future<void> setMusicVolume(double volume) async {
+    _musicVolume = volume;
+    await _musicPlayer.setVolume(volume);
+  }
+
+  // Met à jour le volume des SFX en temps réel sur tout le pool
+  Future<void> setSfxVolume(double volume) async {
+    _sfxVolume = volume;
+    for (final player in _sfxPlayers) {
+      await player.setVolume(volume);
+    }
+  }
+
   // Met à jour l'état. À appeler quand l'utilisateur change les réglages audio
   Future<void> validateAudioSettings() async {
     _isMusicEnabled = await PlayerPreferences.isMusicEnabled();
     _isSfxEnabled = await PlayerPreferences.isSfxEnabled();
-    
+    _musicVolume = await PlayerPreferences.getMusicVolume();
+    _sfxVolume = await PlayerPreferences.getSfxVolume();
+
+    await _musicPlayer.setVolume(_musicVolume);
+    for (final player in _sfxPlayers) {
+      await player.setVolume(_sfxVolume);
+    }
+
     if (!_isMusicEnabled) {
       await stopMusic();
     } else if (_currentMusic != null) {

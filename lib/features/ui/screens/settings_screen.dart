@@ -21,6 +21,8 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool musicOn = true;
   bool sfxOn = true;
+  double musicVolume = 0.8;
+  double sfxVolume = 0.8;
   final String appVersion = AppConfig.version;
   int _currentStage = 1;
 
@@ -33,13 +35,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _loadSettings() async {
     final music = await PlayerPreferences.isMusicEnabled();
     final sfx = await PlayerPreferences.isSfxEnabled();
+    final mVolume = await PlayerPreferences.getMusicVolume();
+    final sVolume = await PlayerPreferences.getSfxVolume();
     final stage = await PlayerPreferences.getCurrentStage();
-    setState(() {
-      musicOn = music;
-      sfxOn = sfx;
-      _currentStage = stage;
-    });
-    if (mounted) setState(() {});
+    if (mounted) {
+      setState(() {
+        musicOn = music;
+        sfxOn = sfx;
+        musicVolume = mVolume;
+        sfxVolume = sVolume;
+        _currentStage = stage;
+      });
+    }
   }
 
   @override
@@ -115,8 +122,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               key: ValueKey('audio-${context.locale}'),
                               musicOn: musicOn,
                               sfxOn: sfxOn,
+                              musicVolume: musicVolume,
+                              sfxVolume: sfxVolume,
                               onMusicChanged: (val) => setState(() => musicOn = val),
                               onSfxChanged: (val) => setState(() => sfxOn = val),
+                              onMusicVolumeChanged: (val) => setState(() => musicVolume = val),
+                              onSfxVolumeChanged: (val) => setState(() => sfxVolume = val),
                             ),
                             
                             const SizedBox(height: 40),
