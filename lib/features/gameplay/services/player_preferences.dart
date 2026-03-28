@@ -324,6 +324,14 @@ class PlayerPreferences {
       await AudioService().setSfxVolume(volume);
   }
 
+  static Future<bool> isTutorialCompleted() async => (await getProfile()).tutorialCompleted;
+
+  static Future<void> setTutorialCompleted(bool completed) async {
+      final profile = await getProfile();
+      profile.tutorialCompleted = completed;
+      await saveProfile(profile);
+  }
+
   static Future<void> resetCampaign() async {
     final profile = await getProfile();
     profile.stage = 1;
