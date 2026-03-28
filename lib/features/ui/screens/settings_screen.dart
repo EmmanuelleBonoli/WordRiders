@@ -7,8 +7,10 @@ import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_about_section.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_audio_section.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_language_section.dart';
+import 'package:word_riders/features/ui/widgets/settings/settings_container.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_reset_section.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_restore_section.dart';
+import 'package:word_riders/features/ui/widgets/game/overlays/tutorial_overlay.dart';
 import 'package:word_riders/config/app_config.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -130,8 +132,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               onSfxVolumeChanged: (val) => setState(() => sfxVolume = val),
                             ),
                             
+                            const SizedBox(height: 24),
+
+                            // Bouton tutoriel
+                            SettingsContainer(
+                              backgroundColor: AppTheme.tileFace,
+                              borderColor: AppTheme.tileShadow,
+                              child: ListTile(
+                                leading: const Icon(Icons.play_circle_outline_rounded, color: AppTheme.tileShadow, size: 28),
+                                title: Text(
+                                  context.tr('settings.tutorial'),
+                                  style: const TextStyle(
+                                    fontFamily: 'Round',
+                                    color: AppTheme.darkBrown,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                trailing: const Icon(Icons.chevron_right_rounded, color: AppTheme.brown),
+                                onTap: () async {
+                                  await showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (ctx) => TutorialOverlay(
+                                      onComplete: () async {
+                                        await PlayerPreferences.setTutorialCompleted(true);
+                                        if (ctx.mounted) Navigator.of(ctx).pop();
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+
                             const SizedBox(height: 40),
-                            
+
                             SettingsAboutSection(
                               key: ValueKey('about-${context.locale}'),
                               appVersion: appVersion

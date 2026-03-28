@@ -41,6 +41,7 @@
         "privacyPolicy": "Datenschutz",
         "termsOfService": "Nutzungsbedingungen",
         "copyright": "© 2026 Major Manu Productions\nAlle Rechte vorbehalten",
+        "tutorial": "Tutorial ansehen",
         "restorePurchases": "Käufe wiederherstellen",
         "restoreStarted": "Käufe werden wiederhergestellt...",
         "emailError": "E-Mail-App kann nicht geöffnet werden",
@@ -125,6 +126,12 @@
             "already_unlimited": "Du hast bereits unbegrenzte Leben!",
             "already_full": "Deine Leben sind bereits voll!"
         }
+    },
+    "tutorial": {
+        "step1_title": "Bilde Wörter zum Vorankommen!",
+        "step2_title": "Besiege deinen Rivalen!",
+        "next": "WEITER",
+        "start": "LOS GEHT'S!"
     },
     "game": {
         "pause_title": "PAUSIERT",
