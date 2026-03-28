@@ -7,6 +7,7 @@ import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/ui/widgets/campaign/stage_circle_widget.dart';
 import 'package:word_riders/features/ui/widgets/game/overlays/no_lives_overlay.dart';
+import 'package:word_riders/features/ui/widgets/game/overlays/tutorial_overlay.dart';
 import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
 
 class CampaignProgressScreen extends StatefulWidget {
@@ -224,7 +225,7 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
              onTap: () async {
               final mainScaffold = context.findAncestorStateOfType<MainLayoutState>();
               final lives = mainScaffold?.currentLives ?? 5;
-              
+
               if (lives <= 0) {
                 showDialog(
                   context: context,
@@ -239,8 +240,27 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
                 return;
               }
 
+              // Afficher le tutoriel uniquement au stage 1 s'il n'a pas encore été vu
+              if (_currentStage == 1) {
+                final tutorialDone = await PlayerPreferences.isTutorialCompleted();
+                if (!tutorialDone) {
+                  if (!mounted) return;
+                  await showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (ctx) => TutorialOverlay(
+                      onComplete: () async {
+                        await PlayerPreferences.setTutorialCompleted(true);
+                        if (ctx.mounted) Navigator.of(ctx).pop();
+                      },
+                    ),
+                  );
+                }
+              }
+
+              if (!mounted) return;
               await context.push('/game', extra: {'isCampaign': true});
-              if (context.mounted) {
+              if (mounted) {
                  _loadStageProgress();
                  mainScaffold?.reloadIndicators();
               }

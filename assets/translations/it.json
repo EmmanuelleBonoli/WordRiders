@@ -41,6 +41,7 @@
         "privacyPolicy": "Informativa sulla privacy",
         "termsOfService": "Termini di servizio",
         "copyright": "© 2026 Major Manu Productions\nTutti i diritti riservati",
+        "tutorial": "Guarda il tutorial",
         "restorePurchases": "Ripristina acquisti",
         "restoreStarted": "Ripristino acquisti...",
         "emailError": "Impossibile aprire l'app di posta elettronica",
@@ -125,6 +126,12 @@
             "already_unlimited": "Hai già vite illimitate!",
             "already_full": "Le tue vite sono già piene!"
         }
+    },
+    "tutorial": {
+        "step1_title": "Forma parole per avanzare!",
+        "step2_title": "Batti il tuo avversario!",
+        "next": "AVANTI",
+        "start": "ANDIAMO!"
     },
     "game": {
         "pause_title": "PAUSA",
