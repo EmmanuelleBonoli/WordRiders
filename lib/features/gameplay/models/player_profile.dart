@@ -10,6 +10,8 @@ class PlayerProfile {
   // Settings
   bool musicEnabled;
   bool sfxEnabled;
+  double musicVolume;
+  double sfxVolume;
   bool tutorialCompleted;
 
   // Goals
@@ -42,6 +44,8 @@ class PlayerProfile {
     DateTime? lastLifeRegen,
     this.musicEnabled = true,
     this.sfxEnabled = true,
+    this.musicVolume = 0.8,
+    this.sfxVolume = 0.8,
     this.tutorialCompleted = false,
     List<Goal>? dailyGoals,
     List<Goal>? careerGoals,
@@ -73,6 +77,8 @@ class PlayerProfile {
           : DateTime.parse(json['lastLifeRegen'] as String),
       musicEnabled: json['musicEnabled'] as bool? ?? true,
       sfxEnabled: json['sfxEnabled'] as bool? ?? true,
+      musicVolume: (json['musicVolume'] as num?)?.toDouble() ?? 0.8,
+      sfxVolume: (json['sfxVolume'] as num?)?.toDouble() ?? 0.8,
       tutorialCompleted: json['tutorialCompleted'] as bool? ?? false,
       dailyGoals: (json['dailyGoals'] as List<dynamic>?)
           ?.map((e) => Goal.fromJson(e as Map<String, dynamic>))
@@ -109,6 +115,8 @@ class PlayerProfile {
         'lastLifeRegen': lastLifeRegen.toIso8601String(),
         'musicEnabled': musicEnabled,
         'sfxEnabled': sfxEnabled,
+        'musicVolume': musicVolume,
+        'sfxVolume': sfxVolume,
         'tutorialCompleted': tutorialCompleted,
         'dailyGoals': dailyGoals.map((e) => e.toJson()).toList(),
         'careerGoals': careerGoals.map((e) => e.toJson()).toList(),

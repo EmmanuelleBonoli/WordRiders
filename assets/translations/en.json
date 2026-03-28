@@ -41,6 +41,7 @@
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "copyright": "© 2026 Major Manu Productions\nAll rights reserved",
+    "tutorial": "Watch Tutorial",
     "restorePurchases": "Restore Purchases",
     "restoreStarted": "Restoring purchases...",
     "emailError": "Unable to open email app",
@@ -125,6 +126,20 @@
       "already_unlimited": "You already have unlimited lives!",
       "already_full": "Your lives are already full!"
     }
+  },
+  "tutorial": {
+    "step1_title": "Form words to advance!",
+    "step2_title": "Beat your rival!",
+    "next": "NEXT",
+    "start": "LET'S GO!",
+    "list_title": "Tutorials",
+    "game_tutorial": "Game Tutorial",
+    "bonus_extra_letter_name": "Extra Letter",
+    "bonus_extra_letter_desc": "Adds a letter to your available tiles!",
+    "bonus_double_distance_name": "Double Distance",
+    "bonus_double_distance_desc": "Your next word moves you twice as far on the track!",
+    "bonus_freeze_rival_name": "Freeze Rival",
+    "bonus_freeze_rival_desc": "Freezes your rival for 8 seconds — take the lead!"
   },
   "game": {
     "pause_title": "PAUSED",

@@ -4,7 +4,7 @@ import 'package:word_riders/features/ui/styles/app_theme.dart';
 
 import 'package:word_riders/features/gameplay/models/goal.dart';
 import 'package:word_riders/features/gameplay/services/goal_service.dart';
-import 'package:word_riders/features/gameplay/services/animation_service.dart';
+import 'package:word_riders/features/ui/animations/resource_transfer_animation.dart';
 import 'package:word_riders/features/ui/widgets/common/main_layout.dart';
 import 'package:word_riders/features/ui/widgets/careerGoals/daily_goal_card.dart';
 import 'package:word_riders/features/ui/widgets/careerGoals/career_goal_tile.dart';
@@ -63,7 +63,7 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
                   final goal = GoalService().dailyGoals[index];
                   return DailyGoalCard(
                     goal: goal,
-                    onClaim: (context) => _handleClaim(context, goal),
+                    onClaim: (key) => _handleClaim(key, goal),
                   );
                 },
               ),
@@ -100,8 +100,8 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
                    return Column(
                      children: [
                        CareerGoalTile(
-                         goal: goal, 
-                         onClaim: () => _handleClaim(context, goal),
+                         goal: goal,
+                         onClaim: (key) => _handleClaim(key, goal),
                        ),
                        if (!last) _buildDivider(),
                      ],
@@ -144,43 +144,24 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
     );
   }
 
-  Future<void> _handleClaim(BuildContext buttonContext, Goal goal) async {
+  Future<void> _handleClaim(GlobalKey buttonKey, Goal goal) async {
     if (goal.isClaimed) return;
 
     final success = await GoalService().claim(goal.id);
-    if (!success) return;
-    
-    // Vérifier que l'écran est toujours monté
-    if (!mounted) return;
-    if (!buttonContext.mounted) return;
+    if (!success || !mounted) return;
 
-    // Logique d'animation  
-    final RenderBox? buttonBox = buttonContext.findRenderObject() as RenderBox?;
     final mainLayoutState = context.findAncestorStateOfType<MainLayoutState>();
-    final RenderBox? indicatorBox = mainLayoutState?.coinIndicatorContext?.findRenderObject() as RenderBox?;
 
-    if (buttonBox != null && indicatorBox != null) {
-      final startPos = buttonBox.localToGlobal(buttonBox.size.center(Offset.zero));
-      final endPos = indicatorBox.localToGlobal(indicatorBox.size.center(Offset.zero));
-
-      AnimationService().showCoinAnimation(
-        context: context,
-        startPosition: startPos,
-        endPosition: endPos,
-        amount: 8,
-        onComplete: () async {
-            if (mounted) {
-               setState(() {}); // Reconstruire pour afficher l'état "Récupéré"
-               mainLayoutState?.reloadIndicators();
-            }
-        },
-      );
-    } else {
-        // Solution de repli sans animation
+    ResourceTransferAnimation.start(
+      context,
+      startKey: buttonKey,
+      assetPath: 'assets/images/indicators/coin.png',
+      onComplete: () {
         if (mounted) {
-             setState(() {});
-             mainLayoutState?.reloadIndicators();
+          setState(() {}); // Reconstruire pour afficher l'état "Récupéré"
+          mainLayoutState?.reloadIndicators();
         }
-    }
+      },
+    );
   }
 }

@@ -306,6 +306,32 @@ class PlayerPreferences {
       await AudioService().validateAudioSettings();
   }
 
+  static Future<double> getMusicVolume() async => (await getProfile()).musicVolume;
+
+  static Future<void> setMusicVolume(double volume) async {
+      final profile = await getProfile();
+      profile.musicVolume = volume;
+      await saveProfile(profile);
+      await AudioService().setMusicVolume(volume);
+  }
+
+  static Future<double> getSfxVolume() async => (await getProfile()).sfxVolume;
+
+  static Future<void> setSfxVolume(double volume) async {
+      final profile = await getProfile();
+      profile.sfxVolume = volume;
+      await saveProfile(profile);
+      await AudioService().setSfxVolume(volume);
+  }
+
+  static Future<bool> isTutorialCompleted() async => (await getProfile()).tutorialCompleted;
+
+  static Future<void> setTutorialCompleted(bool completed) async {
+      final profile = await getProfile();
+      profile.tutorialCompleted = completed;
+      await saveProfile(profile);
+  }
+
   static Future<void> resetCampaign() async {
     final profile = await getProfile();
     profile.stage = 1;

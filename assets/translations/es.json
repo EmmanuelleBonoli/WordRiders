@@ -41,6 +41,7 @@
         "privacyPolicy": "Política de Privacidad",
         "termsOfService": "Términos de Servicio",
         "copyright": "© 2026 Major Manu Productions\nTodos los derechos reservados",
+        "tutorial": "Ver tutorial",
         "restorePurchases": "Restaurar compras",
         "restoreStarted": "Restaurando compras...",
         "emailError": "No se puede abrir la aplicación de correo electrónico",
@@ -125,6 +126,20 @@
             "already_unlimited": "¡Ya tienes vidas ilimitadas!",
             "already_full": "¡Tus vidas ya están llenas!"
         }
+    },
+    "tutorial": {
+        "step1_title": "¡Forma palabras para avanzar!",
+        "step2_title": "¡Vence a tu rival!",
+        "next": "SIGUIENTE",
+        "start": "¡VAMOS!",
+        "list_title": "Tutoriales",
+        "game_tutorial": "Tutorial del juego",
+        "bonus_extra_letter_name": "Letra extra",
+        "bonus_extra_letter_desc": "¡Añade una letra a tus fichas disponibles!",
+        "bonus_double_distance_name": "Distancia × 2",
+        "bonus_double_distance_desc": "¡Tu siguiente palabra te hace avanzar el doble!",
+        "bonus_freeze_rival_name": "Congelar rival",
+        "bonus_freeze_rival_desc": "¡Congela a tu rival durante 8 segundos y toma la delantera!"
     },
     "game": {
         "pause_title": "PAUSA",

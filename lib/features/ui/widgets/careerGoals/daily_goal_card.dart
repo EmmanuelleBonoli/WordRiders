@@ -3,9 +3,9 @@ import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/gameplay/models/goal.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-class DailyGoalCard extends StatelessWidget {
+class DailyGoalCard extends StatefulWidget {
   final Goal goal;
-  final Function(BuildContext)? onClaim;
+  final Function(GlobalKey)? onClaim;
 
   const DailyGoalCard({
     super.key,
@@ -14,7 +14,16 @@ class DailyGoalCard extends StatelessWidget {
   });
 
   @override
+  State<DailyGoalCard> createState() => _DailyGoalCardState();
+}
+
+class _DailyGoalCardState extends State<DailyGoalCard> {
+  final GlobalKey _claimButtonKey = GlobalKey();
+
+  @override
   Widget build(BuildContext context) {
+    final Goal goal = widget.goal;
+    final Function(GlobalKey)? onClaim = widget.onClaim;
      final bool completed = goal.isClaimed;
      final bool canClaim = !completed && goal.isCompleted;
      final double progress = goal.progress;
@@ -85,23 +94,20 @@ class DailyGoalCard extends StatelessWidget {
                child: Text(context.tr('campaign.goals.common.claimed'), style: const TextStyle(color: AppTheme.coinFaceTop, fontSize: 10, fontWeight: FontWeight.bold)),
              )
           else if (canClaim)
-             Builder(
-               builder: (btnContext) {
-                 return GestureDetector(
-                   onTap: () => onClaim?.call(btnContext),
-                   child: Container(
-                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                     decoration: BoxDecoration(
-                       color: AppTheme.green,
-                       borderRadius: BorderRadius.circular(12),
-                       boxShadow: const [
-                         BoxShadow(color: Colors.black26, offset: Offset(0, 2), blurRadius: 4)
-                       ]
-                     ),
-                     child: Text(context.tr('campaign.goals.common.claim'), style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                   ),
-                 );
-               }
+             GestureDetector(
+               onTap: () => onClaim?.call(_claimButtonKey),
+               child: Container(
+                 key: _claimButtonKey,
+                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                 decoration: BoxDecoration(
+                   color: AppTheme.green,
+                   borderRadius: BorderRadius.circular(12),
+                   boxShadow: const [
+                     BoxShadow(color: Colors.black26, offset: Offset(0, 2), blurRadius: 4)
+                   ]
+                 ),
+                 child: Text(context.tr('campaign.goals.common.claim'), style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+               ),
              )
           else
             Column(

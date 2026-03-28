@@ -13,6 +13,7 @@ package.json
 .swiftpm/
 migrate_working_dir/
 .ai/
+CLAUDE.md
 
 # IntelliJ related
 *.iml
