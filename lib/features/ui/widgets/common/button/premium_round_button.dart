@@ -35,7 +35,7 @@ class PremiumRoundButton extends StatelessWidget {
     final effectiveIcon = iconGradient ?? effectiveRim;
 
     return BouncingScaleButton(
-      onTap: onTap ?? () {},
+      onTap: onTap,
       scaleTarget: 0.95,
       showShadow: false,
       child: Container(

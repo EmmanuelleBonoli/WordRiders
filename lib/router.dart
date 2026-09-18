@@ -5,7 +5,6 @@ import 'features/ui/screens/campaign_progress_screen.dart';
 import 'features/ui/screens/loading_start_screen.dart';
 import 'features/ui/screens/menu_game_screen.dart';
 import 'features/ui/screens/settings_screen.dart';
-import 'features/ui/screens/splash_screen.dart';
 import 'features/ui/widgets/common/main_layout.dart';
 import 'features/ui/screens/store_screen.dart';
 import 'features/ui/screens/trophies_screen.dart';
@@ -13,8 +12,7 @@ import 'features/ui/screens/trophies_screen.dart';
 final router = GoRouter(
   initialLocation: '/',
   routes: [
-    GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
-    GoRoute(path: '/loading_start', builder: (context, state) => const LoadingStartScreen()),
+    GoRoute(path: '/', builder: (context, state) => const LoadingStartScreen()),
     GoRoute(path: '/menu', builder: (context, state) => const MenuGameScreen()),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {

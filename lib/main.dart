@@ -22,12 +22,14 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Configuration de Crashlytics pour attraper toutes les erreurs
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
+  if (!kIsWeb) {
+    // Configuration de Crashlytics pour attraper toutes les erreurs
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+  }
   await EasyLocalization.ensureInitialized();
   await IapService.initialize();
   await GoalService().init();

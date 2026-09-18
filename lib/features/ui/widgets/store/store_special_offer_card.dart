@@ -29,7 +29,7 @@ class StoreSpecialOfferCard extends StatelessWidget {
     }
 
     return BouncingScaleButton(
-      onTap: onTap ?? () {},
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(

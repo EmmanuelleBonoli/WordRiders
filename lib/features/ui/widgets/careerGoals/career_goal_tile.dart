@@ -7,11 +7,7 @@ class CareerGoalTile extends StatefulWidget {
   final Goal goal;
   final Function(GlobalKey)? onClaim;
 
-  const CareerGoalTile({
-    super.key,
-    required this.goal,
-    this.onClaim,
-  });
+  const CareerGoalTile({super.key, required this.goal, this.onClaim});
 
   @override
   State<CareerGoalTile> createState() => _CareerGoalTileState();
@@ -26,23 +22,34 @@ class _CareerGoalTileState extends State<CareerGoalTile> {
     final Function(GlobalKey)? onClaim = widget.onClaim;
     final bool completed = goal.isCompleted;
     final double progress = goal.progress;
-    
+
     IconData icon;
-     switch (goal.category) {
-       case GoalCategory.levelsWon: icon = Icons.school; break;
-       case GoalCategory.wordsFound: icon = Icons.emoji_events; break;
-       case GoalCategory.streakDays: icon = Icons.whatshot; break;
-       case GoalCategory.adsWatched: icon = Icons.movie_filter; break;
-       case GoalCategory.wordsLength6:
-       case GoalCategory.wordsLength7:
-       case GoalCategory.wordsLength8Plus: icon = Icons.text_format; break;
-       default: icon = Icons.star;
-     }
+    switch (goal.category) {
+      case GoalCategory.levelsWon:
+        icon = Icons.school;
+        break;
+      case GoalCategory.wordsFound:
+        icon = Icons.emoji_events;
+        break;
+      case GoalCategory.streakDays:
+        icon = Icons.whatshot;
+        break;
+      case GoalCategory.adsWatched:
+        icon = Icons.movie_filter;
+        break;
+      case GoalCategory.wordsLength6:
+      case GoalCategory.wordsLength7:
+      case GoalCategory.wordsLength8Plus:
+        icon = Icons.text_format;
+        break;
+      default:
+        icon = Icons.star;
+    }
 
     // utilise descriptionKey si disponible, sinon réutilise le titre ou vide
-    final String description = goal.descriptionKey.isNotEmpty 
-        ? context.tr(goal.descriptionKey) 
-        : '${context.tr('campaign.goals.career.target_label')} ${goal.target}'; 
+    final String description = goal.descriptionKey.isNotEmpty
+        ? context.tr(goal.descriptionKey)
+        : '${context.tr('campaign.goals.career.target_label')} ${goal.target}';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -57,11 +64,7 @@ class _CareerGoalTileState extends State<CareerGoalTile> {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppTheme.coinRimBottom, width: 2),
             ),
-            child: Icon(
-              icon,
-              color: AppTheme.coinRimBottom,
-              size: 28,
-            ),
+            child: Icon(icon, color: AppTheme.coinRimBottom, size: 28),
           ),
           const SizedBox(width: 16),
           // Info & Progress
@@ -88,7 +91,11 @@ class _CareerGoalTileState extends State<CareerGoalTile> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Image.asset('assets/images/indicators/coin.png', width: 16, height: 16),
+                        Image.asset(
+                          'assets/images/indicators/coin.png',
+                          width: 16,
+                          height: 16,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           "+${goal.reward}",
@@ -126,24 +133,45 @@ class _CareerGoalTileState extends State<CareerGoalTile> {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: goal.isClaimed
-                            ? const Icon(Icons.check_circle, color: AppTheme.green, size: 28)
+                            ? const Icon(
+                                Icons.check_circle,
+                                color: AppTheme.green,
+                                size: 28,
+                              )
                             : (completed && !goal.isClaimed)
-                                ? GestureDetector(
-                                    onTap: () => onClaim?.call(_claimButtonKey),
-                                    child: Container(
-                                      key: _claimButtonKey,
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                      decoration: BoxDecoration(
-                                          color: AppTheme.orangeBurnt,
-                                          borderRadius: BorderRadius.circular(12),
-                                          boxShadow: const [BoxShadow(color: Colors.black26, offset: Offset(0, 2), blurRadius: 4)]),
-                                      child: Text(
-                                        context.tr('campaign.goals.common.claim'),
-                                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
+                            ? MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: GestureDetector(
+                                  onTap: () => onClaim?.call(_claimButtonKey),
+                                  child: Container(
+                                    key: _claimButtonKey,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.orangeBurnt,
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          offset: Offset(0, 2),
+                                          blurRadius: 4,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Text(
+                                      context.tr('campaign.goals.common.claim'),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 11,
                                       ),
                                     ),
-                                  )
-                                : const SizedBox.shrink(),
+                                  ),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
                       ),
                     ),
                   ],
@@ -155,7 +183,9 @@ class _CareerGoalTileState extends State<CareerGoalTile> {
                       child: LinearProgressIndicator(
                         value: progress,
                         backgroundColor: Colors.grey.withValues(alpha: 0.2),
-                        valueColor: const AlwaysStoppedAnimation(AppTheme.green),
+                        valueColor: const AlwaysStoppedAnimation(
+                          AppTheme.green,
+                        ),
                         borderRadius: BorderRadius.circular(4),
                         minHeight: 8,
                       ),

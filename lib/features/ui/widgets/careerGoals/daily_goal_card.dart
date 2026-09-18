@@ -7,11 +7,7 @@ class DailyGoalCard extends StatefulWidget {
   final Goal goal;
   final Function(GlobalKey)? onClaim;
 
-  const DailyGoalCard({
-    super.key,
-    required this.goal,
-    this.onClaim,
-  });
+  const DailyGoalCard({super.key, required this.goal, this.onClaim});
 
   @override
   State<DailyGoalCard> createState() => _DailyGoalCardState();
@@ -24,21 +20,30 @@ class _DailyGoalCardState extends State<DailyGoalCard> {
   Widget build(BuildContext context) {
     final Goal goal = widget.goal;
     final Function(GlobalKey)? onClaim = widget.onClaim;
-     final bool completed = goal.isClaimed;
-     final bool canClaim = !completed && goal.isCompleted;
-     final double progress = goal.progress;
-     
-     // Détermine l'icône en fonction de la catégorie
-     IconData icon;
-     switch (goal.category) {
-       case GoalCategory.levelsWon: icon = Icons.stars; break;
-       case GoalCategory.wordsFound: icon = Icons.menu_book; break;
-       case GoalCategory.adsWatched: icon = Icons.movie_filter; break;
-       case GoalCategory.wordsLength6:
-       case GoalCategory.wordsLength7:
-       case GoalCategory.wordsLength8Plus: icon = Icons.text_format; break;
-       default: icon = Icons.emoji_events;
-     }
+    final bool completed = goal.isClaimed;
+    final bool canClaim = !completed && goal.isCompleted;
+    final double progress = goal.progress;
+
+    // Détermine l'icône en fonction de la catégorie
+    IconData icon;
+    switch (goal.category) {
+      case GoalCategory.levelsWon:
+        icon = Icons.stars;
+        break;
+      case GoalCategory.wordsFound:
+        icon = Icons.menu_book;
+        break;
+      case GoalCategory.adsWatched:
+        icon = Icons.movie_filter;
+        break;
+      case GoalCategory.wordsLength6:
+      case GoalCategory.wordsLength7:
+      case GoalCategory.wordsLength8Plus:
+        icon = Icons.text_format;
+        break;
+      default:
+        icon = Icons.emoji_events;
+    }
 
     return Container(
       width: 140,
@@ -47,14 +52,16 @@ class _DailyGoalCardState extends State<DailyGoalCard> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: completed 
-             ? [AppTheme.coinRimTop, AppTheme.coinRimBottom] 
-             : [AppTheme.tileFace, AppTheme.tileFace],
+          colors: completed
+              ? [AppTheme.coinRimTop, AppTheme.coinRimBottom]
+              : [AppTheme.tileFace, AppTheme.tileFace],
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: completed ? AppTheme.coinBorderDark : (canClaim ? AppTheme.green : AppTheme.coinRimBottom),
-          width: canClaim ? 3 : 2
+          color: completed
+              ? AppTheme.coinBorderDark
+              : (canClaim ? AppTheme.green : AppTheme.coinRimBottom),
+          width: canClaim ? 3 : 2,
         ),
         boxShadow: [
           BoxShadow(
@@ -85,37 +92,63 @@ class _DailyGoalCardState extends State<DailyGoalCard> {
             ),
           ),
           if (completed)
-             Container(
-               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-               decoration: BoxDecoration(
-                 color: AppTheme.darkBrown,
-                 borderRadius: BorderRadius.circular(12),
-               ),
-               child: Text(context.tr('campaign.goals.common.claimed'), style: const TextStyle(color: AppTheme.coinFaceTop, fontSize: 10, fontWeight: FontWeight.bold)),
-             )
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppTheme.darkBrown,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                context.tr('campaign.goals.common.claimed'),
+                style: const TextStyle(
+                  color: AppTheme.coinFaceTop,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            )
           else if (canClaim)
-             GestureDetector(
-               onTap: () => onClaim?.call(_claimButtonKey),
-               child: Container(
-                 key: _claimButtonKey,
-                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                 decoration: BoxDecoration(
-                   color: AppTheme.green,
-                   borderRadius: BorderRadius.circular(12),
-                   boxShadow: const [
-                     BoxShadow(color: Colors.black26, offset: Offset(0, 2), blurRadius: 4)
-                   ]
-                 ),
-                 child: Text(context.tr('campaign.goals.common.claim'), style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-               ),
-             )
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () => onClaim?.call(_claimButtonKey),
+                child: Container(
+                  key: _claimButtonKey,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.green,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        offset: Offset(0, 2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    context.tr('campaign.goals.common.claim'),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            )
           else
             Column(
               children: [
                 LinearProgressIndicator(
                   value: progress,
                   backgroundColor: AppTheme.brown.withValues(alpha: 0.2),
-                  valueColor: const AlwaysStoppedAnimation(AppTheme.orangeBurnt),
+                  valueColor: const AlwaysStoppedAnimation(
+                    AppTheme.orangeBurnt,
+                  ),
                   borderRadius: BorderRadius.circular(4),
                   minHeight: 6,
                 ),
@@ -124,7 +157,11 @@ class _DailyGoalCardState extends State<DailyGoalCard> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.asset('assets/images/indicators/coin.png', width: 14, height: 14),
+                    Image.asset(
+                      'assets/images/indicators/coin.png',
+                      width: 14,
+                      height: 14,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       "+${goal.reward}",
