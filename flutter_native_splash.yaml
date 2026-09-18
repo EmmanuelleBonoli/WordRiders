@@ -1,8 +1,8 @@
 flutter_native_splash:
   color: "#000000"
   color_dark: "#000000"
-  image: assets/images/logoMajorManuProd.png
-  image_dark: assets/images/logoMajorManuProd.png
+  image: assets/images/major-baseline-logo-dark.png
+  image_dark: assets/images/major-baseline-logo-dark.png
 
   android: true
   ios: true

@@ -35,7 +35,7 @@ class SettingsAboutSection extends StatelessWidget {
   }
 
   Future<void> _launchPrivacyPolicy(BuildContext context) async {
-    final Uri url = Uri.parse('https://majormanuprod.com/privacy-policy');
+    final Uri url = Uri.parse('https://major-baseline.fr/policies/wordRiders/privacy');
     
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
@@ -51,7 +51,7 @@ class SettingsAboutSection extends StatelessWidget {
   }
 
   Future<void> _launchTermsOfService(BuildContext context) async {
-    final Uri url = Uri.parse('https://majormanuprod.com/terms-of-service');
+    final Uri url = Uri.parse('https://major-baseline.fr/policies/wordRiders/sales');
     
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
@@ -111,7 +111,7 @@ class SettingsAboutSection extends StatelessWidget {
                   ),
                 ),
                 subtitle: const Text(
-                  'contact@majormanuprod.com',
+                  'contact@major-baseline.fr',
                   style: TextStyle(
                     color: AppTheme.brown,
                     fontSize: 14,

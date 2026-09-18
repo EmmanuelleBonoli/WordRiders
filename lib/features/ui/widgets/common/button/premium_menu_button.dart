@@ -39,7 +39,7 @@ class PremiumMenuButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: BouncingScaleButton(
-        onTap: onTap ?? () {},
+        onTap: onTap,
         scaleTarget: 0.95,
         showShadow: false,
         child: Container(
