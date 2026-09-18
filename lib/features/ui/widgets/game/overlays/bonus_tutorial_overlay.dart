@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/bounded_content.dart';
 import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
 import 'package:word_riders/features/ui/widgets/common/button/premium_round_button.dart';
 import 'package:word_riders/features/ui/widgets/game/game_background.dart';
@@ -98,81 +99,86 @@ class _BonusTutorialOverlayState extends State<BonusTutorialOverlay>
           ),
 
           SafeArea(
-            child: Column(
-              children: [
-                // Contenu centré verticalement
-                Flexible(
-                  child: LayoutBuilder(
-                    builder: (ctx, constraints) => SingleChildScrollView(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight,
-                        ),
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 24,
-                              horizontal: 32,
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // Icône du bonus (pulsation)
-                                _buildPulsingIcon(),
-                                const SizedBox(height: 16),
-                                // Nom du bonus
-                                Text(
-                                  context.tr(_data.nameKey),
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontFamily: 'Round',
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.w900,
-                                    color: Colors.white,
-                                    shadows: [
-                                      Shadow(
-                                        color: Colors.black54,
-                                        offset: Offset(0, 2),
-                                        blurRadius: 6,
-                                      ),
-                                    ],
+            child: BoundedContent(
+              width: ContentWidth.modal,
+              child: Column(
+                children: [
+                  // Contenu centré verticalement
+                  Flexible(
+                    child: LayoutBuilder(
+                      builder: (ctx, constraints) => SingleChildScrollView(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: constraints.maxHeight,
+                          ),
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 24,
+                                horizontal: 32,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Icône du bonus (pulsation)
+                                  _buildPulsingIcon(),
+                                  const SizedBox(height: 16),
+                                  // Nom du bonus
+                                  Text(
+                                    context.tr(_data.nameKey),
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontFamily: 'Round',
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w900,
+                                      color: Colors.white,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black54,
+                                          offset: Offset(0, 2),
+                                          blurRadius: 6,
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 8),
-                                // Description
-                                Text(
-                                  context.tr(_data.descKey),
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontFamily: 'Round',
-                                    fontSize: 15,
-                                    color: Colors.white.withValues(alpha: 0.85),
-                                    shadows: const [
-                                      Shadow(
-                                        color: Colors.black45,
-                                        offset: Offset(0, 1),
-                                        blurRadius: 4,
+                                  const SizedBox(height: 8),
+                                  // Description
+                                  Text(
+                                    context.tr(_data.descKey),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontFamily: 'Round',
+                                      fontSize: 15,
+                                      color: Colors.white.withValues(
+                                        alpha: 0.85,
                                       ),
-                                    ],
+                                      shadows: const [
+                                        Shadow(
+                                          color: Colors.black45,
+                                          offset: Offset(0, 1),
+                                          blurRadius: 4,
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 28),
-                                // Animation de l'effet
-                                _buildDemo(),
-                              ],
+                                  const SizedBox(height: 28),
+                                  // Animation de l'effet
+                                  _buildDemo(),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                // Bouton fermeture
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 32),
-                  child: _buildCloseButton(context),
-                ),
-              ],
+                  // Bouton fermeture
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(32, 0, 32, 32),
+                    child: _buildCloseButton(context),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -188,7 +194,9 @@ class _BonusTutorialOverlayState extends State<BonusTutorialOverlay>
       builder: (context, _) {
         // Pulsation douce : scale entre 0.92 et 1.08
         final pulse =
-            0.92 + 0.16 * (0.5 + 0.5 * math.sin(_controller.value * 2 * math.pi * 1.2));
+            0.92 +
+            0.16 *
+                (0.5 + 0.5 * math.sin(_controller.value * 2 * math.pi * 1.2));
         return Transform.scale(
           scale: pulse,
           child: PremiumRoundButton(
@@ -236,17 +244,24 @@ class _BonusTutorialOverlayState extends State<BonusTutorialOverlay>
 
         final bool buttonTapped = v >= 0.05 && v < 0.20;
         final double btnScale = buttonTapped
-            ? (v < 0.12 ? 1.0 - (v - 0.05) / 0.07 * 0.3 : 0.7 + (v - 0.12) / 0.08 * 0.3)
+            ? (v < 0.12
+                  ? 1.0 - (v - 0.05) / 0.07 * 0.3
+                  : 0.7 + (v - 0.12) / 0.08 * 0.3)
             : 1.0;
 
         // Voyelle supplémentaire : slide depuis le bas (1.0 = en dessous, 0.0 = en place)
         final double letterSlide = v < 0.20
             ? 1.0
             : v < 0.40
-                ? 1.0 - ((v - 0.20) / 0.20)
-                : 0.0;
-        final double letterOpacity =
-            v < 0.18 ? 0.0 : v < 0.30 ? (v - 0.18) / 0.12 : v > 0.92 ? (1 - v) / 0.08 : 1.0;
+            ? 1.0 - ((v - 0.20) / 0.20)
+            : 0.0;
+        final double letterOpacity = v < 0.18
+            ? 0.0
+            : v < 0.30
+            ? (v - 0.18) / 0.12
+            : v > 0.92
+            ? (1 - v) / 0.08
+            : 1.0;
 
         final double globalOpacity = v > 0.92 ? (1 - v) / 0.08 : 1.0;
 
@@ -268,7 +283,12 @@ class _BonusTutorialOverlayState extends State<BonusTutorialOverlay>
                   for (final l in ['W', 'O', 'R'])
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: GameCoinLetter(letter: l, size: 44.0, highlight: false, showHalo: false),
+                      child: GameCoinLetter(
+                        letter: l,
+                        size: 44.0,
+                        highlight: false,
+                        showHalo: false,
+                      ),
                     ),
                 ],
               ),
@@ -280,7 +300,12 @@ class _BonusTutorialOverlayState extends State<BonusTutorialOverlay>
                   for (final l in ['D', 'S', 'E'])
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: GameCoinLetter(letter: l, size: 44.0, highlight: false, showHalo: false),
+                      child: GameCoinLetter(
+                        letter: l,
+                        size: 44.0,
+                        highlight: false,
+                        showHalo: false,
+                      ),
                     ),
                   // Voyelle supplémentaire (slide in depuis le bas)
                   Transform.translate(
@@ -289,7 +314,12 @@ class _BonusTutorialOverlayState extends State<BonusTutorialOverlay>
                       opacity: letterOpacity,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 4),
-                        child: GameCoinLetter(letter: 'U', size: 44.0, highlight: true, showHalo: false),
+                        child: GameCoinLetter(
+                          letter: 'U',
+                          size: 44.0,
+                          highlight: true,
+                          showHalo: false,
+                        ),
                       ),
                     ),
                   ),
@@ -312,86 +342,84 @@ class _BonusTutorialOverlayState extends State<BonusTutorialOverlay>
     const double labelW = 36.0;
 
     return AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) {
-            final v = _controller.value;
+      animation: _controller,
+      builder: (context, _) {
+        final v = _controller.value;
 
-            final bool buttonTapped = v >= 0.05 && v < 0.20;
-            final double btnScale = buttonTapped
-                ? (v < 0.12 ? 1.0 - (v - 0.05) / 0.07 * 0.3 : 0.7 + (v - 0.12) / 0.08 * 0.3)
-                : 1.0;
+        final bool buttonTapped = v >= 0.05 && v < 0.20;
+        final double btnScale = buttonTapped
+            ? (v < 0.12
+                  ? 1.0 - (v - 0.05) / 0.07 * 0.3
+                  : 0.7 + (v - 0.12) / 0.08 * 0.3)
+            : 1.0;
 
-            // Lapin "normal" (track du haut) : v=0.20–0.55 → avance sur 25%
-            final double normalPos = v >= 0.20 && v < 0.55
-                ? ((v - 0.20) / 0.35).clamp(0.0, 1.0) * 0.25
-                : v >= 0.55
-                    ? 0.25
-                    : 0.0;
+        // Lapin "normal" (track du haut) : v=0.20–0.55 → avance sur 25%
+        final double normalPos = v >= 0.20 && v < 0.55
+            ? ((v - 0.20) / 0.35).clamp(0.0, 1.0) * 0.25
+            : v >= 0.55
+            ? 0.25
+            : 0.0;
 
-            // Lapin "×2" (track du bas) : v=0.20–0.55 → avance sur 75%
-            final double boostedPos = v >= 0.20 && v < 0.55
-                ? ((v - 0.20) / 0.35).clamp(0.0, 1.0) * 0.75
-                : v >= 0.55
-                    ? 0.75
-                    : 0.0;
+        // Lapin "×2" (track du bas) : v=0.20–0.55 → avance sur 75%
+        final double boostedPos = v >= 0.20 && v < 0.55
+            ? ((v - 0.20) / 0.35).clamp(0.0, 1.0) * 0.75
+            : v >= 0.55
+            ? 0.75
+            : 0.0;
 
-            final bool showBadge = v >= 0.20;
-            final double globalOpacity = v > 0.92 ? (1 - v) / 0.08 : 1.0;
+        final bool showBadge = v >= 0.20;
+        final double globalOpacity = v > 0.92 ? (1 - v) / 0.08 : 1.0;
 
-            return Opacity(
-              opacity: globalOpacity,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+        return Opacity(
+          opacity: globalOpacity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Panneau bonus
+              _buildBonusRow(
+                activeType: widget.bonusType,
+                activeScale: btnScale,
+              ),
+              const SizedBox(height: 20),
+              // Track ×1 (sans bonus)
+              Row(
                 children: [
-                  // Panneau bonus
-                  _buildBonusRow(
-                    activeType: widget.bonusType,
-                    activeScale: btnScale,
+                  SizedBox(
+                    width: labelW,
+                    child: Center(child: _buildTrackLabel('×1', active: false)),
                   ),
-                  const SizedBox(height: 20),
-                  // Track ×1 (sans bonus)
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: labelW,
-                        child: Center(
-                          child: _buildTrackLabel('×1', active: false),
-                        ),
-                      ),
-                      Expanded(
-                        child: GameTimelineTrack(
-                          progress: normalPos,
-                          imagePath: 'assets/images/characters/rabbit_head2.png',
-                          highlighted: false,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  // Track ×2 (avec bonus)
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: labelW,
-                        child: Center(
-                          child: _buildTrackLabel('×2', active: true),
-                        ),
-                      ),
-                      Expanded(
-                        child: GameTimelineTrack(
-                          progress: boostedPos,
-                          imagePath: 'assets/images/characters/rabbit_head2.png',
-                          highlighted: true,
-                          badgeText: showBadge ? '×2' : null,
-                        ),
-                      ),
-                    ],
+                  Expanded(
+                    child: GameTimelineTrack(
+                      progress: normalPos,
+                      imagePath: 'assets/images/characters/rabbit_head2.png',
+                      highlighted: false,
+                    ),
                   ),
                 ],
               ),
-            );
-          },
+              const SizedBox(height: 12),
+              // Track ×2 (avec bonus)
+              Row(
+                children: [
+                  SizedBox(
+                    width: labelW,
+                    child: Center(child: _buildTrackLabel('×2', active: true)),
+                  ),
+                  Expanded(
+                    child: GameTimelineTrack(
+                      progress: boostedPos,
+                      imagePath: 'assets/images/characters/rabbit_head2.png',
+                      highlighted: true,
+                      badgeText: showBadge ? '×2' : null,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         );
+      },
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -402,68 +430,70 @@ class _BonusTutorialOverlayState extends State<BonusTutorialOverlay>
 
   Widget _buildFreezeRivalDemo() {
     return AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) {
-            final v = _controller.value;
+      animation: _controller,
+      builder: (context, _) {
+        final v = _controller.value;
 
-            final bool buttonTapped = v >= 0.05 && v < 0.20;
-            final double btnScale = buttonTapped
-                ? (v < 0.12 ? 1.0 - (v - 0.05) / 0.07 * 0.3 : 0.7 + (v - 0.12) / 0.08 * 0.3)
-                : 1.0;
+        final bool buttonTapped = v >= 0.05 && v < 0.20;
+        final double btnScale = buttonTapped
+            ? (v < 0.12
+                  ? 1.0 - (v - 0.05) / 0.07 * 0.3
+                  : 0.7 + (v - 0.12) / 0.08 * 0.3)
+            : 1.0;
 
-            // Phase pré-gel (0.05–0.35) : les deux avancent ensemble
-            // Phase gel (0.35–0.90) : fox s'arrête, lapin continue
-            double rabbitLeft = 0.0;
-            double foxLeft = 0.0;
-            double frozenOpacity = 0.0;
+        // Phase pré-gel (0.05–0.35) : les deux avancent ensemble
+        // Phase gel (0.35–0.90) : fox s'arrête, lapin continue
+        double rabbitLeft = 0.0;
+        double foxLeft = 0.0;
+        double frozenOpacity = 0.0;
 
-            if (v >= 0.05 && v < 0.35) {
-              final t = (v - 0.05) / 0.30;
-              rabbitLeft = t * 0.28;
-              foxLeft = t * 0.26;
-            } else if (v >= 0.35 && v < 0.90) {
-              // Fox figé à sa position au moment du gel
-              foxLeft = 0.26;
-              frozenOpacity = ((v - 0.35) / 0.12).clamp(0.0, 1.0);
-              // Lapin continue jusqu'à 85%
-              rabbitLeft = 0.28 + ((v - 0.35) / 0.55) * 0.57;
-            } else if (v >= 0.90) {
-              foxLeft = 0.26;
-              frozenOpacity = 1.0;
-              rabbitLeft = 0.85;
-            }
+        if (v >= 0.05 && v < 0.35) {
+          final t = (v - 0.05) / 0.30;
+          rabbitLeft = t * 0.28;
+          foxLeft = t * 0.26;
+        } else if (v >= 0.35 && v < 0.90) {
+          // Fox figé à sa position au moment du gel
+          foxLeft = 0.26;
+          frozenOpacity = ((v - 0.35) / 0.12).clamp(0.0, 1.0);
+          // Lapin continue jusqu'à 85%
+          rabbitLeft = 0.28 + ((v - 0.35) / 0.55) * 0.57;
+        } else if (v >= 0.90) {
+          foxLeft = 0.26;
+          frozenOpacity = 1.0;
+          rabbitLeft = 0.85;
+        }
 
-            final double globalOpacity = v > 0.92 ? (1 - v) / 0.08 : 1.0;
+        final double globalOpacity = v > 0.92 ? (1 - v) / 0.08 : 1.0;
 
-            return Opacity(
-              opacity: globalOpacity,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Panneau bonus
-                  _buildBonusRow(
-                    activeType: widget.bonusType,
-                    activeScale: btnScale,
-                  ),
-                  const SizedBox(height: 20),
-                  // Track lapin
-                  GameTimelineTrack(
-                    progress: rabbitLeft,
-                    imagePath: 'assets/images/characters/rabbit_head2.png',
-                  ),
-                  const SizedBox(height: 12),
-                  // Track renard (avec effet gel)
-                  GameTimelineTrack(
-                    progress: foxLeft,
-                    imagePath: 'assets/images/characters/fox_head2.png',
-                    frozenOpacity: frozenOpacity,
-                  ),
-                ],
+        return Opacity(
+          opacity: globalOpacity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Panneau bonus
+              _buildBonusRow(
+                activeType: widget.bonusType,
+                activeScale: btnScale,
               ),
-            );
-          },
+              const SizedBox(height: 20),
+              // Track lapin
+              GameTimelineTrack(
+                progress: rabbitLeft,
+                imagePath: 'assets/images/characters/rabbit_head2.png',
+              ),
+              const SizedBox(height: 12),
+              // Track renard (avec effet gel)
+              GameTimelineTrack(
+                progress: foxLeft,
+                imagePath: 'assets/images/characters/fox_head2.png',
+                frozenOpacity: frozenOpacity,
+              ),
+            ],
+          ),
         );
+      },
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -506,8 +536,6 @@ class _BonusTutorialOverlayState extends State<BonusTutorialOverlay>
       }).toList(),
     );
   }
-
-
 
   /// Label ×1 / ×2 stylisé à gauche de la track Double Distance.
   Widget _buildTrackLabel(String text, {required bool active}) {

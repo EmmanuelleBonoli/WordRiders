@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:word_riders/features/gameplay/controllers/game_controller.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/bounded_content.dart';
 import 'package:word_riders/features/ui/widgets/common/button/premium_round_button.dart';
 import 'package:word_riders/features/ui/widgets/common/leaf_background.dart';
 
@@ -67,34 +68,37 @@ class GameBonusPanel extends StatelessWidget {
           ),
         ),
 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildBonusButton(
-              context: context,
-              icon: Icons.text_increase_rounded, // Lettre en plus
-              count: controller.bonusExtraLetterCount,
-              isUsed: controller.extraLetterUsed,
-              onTap: controller.useBonusExtraLetter,
-              colorOptions: const [Colors.orange, Colors.deepOrange],
-            ),
-            _buildBonusButton(
-              context: context,
-              icon: Icons.double_arrow_rounded, // Distance x2
-              count: controller.bonusDoubleDistanceCount,
-              isUsed: controller.isNextWordDistanceDoubled,
-              onTap: controller.useBonusDoubleDistance,
-              colorOptions: const [Colors.blue, Colors.indigo],
-            ),
-            _buildBonusButton(
-              context: context,
-              icon: Icons.ac_unit_rounded, // Gel du rival
-              count: controller.bonusFreezeRivalCount,
-              isUsed: controller.isRivalFrozen,
-              onTap: controller.useBonusFreezeRival,
-              colorOptions: const [Colors.cyan, Colors.blueAccent],
-            ),
-          ],
+        BoundedContent(
+          width: ContentWidth.modal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildBonusButton(
+                context: context,
+                icon: Icons.text_increase_rounded, // Lettre en plus
+                count: controller.bonusExtraLetterCount,
+                isUsed: controller.extraLetterUsed,
+                onTap: controller.useBonusExtraLetter,
+                colorOptions: const [Colors.orange, Colors.deepOrange],
+              ),
+              _buildBonusButton(
+                context: context,
+                icon: Icons.double_arrow_rounded, // Distance x2
+                count: controller.bonusDoubleDistanceCount,
+                isUsed: controller.isNextWordDistanceDoubled,
+                onTap: controller.useBonusDoubleDistance,
+                colorOptions: const [Colors.blue, Colors.indigo],
+              ),
+              _buildBonusButton(
+                context: context,
+                icon: Icons.ac_unit_rounded, // Gel du rival
+                count: controller.bonusFreezeRivalCount,
+                isUsed: controller.isRivalFrozen,
+                onTap: controller.useBonusFreezeRival,
+                colorOptions: const [Colors.cyan, Colors.blueAccent],
+              ),
+            ],
+          ),
         ),
       ],
     );

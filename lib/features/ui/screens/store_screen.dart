@@ -10,6 +10,7 @@ import 'package:word_riders/features/ui/animations/resource_transfer_animation.d
 import 'package:word_riders/features/ui/widgets/common/main_layout.dart';
 import 'package:word_riders/data/store_data.dart';
 import 'package:word_riders/features/ui/widgets/common/app_snackbar.dart';
+import 'package:word_riders/features/ui/widgets/common/bounded_content.dart';
 
 class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});
@@ -242,7 +243,9 @@ class _StoreScreenState extends State<StoreScreen> {
 
     return SingleChildScrollView(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 100),
-      child: Column(
+      child: BoundedContent(
+        explicitMaxWidth: 800,
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
 
@@ -254,7 +257,6 @@ class _StoreScreenState extends State<StoreScreen> {
               if (snapshot.hasData && snapshot.data == true) {
                 return const SizedBox.shrink();
               }
-              // Si vide, ne pas afficher la colonne
               if (specialOfferItems.isEmpty) return const SizedBox.shrink();
               
               return Column(
@@ -280,7 +282,8 @@ class _StoreScreenState extends State<StoreScreen> {
            LayoutBuilder(
              builder: (context, constraints) {
                // On calcule la largeur pour placer 2 items par ligne en conservant un espace de 16
-               final crossAxisCount = constraints.maxWidth > 600 ? 4 : 2;
+               final crossAxisCount =
+                   constraints.maxWidth > ContentWidth.standard.maxWidth ? 4 : 2;
                final spacing = 16.0;
                final itemWidth = (constraints.maxWidth - (spacing * (crossAxisCount - 1))) / crossAxisCount;
                
@@ -306,30 +309,49 @@ class _StoreScreenState extends State<StoreScreen> {
            // --- PACKS DE PIÈCES ---
           StoreSectionHeader(title: context.tr('campaign.store.coin_packs')),
           const SizedBox(height: 12),
-          SizedBox(
-            height: (coinPackItems.isNotEmpty ? coinPackItems.first.height : 220) + 24,
-            child: Scrollbar(
-              controller: _coinPacksScrollController,
-              thumbVisibility: true,
-              child: ListView.separated(
-                controller: _coinPacksScrollController,
-                padding: const EdgeInsets.only(bottom: 24),
-                scrollDirection: Axis.horizontal,
-                clipBehavior: Clip.none,
-                itemCount: coinPackItems.length,
-                separatorBuilder: (context, index) => const SizedBox(width: 16),
-                itemBuilder: (ctx, index) {
-                  final item = coinPackItems[index];
-                  return StoreItemCard(
-                    key: _getKeyForId(item.id) ?? ValueKey(item.id),
-                    item: item,
-                    onTap: _getOnTapForItem(item),
-                  );
-                },
-              ),
-            ),
-          ),  
+          LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth > ContentWidth.standard.maxWidth) {
+                return Wrap(
+                  alignment: WrapAlignment.spaceEvenly,
+                  runSpacing: 16,
+                  children: coinPackItems.map((item) {
+                    return StoreItemCard(
+                      key: _getKeyForId(item.id) ?? ValueKey(item.id),
+                      item: item,
+                      onTap: _getOnTapForItem(item),
+                    );
+                  }).toList(),
+                );
+              }
+
+              return SizedBox(
+                height: (coinPackItems.isNotEmpty ? coinPackItems.first.height : 220) + 24,
+                child: Scrollbar(
+                  controller: _coinPacksScrollController,
+                  thumbVisibility: true,
+                  child: ListView.separated(
+                    controller: _coinPacksScrollController,
+                    padding: const EdgeInsets.only(bottom: 24),
+                    scrollDirection: Axis.horizontal,
+                    clipBehavior: Clip.none,
+                    itemCount: coinPackItems.length,
+                    separatorBuilder: (context, index) => const SizedBox(width: 16),
+                    itemBuilder: (ctx, index) {
+                      final item = coinPackItems[index];
+                      return StoreItemCard(
+                        key: _getKeyForId(item.id) ?? ValueKey(item.id),
+                        item: item,
+                        onTap: _getOnTapForItem(item),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
         ],
+        ),
       ),
     );
   }

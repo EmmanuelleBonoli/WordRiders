@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/bounded_content.dart';
 import 'package:word_riders/features/ui/widgets/common/button/premium_round_button.dart';
 import 'package:word_riders/features/ui/widgets/game/input/game_input_cartridge.dart';
 import 'package:word_riders/features/ui/widgets/game/input/game_letter_grid.dart';
@@ -113,71 +114,74 @@ class GameInputArea extends StatelessWidget {
           ),
 
         // 4. Contenu
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Ligne de saisie
-            SizedBox(
-              height: inputRowHeight,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    // Mélanger (Gauche)
-                    PremiumRoundButton(
-                      icon: Icons.shuffle_rounded,
-                      onTap: onShuffle,
-                      size: 64,
-                      showHole: false,
-                      iconGradient: const [
-                        AppTheme.coinRimTop,
-                        AppTheme.coinRimBottom,
-                      ],
-                    ),
-
-                    const SizedBox(width: 8),
-
-                    // Cartouche (Centre étendu)
-                    Expanded(
-                      child: GameInputCartridge(
-                        currentInput: currentInput,
-                        onBackspace: onBackspace,
-                        isSuccessFlash: isSuccessFlash,
+        BoundedContent(
+          width: ContentWidth.modal,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Ligne de saisie
+              SizedBox(
+                height: inputRowHeight,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      // Mélanger (Gauche)
+                      PremiumRoundButton(
+                        icon: Icons.shuffle_rounded,
+                        onTap: onShuffle,
+                        size: 64,
+                        showHole: false,
+                        iconGradient: const [
+                          AppTheme.coinRimTop,
+                          AppTheme.coinRimBottom,
+                        ],
                       ),
-                    ),
 
-                    const SizedBox(width: 8),
+                      const SizedBox(width: 8),
 
-                    // Valider (Droite)
-                    PremiumRoundButton(
-                      icon: Icons.check_rounded,
-                      onTap: onValidate,
-                      size: 64,
-                      showHole: false,
-                      faceGradient: const [
-                        AppTheme.btnValidateHighlight,
-                        AppTheme.btnValidate,
-                      ],
-                      iconGradient: const [
-                        AppTheme.coinBorderDark,
-                        AppTheme.coinBorderDark,
-                      ],
-                    ),
-                  ],
+                      // Cartouche (Centre étendu)
+                      Expanded(
+                        child: GameInputCartridge(
+                          currentInput: currentInput,
+                          onBackspace: onBackspace,
+                          isSuccessFlash: isSuccessFlash,
+                        ),
+                      ),
+
+                      const SizedBox(width: 8),
+
+                      // Valider (Droite)
+                      PremiumRoundButton(
+                        icon: Icons.check_rounded,
+                        onTap: onValidate,
+                        size: 64,
+                        showHole: false,
+                        faceGradient: const [
+                          AppTheme.btnValidateHighlight,
+                          AppTheme.btnValidate,
+                        ],
+                        iconGradient: const [
+                          AppTheme.coinBorderDark,
+                          AppTheme.coinBorderDark,
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 8),
+              const SizedBox(height: 8),
 
-            // Zone des lettres
-            GameLetterGrid(
-              shuffledLetters: shuffledLetters,
-              onLetterTap: onLetterTap,
-            ),
+              // Zone des lettres
+              GameLetterGrid(
+                shuffledLetters: shuffledLetters,
+                onLetterTap: onLetterTap,
+              ),
 
-            const SizedBox(height: 16),
-          ],
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ],
     );
