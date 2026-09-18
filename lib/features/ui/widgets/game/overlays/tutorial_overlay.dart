@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
 import 'package:word_riders/features/ui/widgets/common/button/premium_round_button.dart';
+import 'package:word_riders/features/ui/widgets/game/game_background.dart';
 import 'package:word_riders/features/ui/widgets/game/game_timeline.dart';
 import 'package:word_riders/features/ui/widgets/game/input/game_coin_letter.dart';
 import 'package:word_riders/features/ui/widgets/game/input/game_input_cartridge.dart';
@@ -198,12 +199,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
       type: MaterialType.transparency,
       child: Stack(
         children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/background/game_bg.jpg',
-              fit: BoxFit.cover,
-            ),
-          ),
+          const Positioned.fill(child: GameBackground()),
           Positioned.fill(
             child: Container(color: Colors.black.withValues(alpha: 0.50)),
           ),
