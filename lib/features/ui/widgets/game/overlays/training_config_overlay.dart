@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
 import 'package:word_riders/features/ui/widgets/common/button/premium_menu_button.dart';
+import 'package:word_riders/features/ui/widgets/game/game_background.dart';
 
 class TrainingConfigOverlay extends StatelessWidget {
   final Function(int) onSelectLength;
@@ -20,13 +21,8 @@ class TrainingConfigOverlay extends StatelessWidget {
       type: MaterialType.transparency,
       child: Stack(
         children: [
-          // Background
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/background/game_bg.jpg',
-              fit: BoxFit.cover,
-            ),
-          ),
+          // Fond (3 couches, statique)
+          const Positioned.fill(child: GameBackground()),
 
           Positioned.fill(
             child: Container(color: Colors.black.withValues(alpha: 0.4)),

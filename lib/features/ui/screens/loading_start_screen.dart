@@ -64,7 +64,7 @@ class _LoadingStartScreenState extends State<LoadingStartScreen> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/images/background/loading_bg2.jpg', 
+              'assets/images/background/loading_bg2.png',
               fit: BoxFit.cover,
               alignment: Alignment.bottomCenter,
             ),

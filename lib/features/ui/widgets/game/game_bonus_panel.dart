@@ -25,7 +25,7 @@ class GameBonusPanel extends StatelessWidget {
             color: AppTheme.headerWood,
             alignment: Alignment.topCenter,
             child: SizedBox(
-              height: 200, 
+              height: 200,
               width: double.infinity,
               child: LeafBackground(
                 backgroundColor: Colors.transparent,
@@ -45,16 +45,28 @@ class GameBonusPanel extends StatelessWidget {
           height: 6,
           child: Container(
             decoration: const BoxDecoration(
-              border: Border.symmetric(horizontal: BorderSide(color: AppTheme.coinBorderDark, width: 1.5)),
+              border: Border.symmetric(
+                horizontal: BorderSide(
+                  color: AppTheme.coinBorderDark,
+                  width: 1.5,
+                ),
+              ),
               gradient: LinearGradient(
                 colors: [AppTheme.coinRimTop, AppTheme.coinRimBottom],
-                begin: Alignment.topCenter, end: Alignment.bottomCenter
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
-              boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
+              ],
             ),
           ),
         ),
-        
+
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -97,16 +109,18 @@ class GameBonusPanel extends StatelessWidget {
     required List<Color> colorOptions,
   }) {
     final isDisabled = count <= 0 || isUsed;
-    
+
     return Stack(
       alignment: Alignment.center,
       children: [
         PremiumRoundButton(
           icon: icon,
-          onTap: isDisabled ? () {} : onTap,
+          onTap: isDisabled ? null : onTap,
           size: 64,
           showHole: false,
-          faceGradient: isDisabled ? const [Colors.grey, Colors.blueGrey] : colorOptions,
+          faceGradient: isDisabled
+              ? const [Colors.grey, Colors.blueGrey]
+              : colorOptions,
           iconGradient: const [Colors.white, Colors.white70],
         ),
         if (count > 0 && !isUsed)

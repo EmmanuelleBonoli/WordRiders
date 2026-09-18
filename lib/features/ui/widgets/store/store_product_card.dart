@@ -50,7 +50,7 @@ class StoreProductCard extends StatelessWidget {
     );
 
     return BouncingScaleButton(
-      onTap: onTap ?? () {},
+      onTap: onTap,
       showShadow: false,
       child: Stack(
         clipBehavior: Clip.none,
