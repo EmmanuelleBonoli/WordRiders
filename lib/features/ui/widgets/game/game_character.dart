@@ -117,7 +117,11 @@ class GameCharacter extends SpriteAnimationGroupComponent<CharacterState> with H
     var availableTricks = _trickAnimations.where((t) => animations?.containsKey(t) == true).toList();
 
     if (availableTricks.isEmpty) {
-      if (resumeRiding) startRiding(); else playIdleLoop();
+      if (resumeRiding) {
+        startRiding();
+      } else {
+        playIdleLoop();
+      }
       return;
     }
 
