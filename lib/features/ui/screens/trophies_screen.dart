@@ -5,6 +5,7 @@ import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/gameplay/models/goal.dart';
 import 'package:word_riders/features/gameplay/services/goal_service.dart';
 import 'package:word_riders/features/ui/animations/resource_transfer_animation.dart';
+import 'package:word_riders/features/ui/widgets/common/bounded_content.dart';
 import 'package:word_riders/features/ui/widgets/common/main_layout.dart';
 import 'package:word_riders/features/ui/widgets/careerGoals/daily_goal_card.dart';
 import 'package:word_riders/features/ui/widgets/careerGoals/career_goal_tile.dart';
@@ -36,81 +37,88 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
     if (mounted) setState(() {});
   }
 
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 100),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // --- SECTION 1 : SUCCÈS QUOTIDIENS ---
-          _buildSectionHeader(context.tr('campaign.goals.headers.daily')),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 175,
-            child: Scrollbar(
-              controller: _dailyGoalsScrollController,
-              thumbVisibility: true,
-              child: ListView.separated(
+      child: BoundedContent(
+        width: ContentWidth.standard,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // --- SECTION 1 : SUCCÈS QUOTIDIENS ---
+            _buildSectionHeader(context.tr('campaign.goals.headers.daily')),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 175,
+              child: Scrollbar(
                 controller: _dailyGoalsScrollController,
-                padding: const EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 24),
-                scrollDirection: Axis.horizontal,
-                clipBehavior: Clip.none,
-                itemCount: GoalService().dailyGoals.length,
-                separatorBuilder: (ctx, index) => const SizedBox(width: 16),
-                itemBuilder: (ctx, index) {
-                  final goal = GoalService().dailyGoals[index];
-                  return DailyGoalCard(
-                    goal: goal,
-                    onClaim: (key) => _handleClaim(key, goal),
-                  );
-                },
+                thumbVisibility: true,
+                child: ListView.separated(
+                  controller: _dailyGoalsScrollController,
+                  padding: const EdgeInsets.only(
+                    left: 4,
+                    right: 4,
+                    top: 4,
+                    bottom: 24,
+                  ),
+                  scrollDirection: Axis.horizontal,
+                  clipBehavior: Clip.none,
+                  itemCount: GoalService().dailyGoals.length,
+                  separatorBuilder: (ctx, index) => const SizedBox(width: 16),
+                  itemBuilder: (ctx, index) {
+                    final goal = GoalService().dailyGoals[index];
+                    return DailyGoalCard(
+                      goal: goal,
+                      onClaim: (key) => _handleClaim(key, goal),
+                    );
+                  },
+                ),
               ),
             ),
-          ),
 
-          const SizedBox(height: 30),
+            const SizedBox(height: 30),
 
-          // --- SECTION 2 : PROGRESSION DE CARRIÈRE ---
-          _buildSectionHeader(context.tr('campaign.goals.headers.career')),
-          const SizedBox(height: 12),
-          
-          Container(
-             decoration: BoxDecoration(
-              color: AppTheme.tileFace.withValues(alpha: 0.9),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.brown, width: 3),
+            // --- SECTION 2 : PROGRESSION DE CARRIÈRE ---
+            _buildSectionHeader(context.tr('campaign.goals.headers.career')),
+            const SizedBox(height: 12),
 
-              boxShadow: [
-                 BoxShadow(
-                   color: Colors.black.withValues(alpha: 0.3),
-                   blurRadius: 10,
-                   offset: const Offset(0, 6)
-                 )
-              ]
+            Container(
+              decoration: BoxDecoration(
+                color: AppTheme.tileFace.withValues(alpha: 0.9),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppTheme.brown, width: 3),
+
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  ...GoalService().careerGoals.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final goal = entry.value;
+                    final last = index == GoalService().careerGoals.length - 1;
+
+                    return Column(
+                      children: [
+                        CareerGoalTile(
+                          goal: goal,
+                          onClaim: (key) => _handleClaim(key, goal),
+                        ),
+                        if (!last) _buildDivider(),
+                      ],
+                    );
+                  }),
+                ],
+              ),
             ),
-            child: Column(
-              children: [
-                ...GoalService().careerGoals.asMap().entries.map((entry) {
-                   final index = entry.key;
-                   final goal = entry.value;
-                   final last = index == GoalService().careerGoals.length - 1;
-                   
-                   return Column(
-                     children: [
-                       CareerGoalTile(
-                         goal: goal,
-                         onClaim: (key) => _handleClaim(key, goal),
-                       ),
-                       if (!last) _buildDivider(),
-                     ],
-                   );
-                }),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -126,10 +134,18 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
             fontFamily: 'Round',
             fontSize: 22,
             fontWeight: FontWeight.w900,
-            color: AppTheme.coinRimTop, 
-             shadows: [
-              Shadow(color: AppTheme.darkBrown, blurRadius: 2, offset: Offset(1, 1)),
-              Shadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
+            color: AppTheme.coinRimTop,
+            shadows: [
+              Shadow(
+                color: AppTheme.darkBrown,
+                blurRadius: 2,
+                offset: Offset(1, 1),
+              ),
+              Shadow(
+                color: Colors.black26,
+                blurRadius: 4,
+                offset: Offset(0, 2),
+              ),
             ],
           ),
         ),

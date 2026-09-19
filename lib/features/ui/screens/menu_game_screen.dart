@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../widgets/common/bounded_content.dart';
 import '../widgets/common/button/premium_menu_button.dart';
 import '../../gameplay/services/player_preferences.dart';
 import '../../gameplay/services/word_service.dart';
@@ -54,12 +55,12 @@ class MenuGameScreen extends StatelessWidget {
                       width: 280,
                       fit: BoxFit.contain,
                     ),
-                    
+
                     const SizedBox(height: 60),
-              
+
                     // Menu Buttons
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 300),
+                    BoundedContent(
+                      width: ContentWidth.menu,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -100,7 +101,6 @@ class MenuGameScreen extends StatelessWidget {
     final initialized = await PlayerPreferences.isCampaignInitialized();
     
     if (!initialized) {
-      // Auto-initialiser la campagne silencieusement
       try {
         final words = [await service.getNextCampaignWord(locale, stage: 1)];
         
@@ -114,7 +114,6 @@ class MenuGameScreen extends StatelessWidget {
       }
     }
     
-    // Vérifier que le widget est toujours monté avant de naviguer
     if (!context.mounted) return;
     context.go('/campaign');
   }

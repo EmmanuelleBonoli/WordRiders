@@ -12,9 +12,10 @@ const double _kTrackAboveRide = 48.0;
 // Chevauchement piste / `up` pour masquer la couture.
 const double _kLayerOverlap = 4.0;
 // La piste passe sous `down` d'au moins ce ratio de la hauteur de `down`
-// (sinon une bande blanche apparaît à la jonction).
-const double _kTrackUnderDownRatio = 0.12;
-const double _kTrackUnderDownMin = 24.0;
+// (sinon une bande blanche apparaît à la jonction, dans les creux du feuillage
+// dentelé de `down`).
+const double _kTrackUnderDownRatio = 0.25;
+const double _kTrackUnderDownMin = 70.0;
 // Garde-fous petits écrans.
 const double _kMinDownHeight = 60.0;
 const double _kMinUpHeight = 60.0;
