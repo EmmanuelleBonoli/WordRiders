@@ -7,10 +7,13 @@ import 'package:word_riders/features/gameplay/services/goal_service.dart';
 import 'package:word_riders/data/audio_data.dart';
 import 'package:word_riders/features/gameplay/services/audio_service.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:word_riders/features/gameplay/controllers/game_keyboard_handler.dart';
 
 enum GameStatus { loading, waitingForConfig, playing, paused, won, lost }
 
-class GameController extends ChangeNotifier with WidgetsBindingObserver {
+class GameController extends ChangeNotifier
+    with WidgetsBindingObserver
+    implements GameKeyboardTarget {
   final bool isCampaign;
   final String locale;
   final WordService wordService;
@@ -40,9 +43,11 @@ class GameController extends ChangeNotifier with WidgetsBindingObserver {
   // Vitesse du renard : % du parcours par seconde. 
   double _foxSpeed = 0.01;
 
+  @override
   GameStatus get status => _status;
   String get targetWord => _targetWord; 
   int get currentStage => _currentStageId;
+  @override
   List<String> get shuffledLetters => List.unmodifiable(_shuffledLetters);
   String get currentInput => _currentInput;
   bool get isLoading => _status == GameStatus.loading;
@@ -64,6 +69,7 @@ class GameController extends ChangeNotifier with WidgetsBindingObserver {
   String? get feedbackMessage => _feedbackMessage;
 
   bool _isSuccessFlash = false;
+  @override
   bool get isSuccessFlash => _isSuccessFlash;
 
   GameController({
@@ -170,7 +176,6 @@ class GameController extends ChangeNotifier with WidgetsBindingObserver {
       _status = GameStatus.playing;
       
       _startGameLoop();
-
     } catch (e) {
       debugPrint("GameController: ERROR initializing game: $e");
       _targetWord = "ERREUR";
@@ -219,7 +224,7 @@ class GameController extends ChangeNotifier with WidgetsBindingObserver {
     });
   }
 
-
+  @override
   void onLetterTap(String letter) {
     if (_status != GameStatus.playing || _isSuccessFlash) return;
 
@@ -230,6 +235,7 @@ class GameController extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
+  @override
   void onBackspace() {
     if (_status != GameStatus.playing || _isSuccessFlash) return;
 
@@ -240,6 +246,7 @@ class GameController extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
+  @override
   void onShuffle() {
     if (_status != GameStatus.playing || _isSuccessFlash) return;
     
@@ -250,6 +257,7 @@ class GameController extends ChangeNotifier with WidgetsBindingObserver {
   int _currentStageId = 1;
 
   // Retourne true si le mot est valide et fait avancer le lapin
+  @override
   bool validate() {
     if (_status != GameStatus.playing) return false;
     
