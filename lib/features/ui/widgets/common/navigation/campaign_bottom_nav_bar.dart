@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/bounded_content.dart';
 
 class CampaignBottomNavBar extends StatefulWidget {
   final int selectedIndex;
@@ -44,6 +45,18 @@ class _CampaignBottomNavBarState extends State<CampaignBottomNavBar> {
     }
   }
 
+  static const List<IconData> _icons = [
+    Icons.store,
+    Icons.videogame_asset,
+    Icons.emoji_events,
+  ];
+
+  static const double _pillWidth = 90.0;
+  static const double _pillHeight = 90.0;
+  static const double _iconSizeSelected = 60.0;
+  static const double _iconSizeUnselected = 40.0;
+  static const Duration _slideDuration = Duration(milliseconds: 450);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -60,163 +73,134 @@ class _CampaignBottomNavBarState extends State<CampaignBottomNavBar> {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final totalWidth = constraints.maxWidth;
+          final totalWidth = constraints.maxWidth > ContentWidth.standard.maxWidth
+              ? ContentWidth.standard.maxWidth
+              : constraints.maxWidth;
+          final slotWidth = totalWidth / _icons.length;
 
-          final selectedWidth = totalWidth * 0.44;
-          final unselectedWidth = totalWidth * 0.28;
+          return Center(
+            child: SizedBox(
+              width: totalWidth,
+              height: 80,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  // Pill de sélection : glisse d'un slot à l'autre
+                  AnimatedPositioned(
+                    duration: _slideDuration,
+                    curve: Curves.easeOutCubic,
+                    left:
+                        widget.selectedIndex * slotWidth +
+                        (slotWidth - _pillWidth) / 2,
+                    bottom: 5,
+                    width: _pillWidth,
+                    height: _pillHeight,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [AppTheme.coinRimTop, AppTheme.coinFaceBottom],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppTheme.coinBorderDark, width: 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            offset: const Offset(0, 4),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
 
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Flexible(
-                child: _buildNavItem(
-                  0,
-                  Icons.store,
-                  selectedWidth,
-                  unselectedWidth,
-                ),
+                  Row(
+                    children: List.generate(
+                      _icons.length,
+                      (index) => _buildNavItem(index, _icons[index], slotWidth),
+                    ),
+                  ),
+                ],
               ),
-              Flexible(
-                child: _buildNavItem(
-                  1,
-                  Icons.videogame_asset,
-                  selectedWidth,
-                  unselectedWidth,
-                ),
-              ),
-              Flexible(
-                child: _buildNavItem(
-                  2,
-                  Icons.emoji_events,
-                  selectedWidth,
-                  unselectedWidth,
-                ),
-              ),
-            ],
+            ),
           );
         },
       ),
     );
   }
 
-  Widget _buildNavItem(
-    int index,
-    IconData icon,
-    double selectedWidth,
-    double unselectedWidth,
-  ) {
+  Widget _buildNavItem(int index, IconData icon, double slotWidth) {
     final isSelected = index == widget.selectedIndex;
-    final width = isSelected ? selectedWidth : unselectedWidth;
+    final iconSize = isSelected ? _iconSizeSelected : _iconSizeUnselected;
 
-    final double height = isSelected ? 90.0 : 70.0;
-
-    final double iconSize = isSelected ? 60.0 : 40.0;
-
-    final Decoration decoration = isSelected
-        ? BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [AppTheme.coinRimTop, AppTheme.coinFaceBottom],
-            ),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppTheme.coinBorderDark, width: 2),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                offset: const Offset(0, 4),
-                blurRadius: 4,
-              ),
-            ],
-          )
-        : BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                AppTheme.coinRimTop.withValues(alpha: 0),
-                AppTheme.coinRimBottom.withValues(alpha: 0),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: AppTheme.coinBorderDark.withValues(alpha: 0),
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.transparent,
-                offset: const Offset(0, 4),
-                blurRadius: 4,
-              ),
-            ],
-          );
-
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: () => widget.onTap(index),
-        behavior: HitTestBehavior.opaque,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOutBack,
-          width: width,
-          height: 80,
-          alignment: Alignment.bottomCenter,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutBack,
-            height: height,
-            width: width - 4,
-            margin: const EdgeInsets.only(bottom: 5),
-            decoration: decoration,
-            child: Center(
-              child: Stack(
-                alignment: Alignment.center,
-                clipBehavior: Clip.none,
-                children: [
-                  Icon(
-                    icon,
-                    size: iconSize,
-                    color: isSelected
-                        ? AppTheme.darkBrown
-                        : AppTheme.tileShadow,
-                  ),
-                  if (index == 2 && _unclaimedCount > 0)
-                    Positioned(
-                      top: -10,
-                      right: -15,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        constraints: const BoxConstraints(
-                          minWidth: 20,
-                          minHeight: 20,
-                        ),
-                        child: Text(
-                          '$_unclaimedCount',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontFamily: 'Round',
-                            fontWeight: FontWeight.bold,
-                          ),
+    return SizedBox(
+      width: slotWidth,
+      height: 80,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: () => widget.onTap(index),
+          behavior: HitTestBehavior.opaque,
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 5),
+              child: SizedBox(
+                height: _pillHeight,
+                child: Center(
+                  child: Stack(
+                    alignment: Alignment.center,
+                    clipBehavior: Clip.none,
+                    children: [
+                      TweenAnimationBuilder<double>(
+                        tween: Tween(end: iconSize),
+                        duration: _slideDuration,
+                        curve: Curves.easeOutCubic,
+                        builder: (context, size, _) => Icon(
+                          icon,
+                          size: size,
+                          color: isSelected
+                              ? AppTheme.darkBrown
+                              : AppTheme.tileShadow,
                         ),
                       ),
-                    ),
-                ],
+                      if (index == 2 && _unclaimedCount > 0)
+                        Positioned(
+                          top: -10,
+                          right: -15,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 20,
+                              minHeight: 20,
+                            ),
+                            child: Text(
+                              '$_unclaimedCount',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontFamily: 'Round',
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
