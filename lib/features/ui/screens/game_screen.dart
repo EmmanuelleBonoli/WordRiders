@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'package:word_riders/features/gameplay/controllers/game_controller.dart';
+import 'package:word_riders/features/gameplay/controllers/game_keyboard_handler.dart';
 import 'package:word_riders/features/gameplay/controllers/physics_progress_controller.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:word_riders/features/gameplay/services/word_service.dart';
@@ -53,6 +54,10 @@ class _GameScreenContentState extends State<_GameScreenContent>
     with SingleTickerProviderStateMixin {
   late final PhysicsProgressController _physicsController;
   late final GameController _controller;
+  late final GameKeyboardHandler _keyboardHandler;
+  final FocusNode _keyboardFocusNode = FocusNode(
+    debugLabel: 'GameKeyboardFocus',
+  );
 
   // Délai avant l'ouverture de la modale de fin, pour laisser le temps
   // de voir l'animation victory/defeat se jouer sur la zone de course.
@@ -133,6 +138,10 @@ class _GameScreenContentState extends State<_GameScreenContent>
     _physicsController.addListener(_onPhysicsUpdate);
     _controller = context.read<GameController>();
     _controller.addListener(_onControllerStatusChanged);
+    _keyboardHandler = GameKeyboardHandler(
+      target: _controller,
+      onPauseRequested: _onBackTap,
+    );
   }
 
   @override
@@ -141,6 +150,7 @@ class _GameScreenContentState extends State<_GameScreenContent>
     _endOverlayTimer?.cancel();
     _physicsController.removeListener(_onPhysicsUpdate);
     _physicsController.dispose();
+    _keyboardFocusNode.dispose();
     super.dispose();
   }
 
@@ -148,11 +158,80 @@ class _GameScreenContentState extends State<_GameScreenContent>
     setState(() {});
   }
 
+  /// Ouvre la modale de pause
+  void _onBackTap() {
+    _controller.pauseGame();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => GamePauseOverlay(
+        title: context.tr('game.pause_title'),
+        isCampaign: _controller.isCampaign,
+        onResume: () {
+          Navigator.pop(ctx);
+          _controller.resumeGame();
+        },
+        onRestart: () async {
+          Navigator.pop(ctx);
+
+          // En campagne, recommencer en cours de jeu coûte une vie (abandon)
+          if (_controller.isCampaign) {
+            final success = await _controller.consumeLifeForRestart();
+            if (!success) {
+              // Si plus de vie : afficher la modale pour recharger
+              if (context.mounted) {
+                await showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (dialogCtx) => NoLivesOverlay(
+                    fromGame: true,
+                    onLivesReplenished: () {
+                      _controller.restartGame();
+                    },
+                  ),
+                );
+
+                if (context.mounted) {
+                  final currentLives = await PlayerPreferences.getLives();
+                  if (currentLives <= 0) {
+                    if (context.mounted) {
+                      context.go('/campaign');
+                    }
+                  }
+                }
+              }
+              return;
+            }
+          }
+
+          _controller.restartGame();
+        },
+        onQuit: () async {
+          Navigator.pop(ctx);
+          await _controller.quitGame();
+          if (context.mounted) {
+            Navigator.pop(context);
+          }
+        },
+      ),
+    );
+  }
+
   /// Programme l'ouverture de la modale de fin après [_endOverlayDelay],
   /// pour laisser le temps de voir l'animation victory/defeat.
   void _onControllerStatusChanged() {
     final status = _controller.status;
     final bool isOver = status == GameStatus.won || status == GameStatus.lost;
+
+    // Redonne le focus clavier quand la partie commence ou reprend
+    if (status == GameStatus.playing && !_keyboardFocusNode.hasFocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _controller.status == GameStatus.playing) {
+          _keyboardFocusNode.requestFocus();
+        }
+      });
+    }
 
     if (!isOver) {
       _lastHandledStatus = status;
@@ -268,78 +347,27 @@ class _GameScreenContentState extends State<_GameScreenContent>
       controller.resumeGame();
     }
 
-    void onBackTap() {
-      controller.pauseGame();
-
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (ctx) => GamePauseOverlay(
-          title: context.tr('game.pause_title'),
-          isCampaign: controller.isCampaign,
-          onResume: () {
-            Navigator.pop(ctx);
-            controller.resumeGame();
-          },
-          onRestart: () async {
-            Navigator.pop(ctx);
-
-            // En campagne, recommencer en cours de jeu coûte une vie (abandon)
-            if (controller.isCampaign) {
-              final success = await controller.consumeLifeForRestart();
-              if (!success) {
-                // Si plus de vie : afficher la modale pour recharger
-                if (context.mounted) {
-                  await showDialog(
-                    context: context,
-                    barrierDismissible: true,
-                    builder: (dialogCtx) => NoLivesOverlay(
-                      fromGame: true,
-                      onLivesReplenished: () {
-                        controller.restartGame();
-                      },
-                    ),
-                  );
-
-                  if (context.mounted) {
-                    final currentLives = await PlayerPreferences.getLives();
-                    if (currentLives <= 0) {
-                      if (context.mounted) {
-                        context.go('/campaign');
-                      }
-                    }
-                  }
-                }
-                return;
-              }
-            }
-
-            controller.restartGame();
-          },
-          onQuit: () async {
-            Navigator.pop(ctx);
-            await controller.quitGame();
-            if (context.mounted) {
-              Navigator.pop(context);
-            }
-          },
-        ),
-      );
-    }
-
-    return Scaffold(
-      body: Stack(
-        children: [
-          // 1. Fond de course en 3 couches — piste fixe (référence stable des
-          // personnages), avant-plan et arrière-plan en parallaxe pilotés par
-          // l'offset lissé de la physique.
-          Positioned.fill(
-            child: GameBackground(
-              scrollOffset: smoothScrollOffset,
-              bottomReserved: bottomReserved,
-              topReserved: topReserved,
+    // Le clavier physique n'agit que sur cet écran, jamais via un champ de
+    // saisie texte : aucun risque d'ouvrir le clavier virtuel sur tactile.
+    return Focus(
+      focusNode: _keyboardFocusNode,
+      autofocus: true,
+      onKeyEvent: (node, event) => _keyboardHandler.handleKeyEvent(event)
+          ? KeyEventResult.handled
+          : KeyEventResult.ignored,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            // 1. Fond de course en 3 couches — piste fixe (référence stable des
+            // personnages), avant-plan et arrière-plan en parallaxe pilotés par
+            // l'offset lissé de la physique.
+            Positioned.fill(
+              child: GameBackground(
+                scrollOffset: smoothScrollOffset,
+                bottomReserved: bottomReserved,
+                topReserved: topReserved,
+              ),
             ),
-          ),
 
           // 2. Header Background Decoration
           Positioned(
@@ -350,19 +378,19 @@ class _GameScreenContentState extends State<_GameScreenContent>
             child: const GameHeaderBackground(),
           ),
 
-          // 3. Contenu Principal
-          SafeArea(
-            child: Column(
-              children: [
-                KeyedSubtree(
-                  key: _headerKey,
-                  child: GameHeader(
-                    onBack: onBackTap,
-                    onSettings: onSettingsTap,
-                    isCampaign: controller.isCampaign,
-                    currentStage: controller.currentStage,
+            // 3. Contenu Principal
+            SafeArea(
+              child: Column(
+                children: [
+                  KeyedSubtree(
+                    key: _headerKey,
+                    child: GameHeader(
+                      onBack: _onBackTap,
+                      onSettings: onSettingsTap,
+                      isCampaign: controller.isCampaign,
+                      currentStage: controller.currentStage,
+                    ),
                   ),
-                ),
 
                 GameTimeline(
                   rabbitProgress: _physicsController.smoothRabbitProgress,
@@ -414,24 +442,25 @@ class _GameScreenContentState extends State<_GameScreenContent>
             ),
           ),
 
-          // 4. Overlays (Pause & Fin)
-          if (_showEndOverlay)
-            GameEndOverlay(
-              currentLevel: controller.currentStage,
-              isWon: controller.status == GameStatus.won,
-              isCampaign: controller.isCampaign,
-              onQuit: () async {
-                if (controller.isCampaign &&
-                    controller.status == GameStatus.lost) {
-                  await controller.concedeGame();
-                }
-                if (context.mounted) Navigator.pop(context);
-              },
-              onRestart: () => controller.restartGame(),
-              onContinue: () => Navigator.pop(context),
-              onRevive: () => controller.revive(),
-            ),
-        ],
+            // 4. Overlays (Pause & Fin)
+            if (_showEndOverlay)
+              GameEndOverlay(
+                currentLevel: controller.currentStage,
+                isWon: controller.status == GameStatus.won,
+                isCampaign: controller.isCampaign,
+                onQuit: () async {
+                  if (controller.isCampaign &&
+                      controller.status == GameStatus.lost) {
+                    await controller.concedeGame();
+                  }
+                  if (context.mounted) Navigator.pop(context);
+                },
+                onRestart: () => controller.restartGame(),
+                onContinue: () => Navigator.pop(context),
+                onRevive: () => controller.revive(),
+              ),
+          ],
+        ),
       ),
     );
   }
