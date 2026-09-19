@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/bounded_content.dart';
 import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
 import 'package:word_riders/features/ui/widgets/common/button/premium_round_button.dart';
 import 'package:word_riders/features/ui/widgets/game/game_background.dart';
@@ -61,12 +62,13 @@ class _TutorialOverlayState extends State<TutorialOverlay>
     _foxProgress = const AlwaysStoppedAnimation(0.0);
 
     // Durée 6500ms : séquence de taps (0→0.62) + affichage validé ~2s (0.62→0.93) + fade
-    _demoAnimController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 6500),
-    )
-      ..addListener(_onDemoTick)
-      ..repeat();
+    _demoAnimController =
+        AnimationController(
+            vsync: this,
+            duration: const Duration(milliseconds: 6500),
+          )
+          ..addListener(_onDemoTick)
+          ..repeat();
 
     _demoData = _getDemoData('en');
   }
@@ -132,9 +134,10 @@ class _TutorialOverlayState extends State<TutorialOverlay>
     _rabbitProgress = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
     );
-    _foxProgress = Tween<double>(begin: 0.0, end: 0.58).animate(
-      CurvedAnimation(parent: _animController, curve: Curves.easeIn),
-    );
+    _foxProgress = Tween<double>(
+      begin: 0.0,
+      end: 0.58,
+    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeIn));
   }
 
   void _goNext() {
@@ -205,41 +208,44 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           ),
 
           SafeArea(
-            child: Column(
-              children: [
-                // Contenu centré verticalement (dots + titre + étape)
-                Flexible(
-                  child: LayoutBuilder(
-                    builder: (ctx, constraints) => SingleChildScrollView(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight,
-                        ),
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 24),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                _buildStepDots(),
-                                const SizedBox(height: 18),
-                                _buildStepSubtitle(context),
-                                const SizedBox(height: 28),
-                                _buildStepContent(context),
-                              ],
+            child: BoundedContent(
+              width: ContentWidth.modal,
+              child: Column(
+                children: [
+                  // Contenu centré verticalement (dots + titre + étape)
+                  Flexible(
+                    child: LayoutBuilder(
+                      builder: (ctx, constraints) => SingleChildScrollView(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: constraints.maxHeight,
+                          ),
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 24),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _buildStepDots(),
+                                  const SizedBox(height: 18),
+                                  _buildStepSubtitle(context),
+                                  const SizedBox(height: 28),
+                                  _buildStepContent(context),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                // Bouton collé en bas
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 32),
-                  child: _buildNextButton(context),
-                ),
-              ],
+                  // Bouton collé en bas
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(32, 0, 32, 32),
+                    child: _buildNextButton(context),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -353,7 +359,10 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           ];
 
           // Départ de la main (hors zone, au-dessus du premier waypoint)
-          final startPos = Offset(tileCenters[_demoData.tapIndices[0]].dx, gridY - 40);
+          final startPos = Offset(
+            tileCenters[_demoData.tapIndices[0]].dx,
+            gridY - 40,
+          );
 
           // Lapin sur la timeline
           final double maxPos = (w - flagSize).clamp(0.0, double.infinity);
@@ -366,7 +375,9 @@ class _TutorialOverlayState extends State<TutorialOverlay>
               children: [
                 // --- Timeline (identique à GameTimeline) ---
                 Positioned(
-                  top: 0, left: 0, right: 0,
+                  top: 0,
+                  left: 0,
+                  right: 0,
                   height: timelineH,
                   child: Stack(
                     alignment: Alignment.centerLeft,
@@ -384,11 +395,14 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                         ),
                       ),
                       Positioned(
-                        right: 0, top: 0, bottom: 0,
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
                         child: Center(
                           child: Image.asset(
                             'assets/images/characters/finish_flag2.png',
-                            width: flagSize, height: flagSize,
+                            width: flagSize,
+                            height: flagSize,
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -397,11 +411,13 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                         duration: const Duration(milliseconds: 500),
                         curve: Curves.easeOutCubic,
                         left: rabbitLeft,
-                        top: 0, bottom: 0,
+                        top: 0,
+                        bottom: 0,
                         child: Center(
                           child: Image.asset(
                             'assets/images/characters/rabbit_head2.png',
-                            width: flagSize, height: flagSize,
+                            width: flagSize,
+                            height: flagSize,
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -449,9 +465,11 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                   final bool isTop = i < 3;
                   final double diff = (i % 3).toDouble() - 1.0;
                   final double yCurve = diff * diff * curveFactor;
-                  final double tileLeft = w / 2 + diff * spacing - letterSize / 2;
-                  final double tileTop =
-                      isTop ? gridY + yCurve : gridY + 74 - yCurve;
+                  final double tileLeft =
+                      w / 2 + diff * spacing - letterSize / 2;
+                  final double tileTop = isTop
+                      ? gridY + yCurve
+                      : gridY + 74 - yCurve;
                   return Positioned(
                     left: tileLeft,
                     top: tileTop,
@@ -490,7 +508,6 @@ class _TutorialOverlayState extends State<TutorialOverlay>
       ),
     );
   }
-
 
   Widget _buildGhostHand() {
     return Container(
@@ -536,7 +553,11 @@ class _TutorialOverlayState extends State<TutorialOverlay>
     Offset startPos,
   ) {
     if (v < 0.065) {
-      return Offset.lerp(startPos, waypoints[0], (v - 0.03).clamp(0, 0.035) / 0.035)!;
+      return Offset.lerp(
+        startPos,
+        waypoints[0],
+        (v - 0.03).clamp(0, 0.035) / 0.035,
+      )!;
     }
     if (v < 0.12) return waypoints[0];
     if (v < 0.19) {
@@ -559,7 +580,8 @@ class _TutorialOverlayState extends State<TutorialOverlay>
 
   /// Rétrécit brièvement la main au moment de chaque tap.
   double _computeHandScale(double v) {
-    final bool tapping = (v >= 0.09 && v < 0.12) ||
+    final bool tapping =
+        (v >= 0.09 && v < 0.12) ||
         (v >= 0.22 && v < 0.25) ||
         (v >= 0.35 && v < 0.37) ||
         (v >= 0.48 && v < 0.50) ||
@@ -620,9 +642,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           ],
         ),
         child: Text(
-          isLast
-              ? context.tr('tutorial.start')
-              : context.tr('tutorial.next'),
+          isLast ? context.tr('tutorial.start') : context.tr('tutorial.next'),
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontFamily: 'Round',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/bounded_content.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_button.dart';
 import 'package:word_riders/features/ui/widgets/common/navigation/app_back_button.dart';
 
@@ -20,47 +21,58 @@ class GameHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      height: 100,
-      child: Stack(
-        alignment: Alignment.center,
-        clipBehavior: Clip.none,
-        children: [
-           // 1. Bouton Gauche (Retour)
-           Align(
-             alignment: Alignment.centerLeft,
-             child: AppBackButton(onPressed: onBack),
-           ),
-           
-           // 2. Panneau Central (Seulement si Campagne)
-           if (isCampaign)
-             _buildCampaignBoard(context),
+    return LayoutBuilder(
+      builder: (context, outerConstraints) {
+        final double availableWidth = outerConstraints.maxWidth.isFinite
+            ? outerConstraints.maxWidth
+            : ContentWidth.modal.maxWidth;
 
-           // 3. Côté Droit (Vies + Paramètres)
-           Align(
-             alignment: Alignment.centerRight,
-             child: Row(
-               mainAxisSize: MainAxisSize.min,
-               children: [
-                 SettingsButton(onTap: onSettings),
-               ],
-             ),
-           ),
-        ],
-      ),
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          height: 100,
+          child: Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+               // 1. Bouton Gauche (Retour)
+               Align(
+                 alignment: Alignment.centerLeft,
+                 child: AppBackButton(onPressed: onBack),
+               ),
+
+               // 2. Panneau Central (Seulement si Campagne)
+               if (isCampaign)
+                 _buildCampaignBoard(
+                   context,
+                   availableWidth.clamp(0.0, ContentWidth.modal.maxWidth),
+                 ),
+
+               // 3. Côté Droit (Vies + Paramètres)
+               Align(
+                 alignment: Alignment.centerRight,
+                 child: Row(
+                   mainAxisSize: MainAxisSize.min,
+                   children: [
+                     SettingsButton(onTap: onSettings),
+                   ],
+                 ),
+               ),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildCampaignBoard(BuildContext context) {
-    final double maxBoardWidth = MediaQuery.of(context).size.width - 160;
+  Widget _buildCampaignBoard(BuildContext context, double availableWidth) {
+    final double maxBoardWidth = availableWidth - 160;
 
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: maxBoardWidth),
       child: Container(
         // 1. Bordure Extérieure Sombre (avec Ombre)
         decoration: BoxDecoration(
-          color: AppTheme.coinBorderDark, 
+          color: AppTheme.coinBorderDark,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -85,7 +97,7 @@ class GameHeader extends StatelessWidget {
           child: Container(
              // 3. Bordure Intérieure Sombre
              decoration: BoxDecoration(
-              color: AppTheme.coinBorderDark, 
+              color: AppTheme.coinBorderDark,
               borderRadius: BorderRadius.circular(10.5),
              ),
              padding: const EdgeInsets.all(1.5),
@@ -93,7 +105,7 @@ class GameHeader extends StatelessWidget {
                // 4. Face (Crème)
                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                decoration: BoxDecoration(
-                 color: AppTheme.levelSignFace, 
+                 color: AppTheme.levelSignFace,
                  borderRadius: BorderRadius.circular(9),
                ),
                child: FittedBox(
@@ -104,7 +116,7 @@ class GameHeader extends StatelessWidget {
                       fontFamily: AppTheme.fontFamily,
                       fontSize: 22,
                       fontWeight: FontWeight.w900,
-                      color: AppTheme.coinBorderDark, 
+                      color: AppTheme.coinBorderDark,
                       letterSpacing: 1.0,
                     ),
                  ),

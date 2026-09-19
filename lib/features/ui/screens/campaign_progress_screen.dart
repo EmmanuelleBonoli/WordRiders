@@ -37,7 +37,11 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
   // --- Géométrie verticale de la piste ---
   // Hauteur fixe du canvas de la piste (ligne + cercles + joueur). Le canvas
   // est centré verticalement sur la ligne de stage fournie par le scope.
-  static const double _kTrackHeight = 320.0;
+  static const double _kTrackHeight = 400.0;
+
+  // Largeur fixe du contenu (11 stages visibles à la fois, 90px chacun).
+  // Centrée horizontalement à l'écran
+  static const double _kContentWidth = 990.0;
 
   @override
   void initState() {
@@ -49,7 +53,6 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
   void dispose() {
     _animationController?.dispose();
     _shakeController?.dispose();
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -123,26 +126,12 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
 
       if (mounted) {
         setState(() => _loaded = true);
-        WidgetsBinding.instance.addPostFrameCallback((_) => _centerContent());
       }
     } catch (e) {
       debugPrint("ERROR loading stage progress: $e");
       if (mounted) {
         setState(() => _loaded = true);
       }
-    }
-  }
-
-  final ScrollController _scrollController = ScrollController();
-
-  void _centerContent() {
-    if (_scrollController.hasClients) {
-      // Calculer le centrage exact par rapport à la largeur de l'écran
-      final viewportWidth = MediaQuery.of(context).size.width - 40;
-      const contentWidth = 990.0;
-      final offset = (contentWidth - viewportWidth) / 2;
-
-      _scrollController.jumpTo(offset);
     }
   }
 
@@ -171,42 +160,42 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
               right: 0,
               top: stageLineLocalY - _kTrackHeight / 2,
               height: _kTrackHeight,
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                scrollDirection: Axis.horizontal,
-                physics: const NeverScrollableScrollPhysics(),
-                clipBehavior: Clip.none,
-                child: SizedBox(
-                  height: _kTrackHeight,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    clipBehavior: Clip.none,
-                    children: [
-                      // 1. Path Line
-                      Container(
-                        width: 990,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: AppTheme.brown,
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                      ),
-
-                      // 2. Circles
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: _buildStageCircles(),
-                      ),
-
-                      // 3. Joueur (canvas Flame)
-                      if (_previewGame != null)
-                        Positioned.fill(
-                          child: IgnorePointer(
-                            child: GameWidget(game: _previewGame!),
+              child: ClipRect(
+                child: OverflowBox(
+                  minWidth: _kContentWidth,
+                  maxWidth: _kContentWidth,
+                  child: SizedBox(
+                    height: _kTrackHeight,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      clipBehavior: Clip.none,
+                      children: [
+                        // 1. Path Line
+                        Container(
+                          width: _kContentWidth,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: AppTheme.brown,
+                            borderRadius: BorderRadius.circular(3),
                           ),
                         ),
-                    ],
+
+                        // 2. Circles
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: _buildStageCircles(),
+                        ),
+
+                        // 3. Joueur (canvas Flame)
+                        if (_previewGame != null)
+                          Positioned.fill(
+                            child: IgnorePointer(
+                              child: GameWidget(game: _previewGame!),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -218,7 +207,6 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
   }
 
   List<Widget> _buildStageCircles() {
-    // Génère les cercles pour la fenêtre visible
     final count = _viewMaxStage - _viewMinStage + 1;
     return List.generate(count, (index) {
       final stageNumber = _viewMinStage + index;
@@ -227,7 +215,6 @@ class _CampaignProgressScreenState extends State<CampaignProgressScreen>
 
       if (stageNumber < 1) {
         // Espaceur invisible pour maintenir la mise en page
-        // Utilisation d'une largeur fixe de 90 pour aligner avec la grille
         content = const SizedBox(width: 50, height: 50);
       } else {
         final unlocked = stageNumber <= _currentStage;
