@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
+import 'package:word_riders/features/ui/widgets/common/bounded_content.dart';
 import 'package:word_riders/features/ui/widgets/common/button/bouncing_scale_button.dart';
 import 'package:word_riders/features/ui/widgets/common/button/premium_menu_button.dart';
 import 'package:word_riders/features/ui/widgets/game/game_background.dart';
@@ -17,6 +18,8 @@ class TrainingConfigOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isFloatingModal = context.isFloatingModal;
+
     return Material(
       type: MaterialType.transparency,
       child: Stack(
@@ -27,103 +30,122 @@ class TrainingConfigOverlay extends StatelessWidget {
           Positioned.fill(
             child: Container(color: Colors.black.withValues(alpha: 0.4)),
           ),
-          
+
           Center(
-            child: Container(
-              width: double.infinity,
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height - 48,
-              ),
-              margin: const EdgeInsets.symmetric(vertical: 24),
-              child: Stack(
-                clipBehavior: Clip.none,
-                alignment: Alignment.topCenter,
-                children: [
-                  // 1. The MAIN PANEL
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 30),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 1.5),
-                    decoration: BoxDecoration(
-                      color: AppTheme.coinBorderDark,
-                      borderRadius: BorderRadius.zero,
-                       boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.5),
-                          blurRadius: 24,
-                          offset: const Offset(0, 12),
-                        ),
-                      ],
-                    ),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.zero,
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [AppTheme.coinRimTop, AppTheme.coinRimBottom],
-                        ),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: BoundedContent(
+              width: ContentWidth.modal,
+              child: Container(
+                width: double.infinity,
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height - 48,
+                ),
+                margin: const EdgeInsets.symmetric(vertical: 24),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.topCenter,
+                  children: [
+                    // 1. The MAIN PANEL
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 30),
                       child: Container(
-                        padding: const EdgeInsets.fromLTRB(24, 50, 24, 32),
-                        decoration: const BoxDecoration(
-                          color: AppTheme.levelSignFace,
-                          borderRadius: BorderRadius.zero,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-
-                            
-                            _buildPremiumOption(context.tr('training.easy'), 6),
-                            const SizedBox(height: 12),
-                            _buildPremiumOption(context.tr('training.medium'), 7),
-                            const SizedBox(height: 12),
-                            _buildPremiumOption(context.tr('training.hard'), 8),
-                          ],
-                        ),
-                      ),
-                      ),
-                  ),
-                  ),
-
-                  // 2. The HEADER (Title)
-                  Positioned(
-                    top: 6,
-                    child: _buildHeaderRibbon(context),
-                  ),
-
-                  // 3. Close Button
-                  Positioned(
-                    top: 4,
-                    right: 16,
-                    child: BouncingScaleButton(
-                      onTap: onBack,
-                      child: Container(
-                        width: 42,
-                        height: 42,
+                        padding: const EdgeInsets.symmetric(vertical: 1.5),
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppTheme.brown,
-                          border: Border.all(color: AppTheme.coinRimBottom, width: 2),
+                          color: AppTheme.coinBorderDark,
+                          borderRadius: isFloatingModal
+                              ? BorderRadius.circular(24)
+                              : BorderRadius.zero,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.3),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            )
+                              color: Colors.black.withValues(alpha: 0.5),
+                              blurRadius: 24,
+                              offset: const Offset(0, 12),
+                            ),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.close_rounded,
-                          color: AppTheme.tileFace,
-                          size: 30,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: isFloatingModal
+                                ? BorderRadius.circular(22)
+                                : BorderRadius.zero,
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                AppTheme.coinRimTop,
+                                AppTheme.coinRimBottom,
+                              ],
+                            ),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Container(
+                            padding: const EdgeInsets.fromLTRB(24, 50, 24, 32),
+                            decoration: BoxDecoration(
+                              color: AppTheme.levelSignFace,
+                              borderRadius: isFloatingModal
+                                  ? BorderRadius.circular(20)
+                                  : BorderRadius.zero,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _buildPremiumOption(
+                                  context.tr('training.easy'),
+                                  6,
+                                ),
+                                const SizedBox(height: 12),
+                                _buildPremiumOption(
+                                  context.tr('training.medium'),
+                                  7,
+                                ),
+                                const SizedBox(height: 12),
+                                _buildPremiumOption(
+                                  context.tr('training.hard'),
+                                  8,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+
+                    // 2. The HEADER (Title)
+                    Positioned(top: 6, child: _buildHeaderRibbon(context)),
+
+                    // 3. Close Button
+                    Positioned(
+                      top: 4,
+                      right: 16,
+                      child: BouncingScaleButton(
+                        onTap: onBack,
+                        child: Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppTheme.brown,
+                            border: Border.all(
+                              color: AppTheme.coinRimBottom,
+                              width: 2,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.3),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.close_rounded,
+                            color: AppTheme.tileFace,
+                            size: 30,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -139,27 +161,23 @@ class TrainingConfigOverlay extends StatelessWidget {
         color: AppTheme.coinBorderDark,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black26, 
-            offset: Offset(0, 4), 
-            blurRadius: 4
-          )
+          BoxShadow(color: Colors.black26, offset: Offset(0, 4), blurRadius: 4),
         ],
       ),
       child: Container(
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(14.5)),
           gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [AppTheme.coinRimTop, AppTheme.coinRimBottom],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppTheme.coinRimTop, AppTheme.coinRimBottom],
           ),
         ),
         padding: const EdgeInsets.all(3.0),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
           decoration: BoxDecoration(
-            color: AppTheme.levelSignFace, 
+            color: AppTheme.levelSignFace,
             borderRadius: BorderRadius.circular(11.5),
           ),
           child: Text(
@@ -186,14 +204,8 @@ class TrainingConfigOverlay extends StatelessWidget {
           forceUpperCase: false,
           onTap: () => onSelectLength(length),
           width: 220,
-          faceGradient: [
-            AppTheme.levelSignFace,
-            AppTheme.levelSignFace,
-          ],
-          rimGradient: const [
-             AppTheme.coinRimTop,
-             AppTheme.coinRimBottom,
-          ],
+          faceGradient: [AppTheme.levelSignFace, AppTheme.levelSignFace],
+          rimGradient: const [AppTheme.coinRimTop, AppTheme.coinRimBottom],
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:word_riders/features/gameplay/services/player_preferences.dart';
 import 'package:go_router/go_router.dart';
+import 'package:word_riders/features/ui/widgets/common/bounded_content.dart';
 import 'package:word_riders/features/ui/widgets/common/navigation/app_back_button.dart';
 import 'package:word_riders/features/ui/styles/app_theme.dart';
 import 'package:word_riders/features/ui/widgets/settings/settings_about_section.dart';
@@ -106,9 +107,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                  ),
                  
                  Expanded(
-                   child: Center(
+                   child: BoundedContent(
+                     width: ContentWidth.standard,
                      child: Container(
-                       constraints: const BoxConstraints(maxWidth: 600),
                        margin: const EdgeInsets.all(24),
                        child: SingleChildScrollView(
                          child: Column(
